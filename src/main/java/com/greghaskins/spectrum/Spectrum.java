@@ -1,5 +1,7 @@
 package com.greghaskins.spectrum;
 
+import java.lang.reflect.Method;
+
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
@@ -13,6 +15,7 @@ public class Spectrum extends Runner {
 
     public Spectrum(final Class<?> testClass) throws InitializationError {
         suiteDescription = Description.createSuiteDescription(getSuiteName(testClass));
+        addChildTests(testClass, suiteDescription);
     }
 
     private String getSuiteName(final Class<?> testClass) throws MissingDescribeAnnotationError {
@@ -21,6 +24,15 @@ public class Spectrum extends Runner {
             throw new MissingDescribeAnnotationError(testClass);
         }
         return describe.value();
+    }
+
+    private void addChildTests(final Class<?> contextClass, final Description contextDescription) {
+        final Method[] methods = contextClass.getDeclaredMethods();
+        for (final Method method : methods) {
+            final It annotation = method.getAnnotation(It.class);
+            final String testName = annotation.value();
+            contextDescription.addChild(Description.createTestDescription(contextDescription.getClassName(), testName));
+        }
     }
 
     @Override
