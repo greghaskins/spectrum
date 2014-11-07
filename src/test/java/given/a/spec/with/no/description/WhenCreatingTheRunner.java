@@ -12,7 +12,7 @@ public class WhenCreatingTheRunner {
     }
 
     @Test(expected = MissingDescribeAnnotationError.class)
-    public void theConstructorThrowsAMissingDescribeAnnotationErrorIsThrown() throws Exception {
+    public void theConstructorThrowsAMissingDescribeAnnotationError() throws Exception {
         new Spectrum(SpecWithoutDescription.class);
     }
 
