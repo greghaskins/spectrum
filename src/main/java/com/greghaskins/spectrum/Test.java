@@ -1,5 +1,6 @@
 package com.greghaskins.spectrum;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.junit.runner.Description;
@@ -27,22 +28,21 @@ class Test<T> {
 
     void run(final T contextInstance, final RunNotifier notifier) {
         notifier.fireTestStarted(description);
-
         try {
             invokeMethodWithInstance(contextInstance);
         } catch (final Throwable e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            notifier.fireTestFailure(new Failure(description, null));
+            notifier.fireTestFailure(new Failure(description, e));
         }
-
-
         notifier.fireTestFinished(description);
     }
 
-    private void invokeMethodWithInstance(final T contextInstance) throws Exception {
+    private void invokeMethodWithInstance(final T contextInstance) throws Throwable {
         method.setAccessible(true);
-        method.invoke(contextInstance);
+        try {
+            method.invoke(contextInstance);
+        } catch (final InvocationTargetException e) {
+            throw e.getTargetException();
+        }
     }
 
 

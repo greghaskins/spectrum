@@ -10,15 +10,13 @@ import org.junit.runner.Description;
 
 import com.greghaskins.spectrum.Spectrum;
 
-import examples.SpecWithOneFailingTest;
-
 public class WhenDescribingTheSpec {
 
     private Description description;
 
     @Before
     public void describeTheSpec() throws Exception{
-        description = new Spectrum(SpecWithOneFailingTest.class).getDescription();
+        description = new Spectrum(Fixture.getSpecWithOneFailingTest()).getDescription();
     }
 
     @Test

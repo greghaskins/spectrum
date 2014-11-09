@@ -9,15 +9,13 @@ import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
-import examples.SpecWithOneFailingTest;
-
 public class WhenThatSpecIsRun {
 
     private Result result;
 
     @Before
     public void runTheSpec(){
-        result = JUnitCore.runClasses(SpecWithOneFailingTest.class);
+        result = JUnitCore.runClasses(Fixture.getSpecWithOneFailingTest());
     }
 
     @Test

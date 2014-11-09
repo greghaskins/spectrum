@@ -12,7 +12,7 @@ import org.junit.runners.model.InitializationError;
 
 public class Spectrum extends Runner {
 
-    private final Context context;
+    private final Context<?> context;
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE})
@@ -26,6 +26,7 @@ public class Spectrum extends Runner {
         String value();
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Spectrum(final Class<?> testClass) throws InitializationError {
         context = new Context(testClass);
     }

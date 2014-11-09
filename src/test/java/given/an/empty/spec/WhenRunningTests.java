@@ -8,15 +8,13 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
-import examples.EmptySpec;
-
 public class WhenRunningTests {
 
     private Result result;
 
     @Before
     public void runEmptySpec(){
-        result = JUnitCore.runClasses(EmptySpec.class);
+        result = JUnitCore.runClasses(Fixture.getEmptySpec());
     }
 
     @Test

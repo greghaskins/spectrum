@@ -9,13 +9,11 @@ import org.junit.runner.Runner;
 
 import com.greghaskins.spectrum.Spectrum;
 
-import examples.EmptySpec;
-
 public class WhenDescribingTheSuite {
 
     @Test
     public void theClassDescriptionIsUsedAsTheSuiteName() throws Exception {
-        final Runner runner = new Spectrum(EmptySpec.class);
+        final Runner runner = new Spectrum(Fixture.getEmptySpec());
         final Description description = runner.getDescription();
 
         assertThat(description.getDisplayName(), is("An empty specification"));

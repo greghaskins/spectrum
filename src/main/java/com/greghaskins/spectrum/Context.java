@@ -13,14 +13,14 @@ import com.greghaskins.spectrum.Spectrum.Describe;
 
 class Context<T> {
 
-    private final List<Test> tests;
+    private final List<Test<T>> tests;
     private final Description description;
     private final Class<T> contextClass;
 
     Context(final Class<T> contextClass) throws InitializationError {
         this.contextClass = contextClass;
         description = makeDescription();
-        tests = new ArrayList<Test>();
+        tests = new ArrayList<Test<T>>();
         addChildTests();
     }
 
@@ -53,7 +53,7 @@ class Context<T> {
     private void addChildTests() {
         final Method[] methods = contextClass.getDeclaredMethods();
         for (final Method method : methods) {
-            final Test test = new Test(contextClass, method);
+            final Test<T> test = new Test<T>(contextClass, method);
             tests.add(test);
             description.addChild(test.getDescription());
         }
@@ -61,7 +61,7 @@ class Context<T> {
 
     public void run(final RunNotifier notifier) {
         final T instance = makeInstance(contextClass);
-        for (final Test test : tests) {
+        for (final Test<T> test : tests) {
             test.run(instance, notifier);
         }
     }
