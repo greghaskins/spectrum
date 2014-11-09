@@ -10,6 +10,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
 
 import com.greghaskins.spectrum.Spectrum.Describe;
+import com.greghaskins.spectrum.Spectrum.It;
 
 class Context<T> {
 
@@ -53,9 +54,12 @@ class Context<T> {
     private void addChildTests() {
         final Method[] methods = contextClass.getDeclaredMethods();
         for (final Method method : methods) {
-            final Test<T> test = new Test<T>(contextClass, method);
-            tests.add(test);
-            description.addChild(test.getDescription());
+            final It annotation = method.getAnnotation(It.class);
+            if (annotation != null) {
+                final Test<T> test = new Test<T>(contextClass, method);
+                tests.add(test);
+                description.addChild(test.getDescription());
+            }
         }
     }
 
