@@ -12,22 +12,21 @@ import examples.EmptySpec;
 
 public class WhenRunningTests {
 
-	private Result result;
+    private Result result;
 
-	@Before
-	public void runEmptySpec(){
-		JUnitCore jUnitCore = new JUnitCore();
-		result = jUnitCore.run(EmptySpec.class);
-	}
+    @Before
+    public void runEmptySpec(){
+        result = JUnitCore.runClasses(EmptySpec.class);
+    }
 
-	@Test
-	public void theRunCountShouldBeOne() throws Exception {
-		assertThat(result.getRunCount(), is(1));
-	}
+    @Test
+    public void theRunCountShouldBeZero() throws Exception {
+        assertThat(result.getRunCount(), is(0));
+    }
 
-	@Test
-	public void theRunIsSuccessful() throws Exception {
-		assertThat(result.wasSuccessful(), is(true));
-	}
+    @Test
+    public void theRunIsSuccessful() throws Exception {
+        assertThat(result.wasSuccessful(), is(true));
+    }
 
 }

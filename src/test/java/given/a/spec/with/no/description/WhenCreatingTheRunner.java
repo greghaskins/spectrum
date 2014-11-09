@@ -2,8 +2,8 @@ package given.a.spec.with.no.description;
 
 import org.junit.Test;
 
+import com.greghaskins.spectrum.MissingDescribeAnnotationError;
 import com.greghaskins.spectrum.Spectrum;
-import com.greghaskins.spectrum.errors.MissingDescribeAnnotationError;
 
 public class WhenCreatingTheRunner {
 

@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum.errors;
+package com.greghaskins.spectrum;
 
 import org.junit.runners.model.InitializationError;
 
