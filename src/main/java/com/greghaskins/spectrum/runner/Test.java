@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.runner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,14 +19,14 @@ class Test<T> {
         this.method = method;
         final String contextName = contextClass.getAnnotation(Describe.class).value();
         final String testName = method.getAnnotation(It.class).value();
-        description = Description.createTestDescription(contextName , testName);
+        description = Description.createTestDescription(contextName, testName);
     }
 
     public Description getDescription() {
         return description;
     }
 
-    void run(final T contextInstance, final RunNotifier notifier) {
+    public void run(final T contextInstance, final RunNotifier notifier) {
         notifier.fireTestStarted(description);
         try {
             invokeMethodWithInstance(contextInstance);
@@ -44,6 +44,5 @@ class Test<T> {
             throw e.getTargetException();
         }
     }
-
 
 }

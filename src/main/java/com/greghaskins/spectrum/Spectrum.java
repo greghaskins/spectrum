@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.model.InitializationError;
+
+import com.greghaskins.spectrum.runner.Context;
 
 public class Spectrum extends Runner {
 
@@ -32,8 +33,8 @@ public class Spectrum extends Runner {
 
     private final Context<?> context;
 
-    public <T> Spectrum(final Class<T> testClass) throws InitializationError {
-        context = new Context<T>(testClass);
+    public <T> Spectrum(final Class<T> testClass) {
+        context = Context.forClass(testClass);
     }
 
     @Override

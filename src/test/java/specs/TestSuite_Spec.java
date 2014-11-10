@@ -14,7 +14,7 @@ import org.junit.runners.model.InitializationError;
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Describe;
 import com.greghaskins.spectrum.Spectrum.It;
-import com.greghaskins.spectrum.UnableToInstantiateContextError;
+import com.greghaskins.spectrum.runner.UnableToInstantiateContextError;
 
 @Describe("a Spectrum test suite")
 @RunWith(Spectrum.class)
