@@ -32,9 +32,8 @@ public class Spectrum extends Runner {
 
     private final Context<?> context;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Spectrum(final Class<?> testClass) throws InitializationError {
-        context = new Context(testClass);
+    public <T> Spectrum(final Class<T> testClass) throws InitializationError {
+        context = new Context<T>(testClass);
     }
 
     @Override
