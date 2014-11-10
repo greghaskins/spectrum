@@ -12,19 +12,25 @@ import org.junit.runners.model.InitializationError;
 
 public class Spectrum extends Runner {
 
-    private final Context<?> context;
-
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE})
+    @Target({ ElementType.TYPE })
     public static @interface Describe {
         String value();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.METHOD})
+    @Target({ ElementType.METHOD })
     public static @interface It {
         String value();
     }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.METHOD })
+    public @interface BeforeEach {
+
+    }
+
+    private final Context<?> context;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public Spectrum(final Class<?> testClass) throws InitializationError {
@@ -40,6 +46,5 @@ public class Spectrum extends Runner {
     public void run(final RunNotifier notifier) {
         context.run(notifier);
     }
-
 
 }

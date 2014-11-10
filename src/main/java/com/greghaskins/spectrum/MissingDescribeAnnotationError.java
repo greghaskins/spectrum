@@ -1,8 +1,7 @@
 package com.greghaskins.spectrum;
 
-import org.junit.runners.model.InitializationError;
 
-public class MissingDescribeAnnotationError extends InitializationError {
+public class MissingDescribeAnnotationError extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.model.InitializationError;
 
 import com.greghaskins.spectrum.Spectrum.Describe;
 import com.greghaskins.spectrum.Spectrum.It;
@@ -18,23 +17,21 @@ class Context<T> {
     private final Description description;
     private final Class<T> contextClass;
 
-    Context(final Class<T> contextClass) throws InitializationError {
+    Context(final Class<T> contextClass) {
         this.contextClass = contextClass;
         description = makeDescription();
         tests = new ArrayList<Test<T>>();
         addChildTests();
     }
 
-    private T makeInstance(final Class<T> type) {
+    private T makeInstance(final Class<T> type) throws UnableToInstantiateContextError {
         final T newInstance;
         try {
             final Constructor<T> constructor = type.getDeclaredConstructor();
             constructor.setAccessible(true);
             newInstance = constructor.newInstance();
         } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new UnableToInstantiateContextError(type, e);
         }
         return newInstance;
     }
