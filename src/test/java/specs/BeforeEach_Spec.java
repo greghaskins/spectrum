@@ -3,6 +3,7 @@ package specs;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
 import com.greghaskins.spectrum.Spectrum;
@@ -29,12 +30,26 @@ public class BeforeEach_Spec {
         assertThat(counter, is(0));
     }
 
-    //    @Describe("that throws an exception") class beforeEachException {
-    //
-    //        @It("causes all tests in that context to fail") void testsFail() {
-    //
-    //        }
-    //
-    //    }
+    @It("that throws an exception causes all tests in that context to fail") void testsFail() throws Exception {
+        final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeEach());
+        assertThat(result.getFailureCount(), is(2));
+    }
+
+    private static Class<?> getSpecWithExplodingBeforeEach(){
+
+        @Describe("a spec with an exploding @BeforeEach method")
+        class Spec {
+
+            @BeforeEach void goBoom() throws Throwable {
+                throw new Exception();
+            }
+
+            @It("should fail") void test1() { }
+
+            @It("should also fail") void test2() { }
+
+        }
+        return Spec.class;
+    }
 
 }

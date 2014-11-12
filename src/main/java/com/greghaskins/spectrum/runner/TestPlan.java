@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 class TestPlan<T> {
@@ -22,23 +23,24 @@ class TestPlan<T> {
         description.addChild(test.getDescription());
     }
 
-    public void addSetup(final InstanceMethod<T> setupMethod){
+    public void addSetup(final InstanceMethod<T> setupMethod) {
         this.setupMethod = setupMethod;
     }
 
     public void runInContext(final T instance, final RunNotifier notifier) {
         for (final Test<T> test : tests) {
-            setupContext(instance);
-            test.run(instance, notifier);
+            try {
+                setupContext(instance);
+                test.run(instance, notifier);
+            } catch (final Throwable e) {
+                notifier.fireTestFailure(new Failure(test.getDescription(), e));
+            }
         }
     }
 
-    private void setupContext(final T instance) {
-        try {
+    private void setupContext(final T instance) throws Throwable {
+        if (setupMethod != null) {
             setupMethod.invokeWithInstance(instance);
-        } catch (final Throwable e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 

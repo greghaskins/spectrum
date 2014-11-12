@@ -1,5 +1,6 @@
 package com.greghaskins.spectrum.runner;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 class InstanceMethod<T> {
@@ -12,7 +13,11 @@ class InstanceMethod<T> {
 
     public void invokeWithInstance(final T instance) throws Throwable {
         method.setAccessible(true);
-        method.invoke(instance);
+        try {
+            method.invoke(instance);
+        } catch (final InvocationTargetException e) {
+            throw e.getTargetException();
+        }
     }
 
 }
