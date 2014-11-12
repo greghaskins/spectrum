@@ -20,14 +20,14 @@ public class BeforeEach_Spec {
         counter = 0;
     }
 
-    @It("is run before the first test") void test1() {
+    @It("is run before a test") void test1() {
         assertThat(counter, is(0));
         counter = 1;
     }
 
-    //    @It("is run before the second test to reset the context") void test2() {
-    //        assertThat(counter, is(0));
-    //    }
+    @It("is run before the next test to reset the context") void test2() {
+        assertThat(counter, is(0));
+    }
 
     //    @Describe("that throws an exception") class beforeEachException {
     //
