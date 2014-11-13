@@ -1,28 +1,47 @@
 package com.greghaskins.spectrum.runner;
 
+import static com.greghaskins.spectrum.runner.AnnotationLogic.ifMethodHasAnnotation;
+
 import java.lang.reflect.Method;
 
 import org.junit.runner.Description;
 
 import com.greghaskins.spectrum.Spectrum.BeforeEach;
 import com.greghaskins.spectrum.Spectrum.It;
+import com.greghaskins.spectrum.runner.AnnotationLogic.Then;
 
 class TestFinder {
 
     static <T> TestPlan<T> findTests(final Class<T> type, final Description parentDescription) {
         final TestPlan<T> testPlan = new TestPlan<T>(type, parentDescription);
+        final String contextName = parentDescription.getDisplayName();
+
         for (final Method method : type.getDeclaredMethods()) {
-
-            final It itAnnotation = method.getAnnotation(It.class);
-            if (itAnnotation != null) {
-                testPlan.addTest(new Test<T>(itAnnotation.value(), parentDescription.getDisplayName(), new InstanceMethod<T>(method)));
-            }
-
-            final BeforeEach beforeEachAnnotation = method.getAnnotation(BeforeEach.class);
-            if (beforeEachAnnotation != null) {
-                testPlan.addSetup(new InstanceMethod<T>(method));
-            }
+            ifMethodHasAnnotation(method, It.class, thenAddTestToPlan(method, testPlan, contextName));
+            ifMethodHasAnnotation(method, BeforeEach.class, thenAddSetupToPlan(method, testPlan));
         }
         return testPlan;
+    }
+
+    private static <T> Then<It> thenAddTestToPlan(final Method method, final TestPlan<T> testPlan, final String contextName) {
+        return new Then<It>() {
+
+            @Override
+            public void then(final It foundAnnotation) {
+                final String testName = foundAnnotation.value();
+                testPlan.addTest(new Test<T>(testName, contextName, new InstanceMethod<T>(method)));
+
+            }
+        };
+    }
+
+    private static <T> Then<BeforeEach> thenAddSetupToPlan(final Method method, final TestPlan<T> testPlan){
+        return new Then<BeforeEach>() {
+
+            @Override
+            public void then(final BeforeEach foundAnnotation) {
+                testPlan.addSetup(new InstanceMethod<T>(method));
+            }
+        };
     }
 }
