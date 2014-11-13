@@ -16,7 +16,7 @@ public class Context<T> {
     private Context(final Class<T> contextClass) {
         this.contextClass = contextClass;
         description = ContextDescriber.makeDescription(contextClass);
-        tests = TestFinder.findTests(contextClass, description);
+        tests = TestPlanner.makeTestPlan(contextClass, description);
     }
 
     public void run(final RunNotifier notifier) {

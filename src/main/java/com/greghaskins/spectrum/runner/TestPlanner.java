@@ -10,9 +10,9 @@ import com.greghaskins.spectrum.Spectrum.BeforeEach;
 import com.greghaskins.spectrum.Spectrum.It;
 import com.greghaskins.spectrum.runner.AnnotationLogic.Then;
 
-class TestFinder {
+class TestPlanner {
 
-    static <T> TestPlan<T> findTests(final Class<T> type, final Description parentDescription) {
+    static <T> TestPlan<T> makeTestPlan(final Class<T> type, final Description parentDescription) {
         final TestPlan<T> testPlan = new TestPlan<T>(type, parentDescription);
         final String contextName = parentDescription.getDisplayName();
 
