@@ -11,11 +11,12 @@ class TestPlan<T> {
 
     private final Description description;
     private final List<Test<T>> tests;
-    private InstanceMethod<T> setupMethod;
+    private final List<InstanceMethod<T>> setupMethods;
 
     public TestPlan(final Class<T> type, final Description description) {
         this.description = description;
         this.tests = new ArrayList<Test<T>>();
+        this.setupMethods = new ArrayList<InstanceMethod<T>>();
     }
 
     public void addTest(final Test<T> test) {
@@ -24,7 +25,7 @@ class TestPlan<T> {
     }
 
     public void addSetup(final InstanceMethod<T> setupMethod) {
-        this.setupMethod = setupMethod;
+        this.setupMethods.add(setupMethod);
     }
 
     public void runInContext(final T instance, final RunNotifier notifier) {
@@ -39,7 +40,7 @@ class TestPlan<T> {
     }
 
     private void setupContext(final T instance) throws Throwable {
-        if (setupMethod != null) {
+        for (final InstanceMethod<T> setupMethod : setupMethods) {
             setupMethod.invokeWithInstance(instance);
         }
     }

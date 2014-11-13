@@ -11,26 +11,42 @@ import com.greghaskins.spectrum.Spectrum.BeforeEach;
 import com.greghaskins.spectrum.Spectrum.Describe;
 import com.greghaskins.spectrum.Spectrum.It;
 
-@Describe("a method marked @BeforeEach")
+@Describe("methods marked @BeforeEach")
 @RunWith(Spectrum.class)
 public class BeforeEach_Spec {
 
-    int counter = -1;
+    int number = -1;
+    String text = null;
 
-    @BeforeEach void setCounterToZero() {
-        counter = 0;
+    @BeforeEach void setNumberToZero() {
+        number = 0;
     }
 
-    @It("is run before a test") void test1() {
-        assertThat(counter, is(0));
-        counter = 1;
+    @BeforeEach void setTextToInitialValue() {
+        text = "initial value";
     }
 
-    @It("is run before the next test to reset the context") void test2() {
-        assertThat(counter, is(0));
+    @It("run before a test") void test1() {
+        verifyContextHasBeenReset();
+        changeContextValues();
     }
 
-    @It("that throws an exception causes all tests in that context to fail") void testsFail() throws Exception {
+    @It("run before the next test to reset the context") void test2() {
+        verifyContextHasBeenReset();
+        changeContextValues();
+    }
+
+    private void changeContextValues() {
+        number = 1;
+        text = "another value";
+    }
+
+    private void verifyContextHasBeenReset() {
+        assertThat(number, is(0));
+        assertThat(text, is("initial value"));
+    }
+
+    @It("that throw an exception causes all tests in that context to fail") void testsFail() throws Exception {
         final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeEach());
         assertThat(result.getFailureCount(), is(2));
     }
