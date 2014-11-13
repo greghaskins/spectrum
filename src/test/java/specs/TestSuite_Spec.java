@@ -46,7 +46,7 @@ public class TestSuite_Spec {
 
     private static Class<?> getSpecWhichCannotBeInstantiated() {
 
-        @Describe("a spec with a non-test helper method")
+        @Describe("a spec with a constructor that requires a parameter")
         class Spec {
 
             @SuppressWarnings("unused")
