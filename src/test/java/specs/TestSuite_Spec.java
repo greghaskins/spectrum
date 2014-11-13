@@ -17,6 +17,11 @@ import com.greghaskins.spectrum.runner.UnableToInstantiateContextError;
 @RunWith(Spectrum.class)
 public class TestSuite_Spec {
 
+    @It("will ignore methods without an @It annotation") void test() throws Exception {
+        final Result result = SpectrumRunner.run(getSpecWithHelperMethod());
+        assertThat(result.wasSuccessful(), is(true));
+    }
+
     private static Class<?> getSpecWithHelperMethod() {
 
         @Describe("a spec with a non-test helper method")
@@ -27,6 +32,16 @@ public class TestSuite_Spec {
             private void doSomething() { }
         }
         return Spec.class;
+    }
+
+    @It("throws an error when the context cannot be created") void cannotCreateContext() throws Exception {
+        final Class<?> specClass = getSpecWhichCannotBeInstantiated();
+        try {
+            SpectrumRunner.run(specClass);
+            Assert.fail("Should have thrown an UnableToInstantiateContextError");
+        } catch (final UnableToInstantiateContextError expected) {
+            assertThat(expected.getMessage(), containsString(specClass.getName()));
+        }
     }
 
     private static Class<?> getSpecWhichCannotBeInstantiated() {
@@ -41,21 +56,6 @@ public class TestSuite_Spec {
 
         }
         return Spec.class;
-    }
-
-    @It("will ignore methods without an @It annotation") void test() throws Exception {
-        final Result result = SpectrumRunner.run(getSpecWithHelperMethod());
-        assertThat(result.wasSuccessful(), is(true));
-    }
-
-    @It("throws an error when the context cannot be created") void cannotCreateContext() throws Exception {
-        final Class<?> specClass = getSpecWhichCannotBeInstantiated();
-        try {
-            SpectrumRunner.run(specClass);
-            Assert.fail("Should have thrown an UnableToInstantiateContextError");
-        } catch (final UnableToInstantiateContextError expected) {
-            assertThat(expected.getMessage(), containsString(specClass.getName()));
-        }
     }
 
 

@@ -1,25 +1,17 @@
 package com.greghaskins.spectrum.runner;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
-import com.greghaskins.spectrum.Spectrum.Describe;
-import com.greghaskins.spectrum.Spectrum.It;
-
 class Test<T> {
 
     private final Description description;
-    private final Method method;
+    private final InstanceMethod<T> method;
 
-    Test(final Class<T> contextClass, final Method method) {
-        this.method = method;
-        final String contextName = contextClass.getAnnotation(Describe.class).value();
-        final String testName = method.getAnnotation(It.class).value();
-        description = Description.createTestDescription(contextName, testName);
+    Test(final String testName, final String contextName, final InstanceMethod<T> instanceMethod) {
+        this.method = instanceMethod;
+        this.description = Description.createTestDescription(contextName, testName);
     }
 
     public Description getDescription() {
@@ -29,20 +21,11 @@ class Test<T> {
     public void run(final T contextInstance, final RunNotifier notifier) {
         notifier.fireTestStarted(description);
         try {
-            invokeMethodWithInstance(contextInstance);
+            method.invokeWithInstance(contextInstance);
         } catch (final Throwable e) {
             notifier.fireTestFailure(new Failure(description, e));
         }
         notifier.fireTestFinished(description);
-    }
-
-    private void invokeMethodWithInstance(final T contextInstance) throws Throwable {
-        method.setAccessible(true);
-        try {
-            method.invoke(contextInstance);
-        } catch (final InvocationTargetException e) {
-            throw e.getTargetException();
-        }
     }
 
 }
