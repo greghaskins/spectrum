@@ -58,7 +58,7 @@ public class TestSuite_Spec {
         return Spec.class;
     }
 
-
-
+    // TODO a spec with no tests gets marked as ignored
+    // TODO @AfterEach
 
 }

@@ -1,6 +1,6 @@
 package com.greghaskins.spectrum.runner;
 
-import static com.greghaskins.spectrum.runner.AnnotationLogic.ifMethodHasAnnotation;
+import static com.greghaskins.spectrum.runner.AnnotationLogic.ifElement;
 
 import java.lang.reflect.Method;
 
@@ -8,7 +8,7 @@ import org.junit.runner.Description;
 
 import com.greghaskins.spectrum.Spectrum.BeforeEach;
 import com.greghaskins.spectrum.Spectrum.It;
-import com.greghaskins.spectrum.runner.AnnotationLogic.Then;
+import com.greghaskins.spectrum.runner.AnnotationLogic.ThenClause;
 
 class TestPlanner {
 
@@ -17,14 +17,14 @@ class TestPlanner {
         final String contextName = parentDescription.getDisplayName();
 
         for (final Method method : type.getDeclaredMethods()) {
-            ifMethodHasAnnotation(method, It.class, thenAddTestToPlan(method, testPlan, contextName));
-            ifMethodHasAnnotation(method, BeforeEach.class, thenAddSetupToPlan(method, testPlan));
+            ifElement(method).hasAnnotation(It.class).then(addTestToPlan(method, testPlan, contextName));
+            ifElement(method).hasAnnotation(BeforeEach.class).then(addSetupToPlan(method, testPlan));
         }
         return testPlan;
     }
 
-    private static <T> Then<It> thenAddTestToPlan(final Method method, final TestPlan<T> testPlan, final String contextName) {
-        return new Then<It>() {
+    private static <T> ThenClause<It> addTestToPlan(final Method method, final TestPlan<T> testPlan, final String contextName) {
+        return new ThenClause<It>() {
 
             @Override
             public void then(final It foundAnnotation) {
@@ -35,8 +35,8 @@ class TestPlanner {
         };
     }
 
-    private static <T> Then<BeforeEach> thenAddSetupToPlan(final Method method, final TestPlan<T> testPlan){
-        return new Then<BeforeEach>() {
+    private static <T> ThenClause<BeforeEach> addSetupToPlan(final Method method, final TestPlan<T> testPlan){
+        return new ThenClause<BeforeEach>() {
 
             @Override
             public void then(final BeforeEach foundAnnotation) {
