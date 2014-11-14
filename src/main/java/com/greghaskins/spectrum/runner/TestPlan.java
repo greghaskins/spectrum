@@ -29,6 +29,9 @@ class TestPlan<T> {
     }
 
     public void runInContext(final T targetInstance, final RunNotifier notifier) {
+        if (tests.isEmpty()) {
+            notifier.fireTestIgnored(description);
+        }
         for (final Test<T> test : tests) {
             try {
                 setup(targetInstance);

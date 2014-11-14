@@ -13,7 +13,7 @@ public class WhenRunningTests {
     private Result result;
 
     @Before
-    public void runEmptySpec(){
+    public void runEmptySpec() {
         result = JUnitCore.runClasses(Fixture.getEmptySpec());
     }
 
@@ -25,6 +25,11 @@ public class WhenRunningTests {
     @Test
     public void theRunIsSuccessful() throws Exception {
         assertThat(result.wasSuccessful(), is(true));
+    }
+
+    @Test
+    public void theIgnoreCountShouldBeOne() throws Exception {
+        assertThat(result.getIgnoreCount(), is(1));
     }
 
 }
