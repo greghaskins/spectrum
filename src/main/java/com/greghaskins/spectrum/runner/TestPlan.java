@@ -13,7 +13,7 @@ class TestPlan<T> {
     private final List<Test<T>> tests;
     private final List<InstanceMethod<T>> setupMethods;
 
-    public TestPlan(final Class<T> type, final Description description) {
+    public TestPlan(final Description description) {
         this.description = description;
         this.tests = new ArrayList<Test<T>>();
         this.setupMethods = new ArrayList<InstanceMethod<T>>();
@@ -25,23 +25,23 @@ class TestPlan<T> {
     }
 
     public void addSetup(final InstanceMethod<T> setupMethod) {
-        this.setupMethods.add(setupMethod);
+        setupMethods.add(setupMethod);
     }
 
-    public void runInContext(final T instance, final RunNotifier notifier) {
+    public void runInContext(final T targetInstance, final RunNotifier notifier) {
         for (final Test<T> test : tests) {
             try {
-                setupContext(instance);
-                test.run(instance, notifier);
+                setup(targetInstance);
+                test.run(targetInstance, notifier);
             } catch (final Throwable e) {
                 notifier.fireTestFailure(new Failure(test.getDescription(), e));
             }
         }
     }
 
-    private void setupContext(final T instance) throws Throwable {
+    private void setup(final T targetInstance) throws Throwable {
         for (final InstanceMethod<T> setupMethod : setupMethods) {
-            setupMethod.invokeWithInstance(instance);
+            setupMethod.invokeWithInstance(targetInstance);
         }
     }
 

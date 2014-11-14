@@ -5,23 +5,23 @@ import org.junit.runner.notification.RunNotifier;
 
 public class Context<T> {
 
-    private final TestPlan<T> tests;
+    private final TestPlan<T> testPlan;
     private final Description description;
-    private final Class<T> contextClass;
+    private final Class<T> type;
 
     public static <T> Context<T> forClass(final Class<T> contextClass) {
         return new Context<T>(contextClass);
     }
 
     private Context(final Class<T> contextClass) {
-        this.contextClass = contextClass;
+        type = contextClass;
         description = ContextDescriber.makeDescription(contextClass);
-        tests = TestPlanner.makeTestPlan(contextClass, description);
+        testPlan = TestPlanner.makeTestPlan(contextClass, description);
     }
 
     public void run(final RunNotifier notifier) {
-        final T instance = ReflectiveConstructor.makeInstance(contextClass);
-        tests.runInContext(instance, notifier);
+        final T instance = ReflectiveConstructor.makeInstance(type);
+        testPlan.runInContext(instance, notifier);
     }
 
     public Description getDescription() {

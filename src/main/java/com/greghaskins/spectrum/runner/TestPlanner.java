@@ -13,7 +13,7 @@ import com.greghaskins.spectrum.runner.AnnotationLogic.Then;
 class TestPlanner {
 
     static <T> TestPlan<T> makeTestPlan(final Class<T> type, final Description parentDescription) {
-        final TestPlan<T> testPlan = new TestPlan<T>(type, parentDescription);
+        final TestPlan<T> testPlan = new TestPlan<T>(parentDescription);
         final String contextName = parentDescription.getDisplayName();
 
         for (final Method method : type.getDeclaredMethods()) {
