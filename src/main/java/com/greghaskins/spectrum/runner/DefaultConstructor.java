@@ -2,9 +2,16 @@ package com.greghaskins.spectrum.runner;
 
 import java.lang.reflect.Constructor;
 
-class ReflectiveConstructor {
+class DefaultConstructor<T> implements InstanceFactory<T, Void> {
 
-    public static <T> T makeInstance(final Class<T> type) {
+    private final Class<T> type;
+
+    public DefaultConstructor(final Class<T> type) {
+        this.type = type;
+    }
+
+    @Override
+    public T makeInstance(final Void outerInstanceNotNeeded) {
         final T newInstance;
         try {
             final Constructor<T> constructor = type.getDeclaredConstructor();

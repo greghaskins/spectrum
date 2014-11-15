@@ -31,7 +31,7 @@ public class Spectrum extends Runner {
 
     }
 
-    private final Context<?> context;
+    private final Context<?, Void> context;
 
     public <T> Spectrum(final Class<T> testClass) {
         context = Context.forClass(testClass);
