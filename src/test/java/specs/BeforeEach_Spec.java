@@ -46,26 +46,30 @@ public class BeforeEach_Spec {
         assertThat(text, is("initial value"));
     }
 
-    @It("that throw an exception causes all tests in that context to fail") void testsFail() throws Exception {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeEach());
-        assertThat(result.getFailureCount(), is(2));
-    }
+    @Describe("that throw an exception") static class $ {
 
-    private static Class<?> getSpecWithExplodingBeforeEach(){
-
-        @Describe("a spec with an exploding @BeforeEach method")
-        class Spec {
-
-            @BeforeEach void goBoom() throws Throwable {
-                throw new Exception();
-            }
-
-            @It("should fail") void test1() { }
-
-            @It("should also fail") void test2() { }
-
+        @It("cause all tests in that context to fail") void testsFail() throws Exception {
+            final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeEach());
+            assertThat(result.getFailureCount(), is(2));
         }
-        return Spec.class;
+
+        private static Class<?> getSpecWithExplodingBeforeEach(){
+
+            @Describe("a spec with an exploding @BeforeEach method")
+            class Spec {
+
+                @BeforeEach void goBoom() throws Throwable {
+                    throw new Exception();
+                }
+
+                @It("should fail") void test1() { }
+
+                @It("should also fail") void test2() { }
+
+            }
+            return Spec.class;
+        }
+
     }
 
 }

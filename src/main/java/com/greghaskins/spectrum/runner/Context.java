@@ -1,5 +1,6 @@
 package com.greghaskins.spectrum.runner;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 import org.junit.runner.Description;
@@ -9,9 +10,9 @@ public class Context<T, OuterType> {
 
     private final TestPlan<T> testPlan;
     private final Description description;
-    private final Class<T> type;
-    private final ArrayList<Context<?, T>> childContexts;
+    private final ArrayList<Context<?, T>> innerContexts;
     private final InstanceFactory<T, OuterType> instanceFactory;
+    private final ArrayList<Context<?, Void>> staticNestedContexts;
 
     public static <T> Context<T, Void> forClass(final Class<T> contextClass) {
         return new Context<T, Void>(contextClass, new DefaultConstructor<T>(contextClass));
@@ -23,25 +24,38 @@ public class Context<T, OuterType> {
     }
 
     private Context(final Class<T> contextClass, final InstanceFactory<T, OuterType> factory) {
-        type = contextClass;
         instanceFactory = factory;
         description = ContextDescriber.makeDescription(contextClass);
         testPlan = TestPlanner.makeTestPlan(contextClass, description);
 
-        childContexts = new ArrayList<Context<?, T>>();
+        innerContexts = new ArrayList<Context<?, T>>();
+        staticNestedContexts = new ArrayList<Context<?, Void>>();
+
         for (final Class<?> nestedClass : contextClass.getDeclaredClasses()) {
-            final Context<?, T> context = Context.forInnerClass(nestedClass, contextClass);
-            childContexts.add(context);
-            description.addChild(context.getDescription());
+            if (Modifier.isStatic(nestedClass.getModifiers())) {
+                final Context<?, Void> context = Context.forClass(nestedClass);
+                addChildContext(context, staticNestedContexts);
+            } else {
+                final Context<?, T> context = Context.forInnerClass(nestedClass, contextClass);
+                addChildContext(context, innerContexts);
+            }
         }
 
+    }
+
+    private <TOuter> void addChildContext(final Context<?, TOuter> context, final ArrayList<Context<?, TOuter>> childContexts) {
+        childContexts.add(context);
+        description.addChild(context.getDescription());
     }
 
     public void run(final RunNotifier notifier) {
         final T instance = instanceFactory.makeInstance(null);
         testPlan.runInContext(instance, notifier);
-        for (final Context<?, T> context : childContexts) {
+        for (final Context<?, T> context : innerContexts) {
             context.execute(instance, notifier);
+        }
+        for (final Context<?,Void> context : staticNestedContexts) {
+            context.run(notifier);
         }
     }
 

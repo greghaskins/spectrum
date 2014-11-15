@@ -17,6 +17,8 @@ import com.greghaskins.spectrum.Spectrum.Describe;
 import com.greghaskins.spectrum.Spectrum.It;
 import com.greghaskins.spectrum.runner.UnableToInstantiateContextError;
 
+import fixtures.SpecWithStaticNestedContext;
+
 @Describe("a spec with nested contexts")
 @RunWith(Spectrum.class)
 public class Nesting_Spec {
@@ -31,11 +33,12 @@ public class Nesting_Spec {
         assertThat(result.getFailures(), hasItem(failure("has a failing test", AssertionError.class, "kaboom")));
     }
 
-    @It("is described as a child of the outer context") void description() {
+    @It("has its inner contexts as children") void description() {
         final Description description = new Spectrum(getSpecWithNestedContext()).getDescription();
         assertThat(description.getChildren(), hasSize(1));
         assertThat(description.getChildren().get(0).getDisplayName(), is("with a nested context"));
     }
+
 
     private static Class<?> getSpecWithNestedContext() {
 
@@ -86,6 +89,18 @@ public class Nesting_Spec {
 
         }
         return Spec.class;
+    }
+
+    @It("can have static nested contexts that don't share state") void staticInner() throws Exception {
+        final Result result = SpectrumRunner.run(SpecWithStaticNestedContext.class);
+        assertThat(result.wasSuccessful(), is(true));
+        assertThat(result.getRunCount(), is(1));
+    }
+
+    @It("describe static nested contexts as children") void describeStatic() throws Exception {
+        final Description description = new Spectrum(SpecWithStaticNestedContext.class).getDescription();
+        assertThat(description.getChildren(), hasSize(1));
+        assertThat(description.getChildren().get(0).getDisplayName(), is("with a static nested context"));
     }
 
 }
