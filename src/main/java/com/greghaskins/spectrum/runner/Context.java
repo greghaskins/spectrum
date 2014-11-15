@@ -32,6 +32,7 @@ public class Context<T, OuterType> {
         for (final Class<?> nestedClass : contextClass.getDeclaredClasses()) {
             final Context<?, T> context = Context.forInnerClass(nestedClass, contextClass);
             childContexts.add(context);
+            description.addChild(context.getDescription());
         }
 
     }

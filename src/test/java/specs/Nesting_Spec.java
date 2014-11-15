@@ -4,9 +4,11 @@ import static matchers.IsFailure.failure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import org.junit.Assert;
+import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
@@ -27,6 +29,12 @@ public class Nesting_Spec {
     @It("will record failures from inner contexts") void failures() throws Exception {
         final Result result = SpectrumRunner.run(getSpecWithNestedContext());
         assertThat(result.getFailures(), hasItem(failure("has a failing test", AssertionError.class, "kaboom")));
+    }
+
+    @It("is described as a child of the outer context") void description() {
+        final Description description = new Spectrum(getSpecWithNestedContext()).getDescription();
+        assertThat(description.getChildren(), hasSize(1));
+        assertThat(description.getChildren().get(0).getDisplayName(), is("with a nested context"));
     }
 
     private static Class<?> getSpecWithNestedContext() {
