@@ -1,10 +1,16 @@
 package com.greghaskins.spectrum.runner;
 
+import static com.greghaskins.spectrum.runner.AnnotationLogic.ifElement;
+
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
+
+import com.greghaskins.spectrum.Spectrum.Describe;
+import com.greghaskins.spectrum.runner.AnnotationLogic.ThenClause;
 
 public class Context<T, OuterType> {
 
@@ -31,20 +37,29 @@ public class Context<T, OuterType> {
         innerContexts = new ArrayList<Context<?, T>>();
         staticNestedContexts = new ArrayList<Context<?, Void>>();
 
-        for (final Class<?> nestedClass : contextClass.getDeclaredClasses()) {
-            if (Modifier.isStatic(nestedClass.getModifiers())) {
-                final Context<?, Void> context = Context.forClass(nestedClass);
-                addChildContext(context, staticNestedContexts);
-            } else {
-                final Context<?, T> context = Context.forInnerClass(nestedClass, contextClass);
-                addChildContext(context, innerContexts);
-            }
-        }
-
+        addInnerContexts(contextClass);
     }
 
-    private <TOuter> void addChildContext(final Context<?, TOuter> context, final ArrayList<Context<?, TOuter>> childContexts) {
-        childContexts.add(context);
+    private void addInnerContexts(final Class<T> contextClass) {
+        for (final Class<?> nestedClass : contextClass.getDeclaredClasses()) {
+            ifElement(nestedClass).hasAnnotation(Describe.class).then(new ThenClause<Describe>() {
+
+                @Override
+                public void then(final Describe foundAnnotation) {
+                    if (Modifier.isStatic(nestedClass.getModifiers())) {
+                        final Context<?, Void> context = Context.forClass(nestedClass);
+                        addChildContext(context, staticNestedContexts);
+                    } else {
+                        final Context<?, T> context = Context.forInnerClass(nestedClass, contextClass);
+                        addChildContext(context, innerContexts);
+                    }
+                }
+            });
+        }
+    }
+
+    private <TOuter> void addChildContext(final Context<?, TOuter> context, final List<Context<?, TOuter>> list) {
+        list.add(context);
         description.addChild(context.getDescription());
     }
 

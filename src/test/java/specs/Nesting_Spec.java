@@ -103,4 +103,31 @@ public class Nesting_Spec {
         assertThat(description.getChildren().get(0).getDisplayName(), is("with a static nested context"));
     }
 
+    @It("ignores inner classes that aren't annotated with @Describe") void ignoresOthers() throws Exception {
+        final Result result = SpectrumRunner.run(getSpecWithOtherInnerClasses());
+        assertThat(result.wasSuccessful(), is(true));
+        assertThat(result.getRunCount(), is(1));
+    }
+
+    private static Class<?> getSpecWithOtherInnerClasses() {
+
+        @Describe("a spec with one inner context and some other inner classes")
+        class Spec {
+
+            @Describe("inner context") class $ {
+                @It("should run") void run() { }
+            }
+
+            @SuppressWarnings("unused")
+            class OtherNestedClass { }
+
+            @SuppressWarnings("unused")
+            class ThirdNestedClass { }
+
+        }
+        return Spec.class;
+
+
+    }
+
 }
