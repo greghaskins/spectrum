@@ -1,6 +1,7 @@
 package com.greghaskins.spectrum;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -61,9 +62,10 @@ public class Spectrum extends Runner {
             final Constructor<?> constructor = specClass.getDeclaredConstructor();
             constructor.setAccessible(true);
             constructor.newInstance();
+        } catch (final InvocationTargetException e) {
+            throw new SpecInitializationError(e.getTargetException());
         } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new SpecInitializationError(e);
         } finally {
             test = currentTest;
             currentTest = null;
