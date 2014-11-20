@@ -13,10 +13,13 @@ public class Spectrum extends Runner {
         void run() throws Throwable;
     }
 
+    private static Description currentDescription;
+
     public static void describe(final String context, final Block block) {
         try {
             suiteName = context;
-            suiteDescription = Description.createSuiteDescription(suiteName);
+            currentDescription = Description.createSuiteDescription(suiteName);
+            suiteDescription.addChild(currentDescription);
             block.run();
         } catch (final Throwable e) {
             // TODO Auto-generated catch block
@@ -28,7 +31,7 @@ public class Spectrum extends Runner {
         currentTest = block;
         testName = behavior;
         final Description description = Description.createTestDescription(suiteName, testName);
-        suiteDescription.addChild(description);
+        currentDescription.addChild(description);
     }
 
     private static Block currentTest;
@@ -39,6 +42,7 @@ public class Spectrum extends Runner {
     private final Block test;
 
     public Spectrum(final Class<?> testClass) {
+        suiteDescription = Description.createSuiteDescription(testClass);
         test = prepareSpec(testClass);
     }
 

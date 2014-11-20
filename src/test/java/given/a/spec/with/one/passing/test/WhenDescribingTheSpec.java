@@ -20,18 +20,32 @@ public class WhenDescribingTheSpec {
     }
 
     @Test
-    public void theSuiteDescriptionIsCorrect() throws Exception {
-        assertThat(description.getDisplayName(), is("a spec with one passing test"));
+    public void theRootSuiteIsTheTestClass() throws Exception {
+        assertThat(description.getDisplayName(), is(Fixture.getSpecWithOnePassingTest().getName()));
     }
 
     @Test
-    public void thereIsOneChildTest() throws Exception {
+    public void thereIsOneChildSuite() throws Exception {
         assertThat(description.getChildren(), hasSize(1));
     }
 
     @Test
+    public void theSuiteDescriptionIsCorrect() throws Exception {
+        assertThat(getFirstChildSuite().getDisplayName(), is("a spec with one passing test"));
+    }
+
+    @Test
+    public void thereIsOneChildTest() throws Exception {
+        assertThat(getFirstChildSuite().getChildren(), hasSize(1));
+    }
+
+    @Test
     public void theTestNameIsCorrect() throws Exception {
-        assertThat(description.getChildren().get(0).getMethodName(), is("should pass"));
+        assertThat(getFirstChildSuite().getChildren().get(0).getMethodName(), is("should pass"));
+    }
+
+    private Description getFirstChildSuite() {
+        return description.getChildren().get(0);
     }
 
 }
