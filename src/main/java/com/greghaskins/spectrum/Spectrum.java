@@ -2,6 +2,8 @@ package com.greghaskins.spectrum;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -16,9 +18,9 @@ public class Spectrum extends Runner {
     private static Description currentDescription;
 
     public static void describe(final String context, final Block block) {
+        currentDescription = Description.createSuiteDescription(context);
+        suiteDescription.addChild(currentDescription);
         try {
-            currentDescription = Description.createSuiteDescription(context);
-            suiteDescription.addChild(currentDescription);
             block.run();
         } catch (final Throwable e) {
             // TODO Auto-generated catch block
@@ -27,21 +29,19 @@ public class Spectrum extends Runner {
     }
 
     public static void it(final String behavior, final Block block) {
-        currentTest = block;
-        testName = behavior;
-        final Description description = Description.createTestDescription(currentDescription.getClassName(), testName);
+        currentTests.add(block);
+        final Description description = Description.createTestDescription(currentDescription.getClassName(), behavior);
         currentDescription.addChild(description);
     }
 
-    private static Block currentTest;
+    private static List<Block> currentTests;
     private static Description suiteDescription;
-    private static String testName;
 
-    private final Block test;
+    private final List<Block> tests;
 
     public Spectrum(final Class<?> testClass) {
         suiteDescription = Description.createSuiteDescription(testClass);
-        test = prepareSpec(testClass);
+        tests = prepareSpec(testClass);
     }
 
     @Override
@@ -51,15 +51,15 @@ public class Spectrum extends Runner {
 
     @Override
     public void run(final RunNotifier notifier) {
-        if(test != null){
+        for (final Block block : tests) {
             notifier.fireTestStarted(null);
             notifier.fireTestFinished(null);
         }
     }
 
-    private Block prepareSpec(final Class<?> specClass) {
-        Block test;
-        currentTest = null;
+    private List<Block> prepareSpec(final Class<?> specClass) {
+        currentTests = new ArrayList<Block>();
+        final List<Block> testList;
         try {
             final Constructor<?> constructor = specClass.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -69,10 +69,10 @@ public class Spectrum extends Runner {
         } catch (final Exception e) {
             throw new SpecInitializationError(e);
         } finally {
-            test = currentTest;
-            currentTest = null;
+            testList = new ArrayList<Block>(currentTests);
+            currentTests = null;
         }
-        return test;
+        return testList;
     }
 
 }
