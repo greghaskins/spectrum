@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 public class Spectrum extends Runner {
@@ -29,15 +30,22 @@ public class Spectrum extends Runner {
     }
 
     public static void it(final String behavior, final Block block) {
-        currentTests.add(block);
-        final Description description = Description.createTestDescription(currentDescription.getClassName(), behavior);
-        currentDescription.addChild(description);
+        final Test test = new Test();
+        test.block = block;
+        test.description = Description.createTestDescription(currentDescription.getClassName(), behavior);
+        currentTests.add(test);
+        currentDescription.addChild(test.description);
     }
 
-    private static List<Block> currentTests;
+    private static List<Test> currentTests;
     private static Description suiteDescription;
 
-    private final List<Block> tests;
+    private final List<Test> tests;
+
+    private static class Test {
+        public Block block;
+        public Description description;
+    }
 
     public Spectrum(final Class<?> testClass) {
         suiteDescription = Description.createSuiteDescription(testClass);
@@ -51,15 +59,20 @@ public class Spectrum extends Runner {
 
     @Override
     public void run(final RunNotifier notifier) {
-        for (final Block block : tests) {
+        for (final Test test : tests) {
             notifier.fireTestStarted(null);
+            try {
+                test.block.run();
+            } catch (final Throwable e) {
+                notifier.fireTestFailure(new Failure(test.description, e));
+            }
             notifier.fireTestFinished(null);
         }
     }
 
-    private List<Block> prepareSpec(final Class<?> specClass) {
-        currentTests = new ArrayList<Block>();
-        final List<Block> testList;
+    private List<Test> prepareSpec(final Class<?> specClass) {
+        currentTests = new ArrayList<Test>();
+        final List<Test> testList;
         try {
             final Constructor<?> constructor = specClass.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -69,7 +82,7 @@ public class Spectrum extends Runner {
         } catch (final Exception e) {
             throw new SpecInitializationError(e);
         } finally {
-            testList = new ArrayList<Block>(currentTests);
+            testList = new ArrayList<Test>(currentTests);
             currentTests = null;
         }
         return testList;
