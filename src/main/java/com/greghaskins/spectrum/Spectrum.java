@@ -23,9 +23,18 @@ public class Spectrum extends Runner {
         suiteDescription.addChild(currentDescription);
         try {
             block.run();
-        } catch (final Throwable e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (final Throwable exceptionFromDescribeBlock) {
+            final Test failingTest = new Test();
+            failingTest.description = Description.createTestDescription(context, "encountered an error");
+            failingTest.block = new Block() {
+
+                @Override
+                public void run() throws Throwable {
+                    throw exceptionFromDescribeBlock;
+                }
+
+            };
+            currentTests.add(failingTest);
         }
     }
 
