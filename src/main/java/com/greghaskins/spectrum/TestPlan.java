@@ -11,9 +11,22 @@ import com.greghaskins.spectrum.Spectrum.Block;
 
 class TestPlan {
 
-    static class Test {
+    private static class Test {
         public Block block;
         public Description description;
+    }
+
+    private static class FailingBlock implements Block {
+        private final Throwable exceptionFromDescribeBlock;
+
+        private FailingBlock(final Throwable exceptionToThrow) {
+            exceptionFromDescribeBlock = exceptionToThrow;
+        }
+
+        @Override
+        public void run() throws Throwable {
+            throw exceptionFromDescribeBlock;
+        }
     }
 
     private final List<Test> tests;
@@ -31,19 +44,8 @@ class TestPlan {
         suiteDescription.addChild(currentDescription);
         try {
             block.run();
-        } catch (final Throwable exceptionFromDescribeBlock) {
-            final Test failingTest = new Test();
-            failingTest.description = Description.createTestDescription(context, "encountered an error");
-            failingTest.block = new Block() {
-
-                @Override
-                public void run() throws Throwable {
-                    throw exceptionFromDescribeBlock;
-                }
-
-            };
-            tests.add(failingTest);
-            currentDescription.addChild(failingTest.description);
+        } catch (final Throwable e) {
+            addTest("encountered an error", new FailingBlock(e));
         }
     }
 
@@ -66,6 +68,5 @@ class TestPlan {
             notifier.fireTestFinished(test.description);
         }
     }
-
 
 }
