@@ -2,12 +2,9 @@ package com.greghaskins.spectrum;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
-import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 public class Spectrum extends Runner {
@@ -24,42 +21,20 @@ public class Spectrum extends Runner {
         currentTestPlan.addTest(behavior, block);
     }
 
-    private final List<Test> tests;
     private final Description description;
+    private final TestPlan plan;
 
     private static TestPlan currentTestPlan;
 
-    static class Test {
-        public Block block;
-        public Description description;
-    }
-
     public Spectrum(final Class<?> testClass) {
         description = Description.createSuiteDescription(testClass);
-        tests = prepareSpec(testClass, description);
+        plan = prepareSpec(testClass, description);
     }
 
-    @Override
-    public Description getDescription() {
-        return description;
-    }
 
-    @Override
-    public void run(final RunNotifier notifier) {
-        for (final Test test : tests) {
-            notifier.fireTestStarted(test.description);
-            try {
-                test.block.run();
-            } catch (final Throwable e) {
-                notifier.fireTestFailure(new Failure(test.description, e));
-            }
-            notifier.fireTestFinished(test.description);
-        }
-    }
-
-    private List<Test> prepareSpec(final Class<?> specClass, final Description rootDescription) {
+    private TestPlan prepareSpec(final Class<?> specClass, final Description rootDescription) {
         currentTestPlan = new TestPlan(rootDescription);
-        final List<Test> testList;
+        final TestPlan testPlan;
         try {
             final Constructor<?> constructor = specClass.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -69,10 +44,21 @@ public class Spectrum extends Runner {
         } catch (final Exception e) {
             throw new SpecInitializationError(e);
         } finally {
-            testList = new ArrayList<Test>(currentTestPlan.getTests());
+            testPlan = currentTestPlan;
             currentTestPlan = null;
         }
-        return testList;
+        return testPlan;
+    }
+
+
+    @Override
+    public Description getDescription() {
+        return description;
+    }
+
+    @Override
+    public void run(final RunNotifier notifier) {
+        plan.execute(notifier);
     }
 
 }

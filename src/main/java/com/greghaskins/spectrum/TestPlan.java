@@ -4,20 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunNotifier;
 
 import com.greghaskins.spectrum.Spectrum.Block;
-import com.greghaskins.spectrum.Spectrum.Test;
 
 class TestPlan {
 
-    private final List<Test> currentTests;
+    static class Test {
+        public Block block;
+        public Description description;
+    }
+
+    private final List<Test> tests;
     private Description currentDescription;
 
     private final Description suiteDescription;
 
     public TestPlan(final Description rootDescription) {
         suiteDescription = rootDescription;
-        currentTests = new ArrayList<Spectrum.Test>();
+        tests = new ArrayList<Test>();
     }
 
     public void addContext(final String context, final Block block) {
@@ -36,23 +42,29 @@ class TestPlan {
                 }
 
             };
-            currentTests.add(failingTest);
+            tests.add(failingTest);
             currentDescription.addChild(failingTest.description);
         }
     }
-
-
 
     public void addTest(final String behavior, final Block block) {
         final Test test = new Test();
         test.block = block;
         test.description = Description.createTestDescription(currentDescription.getClassName(), behavior);
-        currentTests.add(test);
+        tests.add(test);
         currentDescription.addChild(test.description);
     }
 
-    public List<Test> getTests() {
-        return currentTests;
+    public void execute(final RunNotifier notifier) {
+        for (final Test test : tests) {
+            notifier.fireTestStarted(test.description);
+            try {
+                test.block.run();
+            } catch (final Throwable e) {
+                notifier.fireTestFailure(new Failure(test.description, e));
+            }
+            notifier.fireTestFinished(test.description);
+        }
     }
 
 
