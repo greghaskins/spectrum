@@ -35,6 +35,7 @@ public class Spectrum extends Runner {
 
             };
             currentTests.add(failingTest);
+            currentDescription.addChild(failingTest.description);
         }
     }
 
