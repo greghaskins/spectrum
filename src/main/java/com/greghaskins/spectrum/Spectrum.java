@@ -70,13 +70,13 @@ public class Spectrum extends Runner {
     @Override
     public void run(final RunNotifier notifier) {
         for (final Test test : tests) {
-            notifier.fireTestStarted(null);
+            notifier.fireTestStarted(test.description);
             try {
                 test.block.run();
             } catch (final Throwable e) {
                 notifier.fireTestFailure(new Failure(test.description, e));
             }
-            notifier.fireTestFinished(null);
+            notifier.fireTestFinished(test.description);
         }
     }
 
