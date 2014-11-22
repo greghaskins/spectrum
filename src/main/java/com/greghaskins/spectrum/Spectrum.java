@@ -16,55 +16,32 @@ public class Spectrum extends Runner {
         void run() throws Throwable;
     }
 
-    private static Description currentDescription;
-
     public static void describe(final String context, final Block block) {
-        currentDescription = Description.createSuiteDescription(context);
-        suiteDescription.addChild(currentDescription);
-        try {
-            block.run();
-        } catch (final Throwable exceptionFromDescribeBlock) {
-            final Test failingTest = new Test();
-            failingTest.description = Description.createTestDescription(context, "encountered an error");
-            failingTest.block = new Block() {
-
-                @Override
-                public void run() throws Throwable {
-                    throw exceptionFromDescribeBlock;
-                }
-
-            };
-            currentTests.add(failingTest);
-            currentDescription.addChild(failingTest.description);
-        }
+        currentTestPlan.addContext(context, block);
     }
 
     public static void it(final String behavior, final Block block) {
-        final Test test = new Test();
-        test.block = block;
-        test.description = Description.createTestDescription(currentDescription.getClassName(), behavior);
-        currentTests.add(test);
-        currentDescription.addChild(test.description);
+        currentTestPlan.addTest(behavior, block);
     }
 
-    private static List<Test> currentTests;
-    private static Description suiteDescription;
-
     private final List<Test> tests;
+    private final Description description;
 
-    private static class Test {
+    private static TestPlan currentTestPlan;
+
+    static class Test {
         public Block block;
         public Description description;
     }
 
     public Spectrum(final Class<?> testClass) {
-        suiteDescription = Description.createSuiteDescription(testClass);
-        tests = prepareSpec(testClass);
+        description = Description.createSuiteDescription(testClass);
+        tests = prepareSpec(testClass, description);
     }
 
     @Override
     public Description getDescription() {
-        return suiteDescription;
+        return description;
     }
 
     @Override
@@ -80,8 +57,8 @@ public class Spectrum extends Runner {
         }
     }
 
-    private List<Test> prepareSpec(final Class<?> specClass) {
-        currentTests = new ArrayList<Test>();
+    private List<Test> prepareSpec(final Class<?> specClass, final Description rootDescription) {
+        currentTestPlan = new TestPlan(rootDescription);
         final List<Test> testList;
         try {
             final Constructor<?> constructor = specClass.getDeclaredConstructor();
@@ -92,8 +69,8 @@ public class Spectrum extends Runner {
         } catch (final Exception e) {
             throw new SpecInitializationError(e);
         } finally {
-            testList = new ArrayList<Test>(currentTests);
-            currentTests = null;
+            testList = new ArrayList<Test>(currentTestPlan.getTests());
+            currentTestPlan = null;
         }
         return testList;
     }
