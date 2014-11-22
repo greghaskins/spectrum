@@ -27,7 +27,7 @@ public class WhenRunningTheTests {
     }
 
     @Test
-    public void theStartNotificationIsFiredForFailingTests() throws Exception {
+    public void theStartFailureAndFinishedNotificationsAreFiredForFailingTests() throws Exception {
         final Description descriptionOfFailingTest = Description.createTestDescription(CONTEXT_NAME, "fails test 1");
 
         final InOrder inOrder = Mockito.inOrder(runNotifier);
