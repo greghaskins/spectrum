@@ -1,6 +1,8 @@
 package com.greghaskins.spectrum;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import org.junit.runner.Description;
@@ -16,42 +18,56 @@ class TestPlan {
         public Description description;
     }
 
+    private static class Context {
+        private final Description description;
+
+        public Context(final Description description) {
+            this.description = description;
+        }
+
+    }
+
     private static class FailingBlock implements Block {
-        private final Throwable exceptionFromDescribeBlock;
+        private final Throwable exceptionToThrow;
 
         private FailingBlock(final Throwable exceptionToThrow) {
-            exceptionFromDescribeBlock = exceptionToThrow;
+            this.exceptionToThrow = exceptionToThrow;
         }
 
         @Override
         public void run() throws Throwable {
-            throw exceptionFromDescribeBlock;
+            throw exceptionToThrow;
         }
     }
 
+    private final Deque<Context> contexts;
     private final List<Test> tests;
-    private Description currentDescription;
-
-    private final Description suiteDescription;
 
     public TestPlan(final Description rootDescription) {
-        suiteDescription = rootDescription;
+        final Context rootContext = new Context(rootDescription);
+        contexts = new ArrayDeque<Context>();
+        contexts.push(rootContext);
+
         tests = new ArrayList<Test>();
     }
 
     public void addContext(final String context, final Block block) {
-        currentDescription = Description.createSuiteDescription(context);
-        suiteDescription.addChild(currentDescription);
+        final Context newContext = new Context(Description.createSuiteDescription(context));
+        contexts.peek().description.addChild(newContext.description);
+
+        contexts.push(newContext);
         try {
             block.run();
         } catch (final Throwable e) {
             addTest("encountered an error", new FailingBlock(e));
         }
+        contexts.pop();
     }
 
     public void addTest(final String behavior, final Block block) {
         final Test test = new Test();
         test.block = block;
+        final Description currentDescription = contexts.peek().description;
         test.description = Description.createTestDescription(currentDescription.getClassName(), behavior);
         tests.add(test);
         currentDescription.addChild(test.description);

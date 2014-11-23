@@ -15,6 +15,14 @@ public class SpikeSpec {{
 
     describe("a spec", () -> {
 
+        describe("and a nested context", () -> {
+
+            it("does something", () -> {
+
+            });
+
+        });
+
         it("does what it should do", () -> {
             Assert.assertTrue(true);
         });
