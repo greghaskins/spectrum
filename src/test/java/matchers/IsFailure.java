@@ -25,7 +25,7 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
 
     @Override
     protected boolean matchesSafely(final Failure item, final Description mismatchDescription) {
-        final String actualMethodName = item.getDescription().getMethodName();
+        final String actualMethodName = getMethodName(item);
         final Throwable exception = item.getException();
         final Class<? extends Throwable> actualExceptionType = exception == null ? null : exception.getClass();
         final String actualMessage = exception == null ? null : item.getMessage();
@@ -34,6 +34,16 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
 
         return methodName.equals(actualMethodName) && exceptionType.equals(actualExceptionType)
                 && failureMessage.equals(actualMessage);
+    }
+
+    private String getMethodName(final Failure failure) {
+        final String actualMethodName;
+        if (failure.getDescription() == null) {
+            actualMethodName = null;
+        } else {
+            actualMethodName = failure.getDescription().getMethodName();
+        }
+        return actualMethodName;
     }
 
     @Override
