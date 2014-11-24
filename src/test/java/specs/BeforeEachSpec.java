@@ -39,6 +39,23 @@ public class BeforeEachSpec {{
             assertThat(items, not(contains("bar")));
         });
 
+        describe("nested inside another describe", () -> {
+
+            beforeEach(() -> {
+                items.add("baz");
+            });
+
+            it("is run before tests in that context", () -> {
+                assertThat(items, contains("foo", "baz"));
+                items.clear();
+            });
+
+            it("run in addition to the beforeEach in the parent scope", () -> {
+                assertThat(items, contains("foo", "baz"));
+            });
+
+        });
+
     });
 
     describe("Multiple beforeEach blocks", () -> {
