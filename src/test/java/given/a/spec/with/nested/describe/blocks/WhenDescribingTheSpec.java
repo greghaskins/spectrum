@@ -37,7 +37,7 @@ public class WhenDescribingTheSpec {
     }
 
     @Test
-    public void theSecondSubContextHasThreeTests() throws Exception {
+    public void theSecondSubContextHasOneTest() throws Exception {
         assertThat(mainDescription.getChildren().get(1).getChildren(), hasSize(1));
     }
 
