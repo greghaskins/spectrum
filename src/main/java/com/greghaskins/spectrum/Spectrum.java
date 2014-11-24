@@ -21,6 +21,10 @@ public class Spectrum extends Runner {
         currentTestPlan.addTest(behavior, block);
     }
 
+    public static void beforeEach(final Block block){
+        currentTestPlan.addSetup(block);
+    }
+
     private final Description description;
     private final TestPlan plan;
 

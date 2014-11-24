@@ -42,6 +42,7 @@ class TestPlan {
 
     private final Deque<Context> contexts;
     private final List<Test> tests;
+    private final List<Block> setupBlocks;
 
     public TestPlan(final Description rootDescription) {
         final Context rootContext = new Context(rootDescription);
@@ -49,6 +50,7 @@ class TestPlan {
         contexts.push(rootContext);
 
         tests = new ArrayList<Test>();
+        setupBlocks = new ArrayList<Block>();
     }
 
     public void addContext(final String context, final Block block) {
@@ -73,10 +75,15 @@ class TestPlan {
         currentDescription.addChild(test.description);
     }
 
+    public void addSetup(final Block block) {
+        setupBlocks.add(block);
+    }
+
     public void execute(final RunNotifier notifier) {
         for (final Test test : tests) {
             notifier.fireTestStarted(test.description);
             try {
+                setup();
                 test.block.run();
             } catch (final Throwable e) {
                 notifier.fireTestFailure(new Failure(test.description, e));
@@ -84,5 +91,12 @@ class TestPlan {
             notifier.fireTestFinished(test.description);
         }
     }
+
+    private void setup() throws Throwable {
+        for (final Block setupBlock : setupBlocks) {
+            setupBlock.run();
+        }
+    }
+
 
 }
