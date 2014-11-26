@@ -7,13 +7,6 @@ Spectrum
 
 [Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/), [mocha](http://mochajs.org/), and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
 
-## Dependencies
-
- - JUnit 4
- - Java 8
-
-(The Spectrum runner itself should be compatible back to Java 6; verified support for specs written using [Retrolambda](https://github.com/orfjackal/retrolambda) is forthcoming.)
-
 ## Example
 
 > see also [ExampleSpec.java](src/test/java/specs/ExampleSpec.java)
@@ -56,3 +49,10 @@ public class ExampleSpec {{
 
 }}
 ```
+
+## Dependencies
+
+ - JUnit 4
+ - Java 8
+
+(The Spectrum runner itself should be compatible back to Java 6; verified support for specs written using [Retrolambda](https://github.com/orfjackal/retrolambda) is forthcoming.)
