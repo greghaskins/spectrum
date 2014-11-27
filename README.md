@@ -47,7 +47,7 @@ public class ExampleSpec {{
 
     });
     
-    describe("A spec using `beforeEach`", () -> {
+    describe("A spec using beforeEach", () -> {
 
         final List<String> items = new ArrayList<String>();
 
@@ -63,8 +63,24 @@ public class ExampleSpec {{
             items.add("bar");
         });
 
-        it("runs the beforeEach() blocks before each test", () -> {
+        it("runs the beforeEach() blocks in order", () -> {
             assertThat(items, contains("foo", "bar"));
+        });
+
+        it("runs them before every test", () -> {
+            assertThat(items, contains("foo", "bar"));
+        });
+
+        describe("when nested", () -> {
+
+            beforeEach(() -> {
+                items.add("baz");
+            });
+
+            it("runs beforeEach() blocks from inner and outer scopes", () -> {
+                assertThat(items, contains("foo", "bar", "baz"));
+            });
+
         });
 
     });
