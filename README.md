@@ -46,6 +46,28 @@ public class ExampleSpec {{
         });
 
     });
+    
+    describe("A spec using `beforeEach`", () -> {
+
+        final List<String> items = new ArrayList<String>();
+
+        beforeEach(() -> {
+            items.clear();
+        });
+
+        beforeEach(() -> {
+            items.add("foo");
+        });
+
+        beforeEach(() -> {
+            items.add("bar");
+        });
+
+        it("runs the beforeEach() blocks before each test", () -> {
+            assertThat(items, contains("foo", "bar"));
+        });
+
+    });
 
 }}
 ```

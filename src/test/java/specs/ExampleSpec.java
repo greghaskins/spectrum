@@ -1,16 +1,22 @@
 package specs;
 
+import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.runner.RunWith;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
+
 
 @RunWith(Spectrum.class)
 public class ExampleSpec {{
@@ -43,6 +49,28 @@ public class ExampleSpec {{
                 assertThat(bar, is(equalTo(foo)));
             });
 
+        });
+
+    });
+
+    describe("A spec using `beforeEach`", () -> {
+
+        final List<String> items = new ArrayList<String>();
+
+        beforeEach(() -> {
+            items.clear();
+        });
+
+        beforeEach(() -> {
+            items.add("foo");
+        });
+
+        beforeEach(() -> {
+            items.add("bar");
+        });
+
+        it("runs the beforeEach() blocks before each test", () -> {
+            assertThat(items, contains("foo", "bar"));
         });
 
     });
