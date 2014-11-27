@@ -70,16 +70,32 @@ public class BeforeEachSpec {{
             items.add("foo");
         });
 
-        beforeEach(() -> {
-            items.add("bar");
-        });
-
         it("run in order before the first test", () -> {
             assertThat(items, contains("foo", "bar"));
         });
 
         it("and before the other tests", () -> {
             assertThat(items, contains("foo", "bar"));
+        });
+
+        describe("even with a nested context", () -> {
+
+            beforeEach(() -> {
+                items.add("baz");
+            });
+
+            it("all run before each test in declaration order", () -> {
+                assertThat(items, contains("foo", "bar", "baz", "boo"));
+            });
+
+            beforeEach(()->{
+                items.add("boo");
+            });
+
+        });
+
+        beforeEach(() -> {
+            items.add("bar");
         });
 
     });

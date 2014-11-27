@@ -16,6 +16,23 @@ class Context {
         public Description description;
     }
 
+    private static class CompositeBlock implements Block {
+
+        private final Iterable<Block> blocks;
+
+        public CompositeBlock(final Iterable<Block> blocks) {
+            this.blocks = blocks;
+        }
+
+        @Override
+        public void run() throws Throwable {
+            for (final Block block : blocks) {
+                block.run();
+            }
+        }
+
+    }
+
     private final Description description;
     private final List<Block> setupBlocks;
     private final List<Test> tests;
@@ -65,7 +82,7 @@ class Context {
 
     public void addChild(final Context childContext) {
         description.addChild(childContext.description);
-        childContext.setupBlocks.addAll(setupBlocks);
+        childContext.addSetup(new CompositeBlock(setupBlocks));
         childContexts.add(childContext);
     }
 
