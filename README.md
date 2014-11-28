@@ -45,8 +45,12 @@ public class ExampleSpec {{
 
         });
 
+        it("can have `it`s and `describe`s in any order", () -> {
+            assertThat(foo, is(1));
+        });
+
     });
-    
+
     describe("A spec using beforeEach", () -> {
 
         final List<String> items = new ArrayList<String>();
