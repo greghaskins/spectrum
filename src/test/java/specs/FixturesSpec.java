@@ -1,5 +1,6 @@
 package specs;
 
+import static com.greghaskins.spectrum.Spectrum.afterEach;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
@@ -18,23 +19,26 @@ import org.junit.runner.RunWith;
 import com.greghaskins.spectrum.Spectrum;
 
 @RunWith(Spectrum.class)
-public class BeforeEachSpec {{
+public class FixturesSpec {{
 
-    describe("A beforeEach block", () -> {
+    describe("A spec using beforeEach and afterEach", () -> {
 
         final List<String> items = new ArrayList<String>();
 
         beforeEach(() -> {
-            items.clear();
             items.add("foo");
         });
 
-        it("runs before the first test", () -> {
+        afterEach(() -> {
+            items.clear();
+        });
+
+        it("runs beforeEach before every test", () -> {
             assertThat(items, contains("foo"));
             items.add("bar");
         });
 
-        it("runs before the next test to reset the context", () -> {
+        it("runs afterEach after every test", () -> {
             assertThat(items, contains("foo"));
             assertThat(items, not(contains("bar")));
         });
@@ -58,44 +62,57 @@ public class BeforeEachSpec {{
 
     });
 
-    describe("Multiple beforeEach blocks", () -> {
+    describe("Multiple beforeEach and afterEach blocks", () -> {
 
-        final List<String> items = new ArrayList<String>();
+        final List<String> words = new ArrayList<String>();
+        final ArrayList<Integer> numbers = new ArrayList<Integer>();
 
-        beforeEach(() -> {
-            items.clear();
+        afterEach(() -> {
+            words.clear();
         });
 
         beforeEach(() -> {
-            items.add("foo");
+            words.add("foo");
+        });
+
+        afterEach(() -> {
+            numbers.clear();
+        });
+
+        beforeEach(() -> {
+            numbers.add(1);
         });
 
         it("run in order before the first test", () -> {
-            assertThat(items, contains("foo", "bar"));
+            assertThat(words, contains("foo", "bar"));
         });
 
         it("and before the other tests", () -> {
-            assertThat(items, contains("foo", "bar"));
+            assertThat(words, contains("foo", "bar"));
         });
 
         describe("even with a nested context", () -> {
 
             beforeEach(() -> {
-                items.add("baz");
+                numbers.add(3);
             });
 
             it("all run before each test in declaration order", () -> {
-                assertThat(items, contains("foo", "bar", "baz", "boo"));
+                assertThat(numbers, contains(1, 2, 3, 4));
             });
 
-            beforeEach(()->{
-                items.add("boo");
+            beforeEach(() -> {
+                numbers.add(4);
             });
 
         });
 
         beforeEach(() -> {
-            items.add("bar");
+            words.add("bar");
+        });
+
+        beforeEach(() -> {
+            numbers.add(2);
         });
 
     });
@@ -109,11 +126,38 @@ public class BeforeEachSpec {{
 
     });
 
+    describe("An afterEach block that explodes", () -> {
+
+        it("causes all tests in that context to fail", () -> {
+            final Result result = SpectrumRunner.run(getSpecWithExplodingAfterEach());
+            assertThat(result.getFailureCount(), is(2));
+        });
+
+    });
+
 }
 
 private static Class<?> getSpecWithExplodingBeforeEach(){
     class Spec {{
         beforeEach(() -> {
+            throw new Exception("boom");
+        });
+
+        it("should fail", () -> {
+
+        });
+
+        it("should also fail", () -> {
+
+        });
+
+    }}
+    return Spec.class;
+}
+
+private static Class<?> getSpecWithExplodingAfterEach(){
+    class Spec {{
+        afterEach(() -> {
             throw new Exception("boom");
         });
 

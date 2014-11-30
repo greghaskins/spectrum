@@ -1,5 +1,6 @@
 package specs;
 
+import static com.greghaskins.spectrum.Spectrum.afterEach;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
@@ -7,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -57,13 +59,9 @@ public class ExampleSpec {{
 
     });
 
-    describe("A spec using beforeEach", () -> {
+    describe("A spec using beforeEach and afterEach", () -> {
 
         final List<String> items = new ArrayList<String>();
-
-        beforeEach(() -> {
-            items.clear();
-        });
 
         beforeEach(() -> {
             items.add("foo");
@@ -73,12 +71,22 @@ public class ExampleSpec {{
             items.add("bar");
         });
 
+        afterEach(() -> {
+            items.clear();
+        });
+
         it("runs the beforeEach() blocks in order", () -> {
             assertThat(items, contains("foo", "bar"));
+            items.add("bogus");
         });
 
         it("runs them before every test", () -> {
             assertThat(items, contains("foo", "bar"));
+            items.add("bogus");
+        });
+
+        it("runs afterEach after every test", () -> {
+            assertThat(items, not(contains("bogus")));
         });
 
         describe("when nested", () -> {
@@ -87,7 +95,7 @@ public class ExampleSpec {{
                 items.add("baz");
             });
 
-            it("runs beforeEach() blocks from inner and outer scopes", () -> {
+            it("runs beforeEach and afterEach from inner and outer scopes", () -> {
                 assertThat(items, contains("foo", "bar", "baz"));
             });
 

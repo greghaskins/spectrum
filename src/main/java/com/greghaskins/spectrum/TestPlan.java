@@ -52,9 +52,14 @@ class TestPlan {
         contexts.peek().addSetup(block);
     }
 
+    public void addTeardown(final Block block) {
+        contexts.peek().addTeardown(block);
+    }
+
     public void execute(final RunNotifier notifier){
         contexts.peek().execute(notifier);
     }
+
 
 
 }

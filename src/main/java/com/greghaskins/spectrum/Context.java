@@ -12,11 +12,13 @@ class Context implements Executable {
 
     private final Description description;
     private final List<Block> setupBlocks;
+    private final List<Block> teardownBlocks;
     private final List<Executable> children;
 
     public Context(final Description description) {
         this.description = description;
         setupBlocks = new ArrayList<Block>();
+        teardownBlocks = new ArrayList<Block>();
         children = new ArrayList<Executable>();
     }
 
@@ -31,6 +33,10 @@ class Context implements Executable {
         setupBlocks.add(block);
     }
 
+    public void addTeardown(final Block block) {
+        teardownBlocks.add(block);
+    }
+
     public void addTest(final String behavior, final Block block) {
         final Description testDescription = Description.createTestDescription(description.getClassName(), behavior);
         final CompositeBlock testBlock = putTestBlockInContext(block);
@@ -40,7 +46,7 @@ class Context implements Executable {
     }
 
     private CompositeBlock putTestBlockInContext(final Block block) {
-        return new CompositeBlock(new CompositeBlock(setupBlocks), block);
+        return new CompositeBlock(new CompositeBlock(setupBlocks), block, new CompositeBlock(teardownBlocks));
     }
 
     public void addChild(final Context childContext) {
@@ -48,5 +54,6 @@ class Context implements Executable {
         childContext.addSetup(new CompositeBlock(setupBlocks));
         children.add(childContext);
     }
+
 
 }
