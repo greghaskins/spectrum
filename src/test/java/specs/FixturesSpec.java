@@ -1,6 +1,7 @@
 package specs;
 
 import static com.greghaskins.spectrum.Spectrum.afterEach;
+import static com.greghaskins.spectrum.Spectrum.beforeAll;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
@@ -117,6 +118,30 @@ public class FixturesSpec {{
 
     });
 
+    describe("A spec using beforeAll", () -> {
+
+        final ArrayList<String> items = new ArrayList<String>();
+
+        beforeAll(() ->{
+            items.add("foo");
+        });
+
+        beforeAll(() ->{
+            items.add("bar");
+        });
+
+        it("sets the initial state before the tests run", () -> {
+            assertThat(items, contains("foo", "bar"));
+            items.add("baz");
+        });
+
+        it("does't reset any state between tests", () -> {
+            assertThat(items, contains("foo", "bar", "baz"));
+        });
+
+
+    });
+
     describe("A beforeEach block that explodes", () -> {
 
         it("causes all tests in that context to fail", () -> {
@@ -131,6 +156,15 @@ public class FixturesSpec {{
         it("causes all tests in that context to fail", () -> {
             final Result result = SpectrumRunner.run(getSpecWithExplodingAfterEach());
             assertThat(result.getFailureCount(), is(2));
+        });
+
+    });
+
+    describe("beforeAll blocks that explode", () -> {
+
+        it("cause all tests in that context and its children to fail", () -> {
+            final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeAll());
+            assertThat(result.getFailureCount(), is(3));
         });
 
     });
@@ -166,6 +200,36 @@ private static Class<?> getSpecWithExplodingAfterEach(){
         });
 
         it("should also fail", () -> {
+
+        });
+
+    }}
+    return Spec.class;
+}
+
+private static Class<?> getSpecWithExplodingBeforeAll(){
+    class Spec {{
+        beforeAll(() -> {
+            throw new Exception("boom");
+        });
+
+        beforeAll(() -> {
+            throw new Exception("boom two");
+        });
+
+        it("should fail once", () -> {
+
+        });
+
+        it("should also fail", () -> {
+
+        });
+
+        describe("failing child", () -> {
+
+            it("fails too", () -> {
+
+            });
 
         });
 

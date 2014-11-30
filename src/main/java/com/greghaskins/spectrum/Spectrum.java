@@ -29,6 +29,10 @@ public class Spectrum extends Runner {
         currentTestPlan.addTeardown(block);
     }
 
+    public static void beforeAll(final Block block){
+        currentTestPlan.addFixtureSetup(block);
+    }
+
     private final Description description;
     private final TestPlan plan;
 

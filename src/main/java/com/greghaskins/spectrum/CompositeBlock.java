@@ -6,9 +6,9 @@ import com.greghaskins.spectrum.Spectrum.Block;
 
 class CompositeBlock implements Block {
 
-    private final Iterable<Block> blocks;
+    private final Iterable<? extends Block> blocks;
 
-    public CompositeBlock(final Iterable<Block> blocks) {
+    public CompositeBlock(final Iterable<? extends Block> blocks) {
         this.blocks = blocks;
     }
 

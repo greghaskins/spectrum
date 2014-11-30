@@ -10,19 +10,6 @@ import com.greghaskins.spectrum.Spectrum.Block;
 
 class TestPlan {
 
-    private static class FailingBlock implements Block {
-        private final Throwable exceptionToThrow;
-
-        private FailingBlock(final Throwable exceptionToThrow) {
-            this.exceptionToThrow = exceptionToThrow;
-        }
-
-        @Override
-        public void run() throws Throwable {
-            throw exceptionToThrow;
-        }
-    }
-
     private final Deque<Context> contexts;
 
     public TestPlan(final Description rootDescription) {
@@ -56,10 +43,12 @@ class TestPlan {
         contexts.peek().addTeardown(block);
     }
 
-    public void execute(final RunNotifier notifier){
-        contexts.peek().execute(notifier);
+    public void addFixtureSetup(final Block block) {
+        contexts.peek().addFixtureSetup(block);
     }
 
-
+    public void execute(final RunNotifier notifier) {
+        contexts.peek().execute(notifier);
+    }
 
 }

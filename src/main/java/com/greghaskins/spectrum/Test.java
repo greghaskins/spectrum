@@ -25,4 +25,5 @@ class Test implements Executable {
         }
         notifier.fireTestFinished(description);
     }
+
 }
