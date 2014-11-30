@@ -59,8 +59,9 @@ class Context implements Executable {
 
     public void addChild(final Context childContext) {
         description.addChild(childContext.description);
-        childContext.addSetup(new CompositeBlock(setupBlocks));
         childContext.addFixtureSetup(new CompositeBlock(fixtureSetupBlocks));
+        childContext.addSetup(new CompositeBlock(setupBlocks));
+        childContext.addTeardown(new CompositeBlock(teardownBlocks));
         children.add(childContext);
     }
 

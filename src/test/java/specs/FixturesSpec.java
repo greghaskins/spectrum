@@ -102,6 +102,10 @@ public class FixturesSpec {{
                 assertThat(numbers, contains(1, 2, 3, 4));
             });
 
+            it("runs afterEach blocks from parent context", () -> {
+                assertThat(numbers, contains(1, 2, 3, 4));
+            });
+
             beforeEach(() -> {
                 numbers.add(4);
             });
