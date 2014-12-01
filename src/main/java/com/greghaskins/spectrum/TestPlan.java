@@ -47,8 +47,13 @@ class TestPlan {
         contexts.peek().addFixtureSetup(block);
     }
 
+    public void addFixtureTeardown(final Block block) {
+        contexts.peek().addFixtureTeardown(block);
+    }
+
     public void execute(final RunNotifier notifier) {
         contexts.peek().execute(notifier);
     }
+
 
 }
