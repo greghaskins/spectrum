@@ -17,7 +17,7 @@ class Context implements Executable {
     private final List<Block> teardownBlocks;
     private final List<RunOnceBlock> fixtureSetupBlocks;
     private final List<Block> fixtureTeardownBlocks;
-    private final Deque<Executable> children;
+    private final Deque<Executable> executables;
 
     public Context(final Description description) {
         this.description = description;
@@ -26,22 +26,37 @@ class Context implements Executable {
         fixtureSetupBlocks = new ArrayList<RunOnceBlock>();
         fixtureTeardownBlocks = new ArrayList<Block>();
 
-        children = new ArrayDeque<Executable>();
+        executables = new ArrayDeque<Executable>();
     }
 
     @Override
     public void execute(final RunNotifier notifier) {
-        addChildrenForFixtureLevelSetupAndTeardownIfNeeded();
-        for (final Executable child : children) {
+        if (descriptionHasAnyTests(description)) {
+            addExecutablesForFixtureLevelSetupAndTeardown();
+        } else {
+            notifier.fireTestIgnored(description);
+        }
+        for (final Executable child : executables) {
             child.execute(notifier);
         }
     }
 
-    private void addChildrenForFixtureLevelSetupAndTeardownIfNeeded() {
-        if (children.size() > 0) {
-            children.addFirst(new BlockExecutable(description, new CompositeBlock(fixtureSetupBlocks)));
-            children.addLast(new BlockExecutable(description, new CompositeBlock(fixtureTeardownBlocks)));
+    private boolean descriptionHasAnyTests(final Description currentDescription) {
+        for (final Description child : currentDescription.getChildren()) {
+            if (isTest(child) || descriptionHasAnyTests(child)) {
+                return true;
+            }
         }
+        return false;
+    }
+
+    private boolean isTest(final Description child) {
+        return child.getMethodName() != null;
+    }
+
+    private void addExecutablesForFixtureLevelSetupAndTeardown() {
+        executables.addFirst(new BlockExecutable(description, new CompositeBlock(fixtureSetupBlocks)));
+        executables.addLast(new BlockExecutable(description, new CompositeBlock(fixtureTeardownBlocks)));
     }
 
     public void addSetup(final Block block) {
@@ -65,7 +80,7 @@ class Context implements Executable {
         final CompositeBlock testBlock = putTestBlockInContext(block);
         final Test test = new Test(testDescription, testBlock);
         description.addChild(testDescription);
-        children.add(test);
+        executables.add(test);
     }
 
     private CompositeBlock putTestBlockInContext(final Block testBlock) {
@@ -78,7 +93,7 @@ class Context implements Executable {
         childContext.addFixtureSetup(new CompositeBlock(fixtureSetupBlocks));
         childContext.addSetup(new CompositeBlock(setupBlocks));
         childContext.addTeardown(new CompositeBlock(teardownBlocks));
-        children.add(childContext);
+        executables.add(childContext);
     }
 
 
