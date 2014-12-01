@@ -102,10 +102,5 @@ public class ExampleSpec {{
         });
 
     });
-    describe("blah", () -> {
-        describe("blerg", () -> {
-
-        });
-    });
 
 }}
