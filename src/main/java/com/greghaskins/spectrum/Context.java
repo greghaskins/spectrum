@@ -31,14 +31,15 @@ class Context implements Executable {
 
     @Override
     public void execute(final RunNotifier notifier) {
-        addFixtureLevelTeardownIfNeeded();
+        addChildrenForFixtureLevelSetupAndTeardownIfNeeded();
         for (final Executable child : children) {
             child.execute(notifier);
         }
     }
 
-    private void addFixtureLevelTeardownIfNeeded() {
+    private void addChildrenForFixtureLevelSetupAndTeardownIfNeeded() {
         if (children.size() > 0) {
+            children.addFirst(new BlockExecutable(description, new CompositeBlock(fixtureSetupBlocks)));
             children.addLast(new BlockExecutable(description, new CompositeBlock(fixtureTeardownBlocks)));
         }
     }

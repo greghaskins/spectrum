@@ -205,7 +205,9 @@ public class FixturesSpec {{
 
         it("cause all tests in that context and its children to fail", () -> {
             final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeAll());
-            assertThat(result.getFailureCount(), is(3));
+            final int numberOfFailingContexts = 2;
+            final int numbmerOfTestsWithinThoseContexts = 3;
+            assertThat(result.getFailureCount(), is(numberOfFailingContexts + numbmerOfTestsWithinThoseContexts));
         });
 
     });
