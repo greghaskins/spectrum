@@ -95,6 +95,41 @@ public class ExampleSpec {{
 
     });
 
+    describe("A spec using beforeAll", () -> {
+
+        final List<Integer> numbers = new ArrayList<Integer>();
+
+        beforeAll(() -> {
+            numbers.add(1);
+        });
+
+        it("sets the initial state before any tests run", () -> {
+            assertThat(numbers, contains(1));
+            numbers.add(2);
+        });
+
+        describe("and afterAll", () -> {
+
+            afterAll(() -> {
+                numbers.clear();
+            });
+
+            it("does not reset anything between tests", () -> {
+                assertThat(numbers, contains(1, 2));
+                numbers.add(3);
+            });
+
+            it("so proceed with caution; this *will* leak shared state across tests", () -> {
+                assertThat(numbers, contains(1, 2, 3));
+            });
+        });
+
+        it("cleans up after running all tests in the describe block", () -> {
+            assertThat(numbers, is(empty()));
+        });
+
+    });
+
 }}
 ```
 
