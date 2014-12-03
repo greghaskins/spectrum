@@ -62,7 +62,7 @@ public class Spectrum extends Runner {
         rootContext.execute(notifier);
     }
 
-    private static Context enterContext(final Context context, final Block block) {
+    private static void enterContext(final Context context, final Block block) {
         getCurrentContext().addChild(context);
 
         globalContexts.push(context);
@@ -72,7 +72,6 @@ public class Spectrum extends Runner {
             it("encountered an error", new FailingBlock(e));
         }
         globalContexts.pop();
-        return context;
     }
 
     private static Context getCurrentContext() {
