@@ -1,7 +1,7 @@
 package com.greghaskins.spectrum;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -14,58 +14,43 @@ public class Spectrum extends Runner {
     }
 
     public static void describe(final String context, final Block block) {
-        currentTestPlan.addContext(context, block);
+        final Context newContext = new Context(Description.createSuiteDescription(context));
+        enterContext(newContext, block);
     }
 
     public static void it(final String behavior, final Block block) {
-        currentTestPlan.addTest(behavior, block);
+        getCurrentContext().addTest(behavior, block);
     }
 
-    public static void beforeEach(final Block block){
-        currentTestPlan.addSetup(block);
+    public static void beforeEach(final Block block) {
+        getCurrentContext().addSetup(block);
     }
 
-    public static void afterEach(final Block block){
-        currentTestPlan.addTeardown(block);
+    public static void afterEach(final Block block) {
+        getCurrentContext().addTeardown(block);
     }
 
-    public static void beforeAll(final Block block){
-        currentTestPlan.addFixtureSetup(block);
+    public static void beforeAll(final Block block) {
+        getCurrentContext().addFixtureSetup(block);
     }
 
-    public static void afterAll(final Block block){
-        currentTestPlan.addFixtureTeardown(block);
+    public static void afterAll(final Block block) {
+        getCurrentContext().addFixtureTeardown(block);
+    }
+
+    private static final Deque<Context> globalContexts = new ArrayDeque<Context>();
+    static {
+        globalContexts.push(new Context(Description.createSuiteDescription("Spectrum tests")));
     }
 
     private final Description description;
-    private final TestPlan plan;
-
-    private static TestPlan currentTestPlan;
+    private final Context rootContext;
 
     public Spectrum(final Class<?> testClass) {
         description = Description.createSuiteDescription(testClass);
-        plan = prepareSpec(testClass, description);
+        rootContext = new Context(description);
+        enterContext(rootContext, new ConstructorBlock(testClass));
     }
-
-
-    private TestPlan prepareSpec(final Class<?> specClass, final Description rootDescription) {
-        currentTestPlan = new TestPlan(rootDescription);
-        final TestPlan testPlan;
-        try {
-            final Constructor<?> constructor = specClass.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            constructor.newInstance();
-        } catch (final InvocationTargetException e) {
-            throw new SpecInitializationError(e.getTargetException());
-        } catch (final Exception e) {
-            throw new SpecInitializationError(e);
-        } finally {
-            testPlan = currentTestPlan;
-            currentTestPlan = null;
-        }
-        return testPlan;
-    }
-
 
     @Override
     public Description getDescription() {
@@ -74,7 +59,24 @@ public class Spectrum extends Runner {
 
     @Override
     public void run(final RunNotifier notifier) {
-        plan.execute(notifier);
+        rootContext.execute(notifier);
+    }
+
+    private static Context enterContext(final Context context, final Block block) {
+        getCurrentContext().addChild(context);
+
+        globalContexts.push(context);
+        try {
+            block.run();
+        } catch (final Throwable e) {
+            it("encountered an error", new FailingBlock(e));
+        }
+        globalContexts.pop();
+        return context;
+    }
+
+    private static Context getCurrentContext() {
+        return globalContexts.peek();
     }
 
 }
