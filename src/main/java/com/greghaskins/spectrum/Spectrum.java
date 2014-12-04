@@ -23,19 +23,19 @@ public class Spectrum extends Runner {
     }
 
     public static void beforeEach(final Block block) {
-        getCurrentContext().addSetup(block);
+        getCurrentContext().addTestSetup(block);
     }
 
     public static void afterEach(final Block block) {
-        getCurrentContext().addTeardown(block);
+        getCurrentContext().addTestTeardown(block);
     }
 
     public static void beforeAll(final Block block) {
-        getCurrentContext().addFixtureSetup(block);
+        getCurrentContext().addContextSetup(block);
     }
 
     public static void afterAll(final Block block) {
-        getCurrentContext().addFixtureTeardown(block);
+        getCurrentContext().addContextTeardown(block);
     }
 
     private static final Deque<Context> globalContexts = new ArrayDeque<Context>();

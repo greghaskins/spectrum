@@ -15,16 +15,16 @@ class Context implements Executable {
     private final Description description;
     private final List<Block> setupBlocks;
     private final List<Block> teardownBlocks;
-    private final List<RunOnceBlock> fixtureSetupBlocks;
-    private final List<Block> fixtureTeardownBlocks;
+    private final List<RunOnceBlock> contextSetupBlocks;
+    private final List<Block> contextTeardownBlocks;
     private final Deque<Executable> executables;
 
     public Context(final Description description) {
         this.description = description;
         setupBlocks = new ArrayList<Block>();
         teardownBlocks = new ArrayList<Block>();
-        fixtureSetupBlocks = new ArrayList<RunOnceBlock>();
-        fixtureTeardownBlocks = new ArrayList<Block>();
+        contextSetupBlocks = new ArrayList<RunOnceBlock>();
+        contextTeardownBlocks = new ArrayList<Block>();
 
         executables = new ArrayDeque<Executable>();
     }
@@ -55,24 +55,24 @@ class Context implements Executable {
     }
 
     private void addExecutablesForFixtureLevelSetupAndTeardown() {
-        executables.addFirst(new BlockExecutable(description, new CompositeBlock(fixtureSetupBlocks)));
-        executables.addLast(new BlockExecutable(description, new CompositeBlock(fixtureTeardownBlocks)));
+        executables.addFirst(new BlockExecutable(description, new CompositeBlock(contextSetupBlocks)));
+        executables.addLast(new BlockExecutable(description, new CompositeBlock(contextTeardownBlocks)));
     }
 
-    public void addSetup(final Block block) {
+    public void addTestSetup(final Block block) {
         setupBlocks.add(block);
     }
 
-    public void addTeardown(final Block block) {
+    public void addTestTeardown(final Block block) {
         teardownBlocks.add(block);
     }
 
-    public void addFixtureSetup(final Block block) {
-        fixtureSetupBlocks.add(new RunOnceBlock(block));
+    public void addContextSetup(final Block block) {
+        contextSetupBlocks.add(new RunOnceBlock(block));
     }
 
-    public void addFixtureTeardown(final Block block) {
-        fixtureTeardownBlocks.add(block);
+    public void addContextTeardown(final Block block) {
+        contextTeardownBlocks.add(block);
     }
 
     public void addTest(final String behavior, final Block block) {
@@ -84,15 +84,15 @@ class Context implements Executable {
     }
 
     private CompositeBlock putTestBlockInContext(final Block testBlock) {
-        return new CompositeBlock(new CompositeBlock(fixtureSetupBlocks), new CompositeBlock(setupBlocks), testBlock,
+        return new CompositeBlock(new CompositeBlock(contextSetupBlocks), new CompositeBlock(setupBlocks), testBlock,
                 new CompositeBlock(teardownBlocks));
     }
 
     public void addChild(final Context childContext) {
         description.addChild(childContext.description);
-        childContext.addFixtureSetup(new CompositeBlock(fixtureSetupBlocks));
-        childContext.addSetup(new CompositeBlock(setupBlocks));
-        childContext.addTeardown(new CompositeBlock(teardownBlocks));
+        childContext.addContextSetup(new CompositeBlock(contextSetupBlocks));
+        childContext.addTestSetup(new CompositeBlock(setupBlocks));
+        childContext.addTestTeardown(new CompositeBlock(teardownBlocks));
         executables.add(childContext);
     }
 
