@@ -6,12 +6,14 @@ import static com.greghaskins.spectrum.Spectrum.beforeAll;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.value;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
+import com.greghaskins.spectrum.Spectrum.Value;
 
 
 @RunWith(Spectrum.class)
@@ -102,6 +105,35 @@ public class ExampleSpec {{
                 assertThat(items, contains("foo", "bar", "baz"));
             });
 
+        });
+
+    });
+
+    describe("The Value convenience wrapper", () -> {
+
+        final Value<Integer> counter = value(Integer.class);
+
+        beforeEach(() -> {
+            counter.value = 0;
+        });
+
+        beforeEach(() -> {
+            counter.value++;
+        });
+
+        it("lets you work around Java's requirement that closures only reference `final` variables", () -> {
+            counter.value++;
+            assertThat(counter.value, is(2));
+        });
+
+        it("can optionally have an initial value set", () -> {
+            final Value<String> name = value("Alice");
+            assertThat(name.value, is("Alice"));
+        });
+
+        it("has a null value if not specified", () -> {
+            final Value<String> name = value(String.class);
+            assertThat(name.value, is(nullValue()));
         });
 
     });

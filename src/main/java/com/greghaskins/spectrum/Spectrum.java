@@ -38,6 +38,22 @@ public class Spectrum extends Runner {
         getCurrentContext().addContextTeardown(block);
     }
 
+    public static <T> Value<T> value(@SuppressWarnings("unused") final Class<T> type){
+        return new Value<T>(null);
+    }
+
+    public static <T> Value<T> value(final T startingValue){
+        return new Value<T>(startingValue);
+    }
+
+    public static class Value<T> {
+        public T value;
+
+        private Value(final T value) {
+            this.value = value;
+        }
+    }
+
     private static final Deque<Context> globalContexts = new ArrayDeque<Context>();
     static {
         globalContexts.push(new Context(Description.createSuiteDescription("Spectrum tests")));
