@@ -9,15 +9,43 @@ import org.junit.runner.notification.RunNotifier;
 
 public class Spectrum extends Runner {
 
+    /**
+     * A generic code block with a {@link #run()} method.
+     *
+     */
     public static interface Block {
+
+        /**
+         * Execute the code block, raising any {@code Throwable} that may occur.
+         *
+         * @throws Throwable
+         */
         void run() throws Throwable;
     }
 
+    /**
+     * Declare a test suite to describe the expected behaviors of the system in a given context.
+     *
+     * @param context
+     *            Description of the test context
+     * @param block
+     *            {@link Block} with one or more calls to {@link #it(String, Block) it} that define each expected behavior
+     *
+     */
     public static void describe(final String context, final Block block) {
         final Context newContext = new Context(Description.createSuiteDescription(context));
         enterContext(newContext, block);
     }
 
+    /**
+     * Declare a test for an expected behavior of the system.
+     *
+     * @param behavior
+     *            Description of the expected behavior
+     * @param block
+     *            {@link Block} that verifies the system behaves as expected and throws a {@link java.lang.Throwable Throwable}
+     *            if that expectation is not met.
+     */
     public static void it(final String behavior, final Block block) {
         getCurrentContext().addTest(behavior, block);
     }
@@ -38,11 +66,11 @@ public class Spectrum extends Runner {
         getCurrentContext().addContextTeardown(block);
     }
 
-    public static <T> Value<T> value(@SuppressWarnings("unused") final Class<T> type){
+    public static <T> Value<T> value(@SuppressWarnings("unused") final Class<T> type) {
         return new Value<T>(null);
     }
 
-    public static <T> Value<T> value(final T startingValue){
+    public static <T> Value<T> value(final T startingValue) {
         return new Value<T>(startingValue);
     }
 
