@@ -50,18 +50,62 @@ public class Spectrum extends Runner {
         getCurrentContext().addTest(behavior, block);
     }
 
+    /**
+     * Declare a {@link Block} to be run before each test in the current context.
+     *
+     * <p>
+     * Use this to perform setup actions that are common across tests in the context. If multiple {@code beforeEach} blocks are
+     * declared, they will run in declaration order.
+     * </p>
+     *
+     * @param block
+     *            {@link Block} to run before each test
+     */
     public static void beforeEach(final Block block) {
         getCurrentContext().addTestSetup(block);
     }
 
+    /**
+     * Declare a {@link Block} to be run after each test in the current context.
+     *
+     * <p>
+     * Use this to perform teardown or cleanup actions that are common across tests in this context. If multiple
+     * {@code afterEach} blocks are declared, they will run in declaration order.
+     * </p>
+     *
+     * @param block
+     *            {@link Block} to run after each test
+     */
     public static void afterEach(final Block block) {
         getCurrentContext().addTestTeardown(block);
     }
 
+    /**
+     * Declare a {@link Block} to be run once before all the tests in the current context.
+     *
+     * <p>
+     * Use {@code beforeAll} and {@link #afterAll(Block) afterAll} blocks with caution: since they only run once, shared state
+     * <strong>will</strong> leak across tests.
+     * </p>
+     *
+     * @param block
+     *            {@link Block} to run once before all tests
+     */
     public static void beforeAll(final Block block) {
         getCurrentContext().addContextSetup(block);
     }
 
+    /**
+     * Declare a {@link Block} to be run once after all the tests in the current context.
+     *
+     * <p>
+     * Use {@link #beforeAll(Block) beforeAll} and {@code afterAll} blocks with caution: since they only run once, shared state
+     * <strong>will</strong> leak across tests.
+     * </p>
+     *
+     * @param block
+     *            {@link Block} to run once after all tests
+     */
     public static void afterAll(final Block block) {
         getCurrentContext().addContextTeardown(block);
     }
