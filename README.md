@@ -3,9 +3,9 @@ Spectrum
 
 [![Build Status](https://travis-ci.org/greghaskins/spectrum.svg?branch=master)](https://travis-ci.org/greghaskins/spectrum) [![Coverage Status](https://coveralls.io/repos/greghaskins/spectrum/badge.png)](https://coveralls.io/r/greghaskins/spectrum)
 
-> A colorful spec-style test runner for Java
+*A colorful BDD-style test runner for Java*
 
-[Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/), [mocha](http://mochajs.org/), and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
+[Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/), [Kiwi](https://github.com/kiwi-bdd/Kiwi), and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
 
 ## Example
 
