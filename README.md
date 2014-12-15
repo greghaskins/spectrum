@@ -95,6 +95,35 @@ public class ExampleSpec {{
 
     });
 
+    describe("The Value convenience wrapper", () -> {
+
+        final Value<Integer> counter = value(Integer.class);
+
+        beforeEach(() -> {
+            counter.value = 0;
+        });
+
+        beforeEach(() -> {
+            counter.value++;
+        });
+
+        it("lets you work around Java's requirement that closures only reference `final` variables", () -> {
+            counter.value++;
+            assertThat(counter.value, is(2));
+        });
+
+        it("can optionally have an initial value set", () -> {
+            final Value<String> name = value("Alice");
+            assertThat(name.value, is("Alice"));
+        });
+
+        it("has a null value if not specified", () -> {
+            final Value<String> name = value(String.class);
+            assertThat(name.value, is(nullValue()));
+        });
+
+    });
+
     describe("A spec using beforeAll", () -> {
 
         final List<Integer> numbers = new ArrayList<Integer>();
