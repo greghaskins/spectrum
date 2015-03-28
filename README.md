@@ -1,7 +1,7 @@
 Spectrum
 ========
 
-[![Build Status](https://travis-ci.org/greghaskins/spectrum.svg?branch=master)](https://travis-ci.org/greghaskins/spectrum) [![Coverage Status](https://coveralls.io/repos/greghaskins/spectrum/badge.png)](https://coveralls.io/r/greghaskins/spectrum)
+[![Build Status](https://img.shields.io/travis/greghaskins/spectrum.svg)](https://travis-ci.org/greghaskins/spectrum) [![Coverage Status](https://img.shields.io/coveralls/greghaskins/spectrum.svg)](https://coveralls.io/r/greghaskins/spectrum)
 
 *A colorful BDD-style test runner for Java*
 
