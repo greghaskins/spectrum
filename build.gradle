@@ -15,7 +15,7 @@ apply plugin: 'jacoco'
 apply plugin: 'maven-publish'
 apply plugin: 'com.github.kt3k.coveralls'
 
-version = '0.4.1'
+version = '0.4.2'
 
 repositories {
     mavenCentral()
