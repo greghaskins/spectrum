@@ -1,6 +1,16 @@
+sudo: false
 language: java
 
 jdk:
   - oraclejdk8
 after_success:
-  - gradle coveralls
+  - " ./gradlew coveralls"
+deploy:
+  provider: script
+  script: "./gradlew bintrayUpload"
+  on:
+    tags: true
+env:
+  global:
+    - secure: "Ai47GDG9Hv60mIIVqgQbG9CLzftKnAg1J3h762byEk0tMUNNEfbnBHEiiX5YTduT93RF/zvvME9rn+ycvjFA5Q/KGQNLfQHdGMaAP+lfLQeT8FsiomV9QMGDjDYnF1KGXztZHGB3TOPs6KMwSAiO15QXoRQ+8p89UFphVKy1fmU="
+    - secure: "CpKsnXu69uVUOUI9v4NiqpN3TR+/uWeCWjTvblrJDvZPuI/JWFKl/z2MyrgWmwDHi6G3Q0EGHSt+Y9f42jeH0IyGLJLrTc2W1SbjKkYscQGRLIH33MKVO0o30ltUWYnoySBOxs/8LM8MIKhrwtypzu0ewQoAvmteO9Za4RVkKAk="
