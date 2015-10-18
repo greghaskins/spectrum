@@ -7,7 +7,7 @@ after_success:
   - gradle coveralls
 deploy:
   provider: script
-  script: ./gradlew bintrayUpload
+  script: "./gradlew bintrayUpload"
   on:
     - branch: jcenter-publish
 env:
