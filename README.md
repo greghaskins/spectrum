@@ -7,6 +7,10 @@ Spectrum
 
 [Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/), [Kiwi](https://github.com/kiwi-bdd/Kiwi), and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
 
+## Download
+
+[ ![Download](https://api.bintray.com/packages/greghaskins/maven/Spectrum/images/download.svg) ](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion)
+
 ## Example
 
 > see also [ExampleSpec.java](src/test/java/specs/ExampleSpec.java)
