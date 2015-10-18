@@ -9,7 +9,7 @@ Spectrum
 
 ## Download
 
-[ ![Download](https://api.bintray.com/packages/greghaskins/maven/Spectrum/images/download.svg) ](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion)
+Spectrum is available as a package on Bintray: [ ![Download](https://api.bintray.com/packages/greghaskins/maven/Spectrum/images/download.svg) ](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion)
 
 ## Example
 
