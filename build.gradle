@@ -47,7 +47,7 @@ publishing {
 	publications {
 		bintrayPublication(MavenPublication) {
 			from components.java
-			groupId 'com.greghaskins.spectrum'
+			groupId 'com.greghaskins'
 			artifactId 'spectrum'
 			version project.version
 		}
