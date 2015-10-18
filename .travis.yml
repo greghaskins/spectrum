@@ -9,7 +9,7 @@ deploy:
   provider: script
   script: "./gradlew bintrayUpload"
   on:
-    - branch: jcenter-publish
+    branch: jcenter-publish
 env:
   global:
     - secure: "Ai47GDG9Hv60mIIVqgQbG9CLzftKnAg1J3h762byEk0tMUNNEfbnBHEiiX5YTduT93RF/zvvME9rn+ycvjFA5Q/KGQNLfQHdGMaAP+lfLQeT8FsiomV9QMGDjDYnF1KGXztZHGB3TOPs6KMwSAiO15QXoRQ+8p89UFphVKy1fmU="
