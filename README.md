@@ -7,9 +7,6 @@ Spectrum
 
 [Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/), [Kiwi](https://github.com/kiwi-bdd/Kiwi), and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
 
-## Download
-
-Spectrum is available as a package on Bintray: [ ![Download](https://api.bintray.com/packages/greghaskins/maven/Spectrum/images/download.svg) ](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion)
 
 ## Example
 
@@ -166,9 +163,66 @@ public class ExampleSpec {{
 }}
 ```
 
-## Dependencies
+## Getting Started
+
+Spectrum is available as a [package on Bintray](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion), so you'll need to add a Maven repository to your build config. Inclusion in JCenter (see #8) and Maven Central (see #11) will make this easier when those issues are resolved.
+
+### Dependencies
 
  - JUnit 4
  - Java 8
 
-(The Spectrum runner itself should be compatible back to Java 6; verified support for specs written using [Retrolambda](https://github.com/orfjackal/retrolambda) is forthcoming.)
+### Gradle
+
+Add the Maven repository to `build.gradle`:
+
+```groovy
+repositories { 
+	maven { 
+		url "http://dl.bintray.com/greghaskins/maven"
+	}
+}
+```
+
+Then add the Spectrum dependency for your tests:
+
+```groovy
+dependencies {
+	...
+	testCompile group: 'com.greghaskins', name: 'spectrum', version: '0.4.4'
+	...
+}
+
+```
+
+### Maven
+
+Add the `bintray-greghaskins-maven` Maven repository to your `pom.xml`:
+
+```xml
+<project ...>
+<repositories>
+	<repository>
+		<id>bintray-greghaskins-maven</id>
+		<url>http://dl.bintray.com/greghaskins/maven</url>
+	</repository>
+ </repositories>
+</project>
+```
+
+Then add Spectrum as a dependency with `test` scope:
+
+```xml
+<project ...>
+	<dependencies>
+	...
+		<dependency>
+			<groupId>com.greghaskins</groupId>
+			<artifactId>spectrum</artifactId>
+			<version>0.4.4</version>
+			<scope>test</scope>
+		</dependency>
+	...
+	</dependencies>
+</project>
+```
