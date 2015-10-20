@@ -165,7 +165,7 @@ public class ExampleSpec {{
 
 ## Getting Started
 
-Spectrum is available as a [package on Bintray](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion), so you'll need to add a Maven repository to your build config. Inclusion in JCenter (see [#8](https://github.com/greghaskins/spectrum/issues/8)) and Maven Central (see [#11](https://github.com/greghaskins/spectrum/issues/11)) will make this easier when those issues are resolved.
+Spectrum is available as a [package on Bintray](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion), so you'll need to add a Maven repository to your build config. Inclusion in JCenter (see [#8](https://github.com/greghaskins/spectrum/issues/8)) and Maven Central (see [#12](https://github.com/greghaskins/spectrum/issues/12)) will make this easier when those issues are resolved.
 
 ### Dependencies
 
