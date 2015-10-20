@@ -165,7 +165,7 @@ public class ExampleSpec {{
 
 ## Getting Started
 
-Spectrum is available as a [package on Bintray](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion), so you'll need to add a Maven repository to your build config. Inclusion in JCenter (see #8) and Maven Central (see #11) will make this easier when those issues are resolved.
+Spectrum is available as a [package on Bintray](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion), so you'll need to add a Maven repository to your build config. Inclusion in JCenter (see [#8](https://github.com/greghaskins/spectrum/issues/8)) and Maven Central (see [#11](https://github.com/greghaskins/spectrum/issues/11)) will make this easier when those issues are resolved.
 
 ### Dependencies
 
@@ -201,12 +201,12 @@ Add the `bintray-greghaskins-maven` Maven repository to your `pom.xml`:
 
 ```xml
 <project ...>
-<repositories>
-	<repository>
-		<id>bintray-greghaskins-maven</id>
-		<url>http://dl.bintray.com/greghaskins/maven</url>
-	</repository>
- </repositories>
+	<repositories>
+		<repository>
+			<id>bintray-greghaskins-maven</id>
+			<url>http://dl.bintray.com/greghaskins/maven</url>
+		</repository>
+	 </repositories>
 </project>
 ```
 
@@ -215,14 +215,12 @@ Then add Spectrum as a dependency with `test` scope:
 ```xml
 <project ...>
 	<dependencies>
-	...
 		<dependency>
 			<groupId>com.greghaskins</groupId>
 			<artifactId>spectrum</artifactId>
 			<version>0.4.4</version>
 			<scope>test</scope>
 		</dependency>
-	...
 	</dependencies>
 </project>
 ```
