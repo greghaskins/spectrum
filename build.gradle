@@ -61,6 +61,12 @@ publishing {
 			groupId 'com.greghaskins'
 			artifactId 'spectrum'
 			version project.version
+			artifact (sourcesJar) {
+				classifier = 'sources'
+			}
+			artifact (javadocJar) {
+				classifier = 'javadoc'
+			}
 		}
 	}
 }
@@ -76,7 +82,7 @@ bintray {
 		licenses = ['MIT']
 		desc = 'A colorful BDD-style test runner for Java'
 		websiteUrl = 'https://github.com/greghaskins/spectrum'
-		issueTrackerUrl = 'https://github.com/greghaskins/spectrum'
+		issueTrackerUrl = 'https://github.com/greghaskins/spectrum/issues'
 		vcsUrl = 'https://github.com/greghaskins/spectrum.git'
 		labels = ['java', 'junit', 'bdd', 'testing', 'unit testing', 'java8', 'lambda']
 		version {
