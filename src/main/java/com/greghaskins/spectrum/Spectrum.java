@@ -18,7 +18,7 @@ public class Spectrum extends Runner {
         /**
          * Execute the code block, raising any {@code Throwable} that may occur.
          *
-         * @throws Throwable
+         * @throws Throwable if anything goes awry.
          */
         void run() throws Throwable;
     }

@@ -61,12 +61,9 @@ publishing {
 			groupId 'com.greghaskins'
 			artifactId 'spectrum'
 			version project.version
-			artifact (sourcesJar) {
-				classifier = 'sources'
-			}
-			artifact (javadocJar) {
-				classifier = 'javadoc'
-			}
+			
+			artifact sourcesJar
+			artifact javadocJar
 		}
 	}
 }
