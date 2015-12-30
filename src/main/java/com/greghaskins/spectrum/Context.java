@@ -96,17 +96,17 @@ class Context implements Executable {
         executables.add(childContext);
     }
 
-	public void skipTest(String behavior) {
-		Description testDescription = Description.createTestDescription(description.getClassName(), behavior);
-		description.addChild(testDescription);
-		executables.add(new Executable() {
-			
-			@Override
-			public void execute(RunNotifier notifier) {
-				notifier.fireTestIgnored(testDescription);
-			}
-		});
-	}
+    public void skipTest(final String behavior) {
+        final Description testDescription = Description.createTestDescription(description.getClassName(), behavior);
+        description.addChild(testDescription);
+        executables.add(new Executable() {
+
+            @Override
+            public void execute(final RunNotifier notifier) {
+                notifier.fireTestIgnored(testDescription);
+            }
+        });
+    }
 
 
 }
