@@ -7,6 +7,7 @@ import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.value;
+import static com.greghaskins.spectrum.Spectrum.xit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
@@ -24,7 +25,6 @@ import org.junit.runner.RunWith;
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
 import com.greghaskins.spectrum.Spectrum.Value;
-
 
 @RunWith(Spectrum.class)
 public class ExampleSpec {{
@@ -169,6 +169,15 @@ public class ExampleSpec {{
 
         it("cleans up after running all tests in the describe block", () -> {
             assertThat(numbers, is(empty()));
+        });
+
+    });
+
+    describe("Pending/ignored specs", () -> {
+
+        xit("can be declared using `xit`", () -> {
+            // this will not run
+            assertThat(true, is(false));
         });
 
     });
