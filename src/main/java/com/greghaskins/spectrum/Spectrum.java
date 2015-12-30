@@ -51,6 +51,18 @@ public class Spectrum extends Runner {
     }
 
     /**
+     * Temporarily skip a test; <em>it will not be run.</em> To re-enable, switch to {@link it it()}.
+     *
+     * @param behavior
+     *            Description of the behavior
+     * @param block
+     *            {@link Block} that will not be executed
+     */
+    public static void xit(final String behavior, final Block block) {
+        getCurrentContext().skipTest(behavior);
+    }
+    
+    /**
      * Declare a {@link Block} to be run before each test in the current context.
      *
      * <p>
