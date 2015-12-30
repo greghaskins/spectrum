@@ -165,7 +165,7 @@ public class ExampleSpec {{
 
 ## Getting Started
 
-Spectrum is available as a [package on Bintray](https://bintray.com/greghaskins/maven/Spectrum/_latestVersion), so you'll need to add a Maven repository to your build config. Inclusion in JCenter (see [#8](https://github.com/greghaskins/spectrum/issues/8)) and Maven Central (see [#12](https://github.com/greghaskins/spectrum/issues/12)) will make this easier when those issues are resolved.
+Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/maven/Spectrum/view), so make sure you have jCenter declared as a repository in your build config. Future inclusion in Maven Central (see [#12](https://github.com/greghaskins/spectrum/issues/12)) will make this even easier.
 
 ### Dependencies
 
@@ -174,13 +174,11 @@ Spectrum is available as a [package on Bintray](https://bintray.com/greghaskins/
 
 ### Gradle
 
-Add the Maven repository to `build.gradle`:
+Make sure you have the jCenter repository in your [init script](https://docs.gradle.org/current/userguide/init_scripts.html) or project `build.gradle`:
 
 ```groovy
-repositories { 
-	maven { 
-		url "http://dl.bintray.com/greghaskins/maven"
-	}
+repositories {
+    jcenter()
 }
 ```
 
@@ -188,37 +186,33 @@ Then add the Spectrum dependency for your tests:
 
 ```groovy
 dependencies {
-	...
-	testCompile group: 'com.greghaskins', name: 'spectrum', version: '0.4.4'
-	...
+	testCompile 'com.greghaskins:spectrum:0.5.0'
 }
 
 ```
 
 ### Maven
 
-Add the `bintray-greghaskins-maven` Maven repository to your `pom.xml`:
+Make sure you have the jCenter repository in your global `settings.xml` or project `pom.xml`:
 
 ```xml
-<project ...>
-	<repositories>
-		<repository>
-			<id>bintray-greghaskins-maven</id>
-			<url>http://dl.bintray.com/greghaskins/maven</url>
-		</repository>
-	 </repositories>
-</project>
+<repositories>
+    <repository>
+        <id>jcenter</id>
+        <url>http://jcenter.bintray.com</url>
+    </repository>
+</repositories>
 ```
 
-Then add Spectrum as a dependency with `test` scope:
+Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
 
 ```xml
-<project ...>
+<project>
 	<dependencies>
 		<dependency>
 			<groupId>com.greghaskins</groupId>
 			<artifactId>spectrum</artifactId>
-			<version>0.4.4</version>
+			<version>0.5.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
