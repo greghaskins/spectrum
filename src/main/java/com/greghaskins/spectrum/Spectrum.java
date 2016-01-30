@@ -49,6 +49,21 @@ public class Spectrum extends Runner {
     public static void it(final String behavior, final Block block) {
         getCurrentContext().addTest(behavior, block);
     }
+    
+    /**
+     * Focus on this specific test, while ignoring others.
+     *
+     * @param behavior
+     *            Description of the expected behavior
+     * @param block
+     *            {@link Block} that verifies the system behaves as expected and throws a {@link java.lang.Throwable Throwable}
+     *            if that expectation is not met.
+     * 
+     * @see {@link #it(String, Block) it}
+     */
+    public static void fit(final String behavior, final Block block) {
+        getCurrentContext().addTest(behavior, block);
+    }
 
     /**
      * Declare a {@link Block} to be run before each test in the current context.
