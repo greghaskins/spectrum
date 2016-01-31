@@ -19,7 +19,7 @@ class Suite extends Runner {
 	private final CompositeBlock beforeEach = new CompositeBlock();
 	private final CompositeBlock afterEach = new CompositeBlock();
 
-	private final List<Runner> children = new ArrayList<>();
+	private final List<Runner> children = new ArrayList<Runner>();
 
 	private final Description description;
 
@@ -81,7 +81,9 @@ class Suite extends Runner {
 	}
 
 	private void runChildren(final RunNotifier notifier) {
-		this.children.stream().forEach((child) -> child.run(notifier));
+		for (final Runner child : this.children) {
+			child.run(notifier);
+		}
 	}
 
 	private void runAfterAll(final RunNotifier notifier) {
@@ -101,7 +103,11 @@ class Suite extends Runner {
 
 	@Override
 	public int testCount() {
-		return this.children.stream().mapToInt((child) -> { return child.testCount(); }).sum();
+		int count = 0;
+		for (final Runner child : this.children) {
+			count += child.testCount();
+		}
+		return count;
 	}
 
 }
