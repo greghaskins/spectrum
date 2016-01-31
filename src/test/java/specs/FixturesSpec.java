@@ -6,12 +6,12 @@ import static com.greghaskins.spectrum.Spectrum.beforeAll;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.value;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import helpers.SpectrumRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,9 @@ import org.junit.runner.notification.Failure;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
+import com.greghaskins.spectrum.Spectrum.Value;
+
+import helpers.SpectrumRunner;
 
 @RunWith(Spectrum.class)
 public class FixturesSpec {{
@@ -205,9 +208,7 @@ public class FixturesSpec {{
 
         it("cause all tests in that context and its children to fail", () -> {
             final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeAll());
-            final int numberOfFailingContexts = 2;
-            final int numbmerOfTestsWithinThoseContexts = 3;
-            assertThat(result.getFailureCount(), is(numberOfFailingContexts + numbmerOfTestsWithinThoseContexts));
+            assertThat(result.getFailureCount(), is(3));
         });
 
     });
@@ -292,6 +293,8 @@ private static Class<?> getSpecWithExplodingAfterEach(){
 private static Class<?> getSpecWithExplodingBeforeAll(){
     class Spec {{
 
+    	final Value<Integer> executedSpecs = value(0);
+
         describe("failing context", () ->{
 
             beforeAll(() -> {
@@ -303,21 +306,25 @@ private static Class<?> getSpecWithExplodingBeforeAll(){
             });
 
             it("should fail once", () -> {
-
+            	executedSpecs.value++;
             });
 
             it("should also fail", () -> {
-
+            	executedSpecs.value++;
             });
 
             describe("failing child", () -> {
 
                 it("fails too", () -> {
-
+                	executedSpecs.value++;
                 });
 
             });
         });
+
+        it("should not execute any specs", () -> {
+			assertThat(executedSpecs.value, is(0));
+		});
 
     }}
     return Spec.class;
