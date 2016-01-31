@@ -25,7 +25,6 @@ class Suite extends Runner {
 
 	public Suite(final Description description) {
 		this.description = description;
-		beforeEach(new RunOnceBlock(this.beforeAll));
 	}
 
 	public Suite addSuite(final String name) {
@@ -34,6 +33,7 @@ class Suite extends Runner {
 
 	public Suite addSuite(final Description description) {
 		final Suite suite = new Suite(description);
+		suite.beforeAll(this.beforeAll);
 		suite.beforeEach(this.beforeEach);
 		suite.afterEach(this.afterEach);
 		addChild(suite);
@@ -41,7 +41,7 @@ class Suite extends Runner {
 	}
 
 	public Spec addSpec(final String name, final Block block) {
-		final CompositeBlock specBlockInContext = new CompositeBlock(Arrays.asList(this.beforeEach, block, this.afterEach));
+		final CompositeBlock specBlockInContext = new CompositeBlock(Arrays.asList(this.beforeAll, this.beforeEach, block, this.afterEach));
 		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
 		final Spec spec = new Spec(specDescription, specBlockInContext);
 		addChild(spec);
@@ -54,7 +54,7 @@ class Suite extends Runner {
 	}
 
 	public void beforeAll(final Block block) {
-		this.beforeAll.addBlock(block);
+		this.beforeAll.addBlock(new RunOnceBlock(block));
 	}
 
 	public void afterAll(final Block block) {

@@ -129,7 +129,7 @@ public class FixturesSpec {{
 
     });
 
-    describe("A spec using beforeAll", () -> {
+    describe("A suite using beforeAll", () -> {
 
         final List<String> items = new ArrayList<String>();
 
@@ -149,6 +149,28 @@ public class FixturesSpec {{
         it("does't reset any state between tests", () -> {
             assertThat(items, contains("foo", "bar", "baz"));
         });
+
+        describe("with nested children", () -> {
+
+        	final ArrayList<Integer> numbers = new ArrayList<Integer>();
+
+        	beforeAll(() -> {
+        		numbers.add(1);
+        	});
+
+        	describe("inside suites without their own tests", () -> {
+
+        		beforeAll(() -> {
+        			numbers.add(2);
+        		});
+
+	        	it("runs the beforeAll blocks from outer scope first", () -> {
+					assertThat(numbers, contains(1, 2));
+				});
+
+        	});
+
+		});
 
     });
 
