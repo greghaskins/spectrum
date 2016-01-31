@@ -25,17 +25,25 @@ class Suite extends Runner {
 
 	public Suite(final Description description) {
 		this.description = description;
+		beforeEach(new RunOnceBlock(this.beforeAll));
 	}
 
-	public Suite addSuite(final String name, final Block block) {
-		final Suite suite = new Suite(Description.createSuiteDescription(name));
+	public Suite addSuite(final String name) {
+		return addSuite(Description.createSuiteDescription(name));
+	}
+
+	public Suite addSuite(final Description description) {
+		final Suite suite = new Suite(description);
+		suite.beforeEach(this.beforeEach);
+		suite.afterEach(this.afterEach);
 		addChild(suite);
 		return suite;
 	}
 
 	public Spec addSpec(final String name, final Block block) {
 		final CompositeBlock specBlockInContext = new CompositeBlock(Arrays.asList(this.beforeEach, block, this.afterEach));
-		final Spec spec = new Spec(Description.createTestDescription(this.description.getClassName(), name), specBlockInContext);
+		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
+		final Spec spec = new Spec(specDescription, specBlockInContext);
 		addChild(spec);
 		return spec;
 	}
@@ -65,19 +73,22 @@ class Suite extends Runner {
 	public void run(final RunNotifier notifier) {
 		if (this.testCount() == 0) {
 			notifier.fireTestIgnored(this.description);
-			return;
+			runChildren(notifier);
+		} else {
+			runChildren(notifier);
+			runAfterAll(notifier);
 		}
-
-		runOrFail(this.beforeAll, notifier, "error in beforeAll");
-		this.children.stream().forEach((child) -> child.run(notifier));
-		runOrFail(this.afterAll, notifier, "error in afterAll");
 	}
 
-	private void runOrFail(final Block block, final RunNotifier notifier, final String failureMessage) {
+	private void runChildren(final RunNotifier notifier) {
+		this.children.stream().forEach((child) -> child.run(notifier));
+	}
+
+	private void runAfterAll(final RunNotifier notifier) {
 		try {
-			block.run();
+			this.afterAll.run();
 		} catch (final Throwable e) {
-			final Description failureDescription = Description.createTestDescription(this.description.getClassName(), failureMessage);
+			final Description failureDescription = Description.createTestDescription(this.description.getClassName(), "error in afterAll");
 			this.description.addChild(failureDescription);
 			notifier.fireTestFailure(new Failure(failureDescription, e));
 		}
@@ -92,7 +103,5 @@ class Suite extends Runner {
 	public int testCount() {
 		return this.children.stream().mapToInt((child) -> { return child.testCount(); }).sum();
 	}
-
-
 
 }
