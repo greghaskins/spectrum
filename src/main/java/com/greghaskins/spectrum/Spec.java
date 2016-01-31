@@ -1,33 +1,43 @@
 package com.greghaskins.spectrum;
 
+import org.junit.runner.Description;
+import org.junit.runner.Runner;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunNotifier;
+
 import com.greghaskins.spectrum.Spectrum.Block;
 
-class Spec implements Trilogy {
+class Spec extends Runner {
 
-	private final Block setup;
-	private final Block teardown;
-	private final Block test;
+	private final Block block;
+	private final Description description;
 
-	public Spec(final Block setup, final Block test, final Block teardown) {
-		this.setup = setup;
-		this.test = test;
-		this.teardown = teardown;
+
+	public Spec(final Description description, final Block block) {
+		this.description = description;
+		this.block = block;
 	}
 
 	@Override
-	public void setUp() throws Throwable {
-		this.setup.run();
+	public Description getDescription() {
+		return this.description;
 	}
 
 	@Override
-	public void run() throws Throwable {
-		this.test.run();
+	public void run(final RunNotifier notifier) {
+		notifier.fireTestStarted(this.description);
+		try {
+			this.block.run();
+		} catch (final Throwable e) {
+			notifier.fireTestFailure(new Failure(this.description, e));
+		}
+		notifier.fireTestFinished(this.description);
 	}
+
 
 	@Override
-	public void tearDown() throws Throwable {
-		this.teardown.run();
+	public int testCount() {
+		return 1;
 	}
-
 
 }

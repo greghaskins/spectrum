@@ -1,5 +1,7 @@
 package com.greghaskins.spectrum;
 
+import static java.util.Arrays.asList;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -15,28 +17,28 @@ class Context implements Executable {
     private final Description description;
     private final List<Block> setupBlocks;
     private final List<Block> teardownBlocks;
-    private final List<RunOnceBlock> contextSetupBlocks;
+    private final List<Block> contextSetupBlocks;
     private final List<Block> contextTeardownBlocks;
     private final Deque<Executable> executables;
 
     public Context(final Description description) {
         this.description = description;
-        setupBlocks = new ArrayList<Block>();
-        teardownBlocks = new ArrayList<Block>();
-        contextSetupBlocks = new ArrayList<RunOnceBlock>();
-        contextTeardownBlocks = new ArrayList<Block>();
+        this.setupBlocks = new ArrayList<Block>();
+        this.teardownBlocks = new ArrayList<Block>();
+        this.contextSetupBlocks = new ArrayList<Block>();
+        this.contextTeardownBlocks = new ArrayList<Block>();
 
-        executables = new ArrayDeque<Executable>();
+        this.executables = new ArrayDeque<Executable>();
     }
 
     @Override
     public void execute(final RunNotifier notifier) {
-        if (descriptionHasAnyTests(description)) {
+        if (descriptionHasAnyTests(this.description)) {
             addExecutablesForFixtureLevelSetupAndTeardown();
         } else {
-            notifier.fireTestIgnored(description);
+            notifier.fireTestIgnored(this.description);
         }
-        for (final Executable child : executables) {
+        for (final Executable child : this.executables) {
             child.execute(notifier);
         }
     }
@@ -55,45 +57,44 @@ class Context implements Executable {
     }
 
     private void addExecutablesForFixtureLevelSetupAndTeardown() {
-        executables.addFirst(new BlockExecutable(description, new CompositeBlock(contextSetupBlocks)));
-        executables.addLast(new BlockExecutable(description, new CompositeBlock(contextTeardownBlocks)));
+        this.executables.addFirst(new BlockExecutable(this.description, new CompositeBlock(this.contextSetupBlocks)));
+        this.executables.addLast(new BlockExecutable(this.description, new CompositeBlock(this.contextTeardownBlocks)));
     }
 
     public void addTestSetup(final Block block) {
-        setupBlocks.add(block);
+        this.setupBlocks.add(block);
     }
 
     public void addTestTeardown(final Block block) {
-        teardownBlocks.add(block);
+        this.teardownBlocks.add(block);
     }
 
     public void addContextSetup(final Block block) {
-        contextSetupBlocks.add(new RunOnceBlock(block));
+        this.contextSetupBlocks.add(new RunOnceBlock(block));
     }
 
     public void addContextTeardown(final Block block) {
-        contextTeardownBlocks.add(block);
+        this.contextTeardownBlocks.add(block);
     }
 
     public void addTest(final String behavior, final Block block) {
-        final Description testDescription = Description.createTestDescription(description.getClassName(), behavior);
+        final Description testDescription = Description.createTestDescription(this.description.getClassName(), behavior);
         final CompositeBlock testBlock = putTestBlockInContext(block);
         final Test test = new Test(testDescription, testBlock);
-        description.addChild(testDescription);
-        executables.add(test);
+        this.description.addChild(testDescription);
+        this.executables.add(test);
     }
 
     private CompositeBlock putTestBlockInContext(final Block testBlock) {
-        return new CompositeBlock(new CompositeBlock(contextSetupBlocks), new CompositeBlock(setupBlocks), testBlock,
-                new CompositeBlock(teardownBlocks));
+		return new CompositeBlock(asList(new CompositeBlock(this.contextSetupBlocks), new CompositeBlock(this.setupBlocks), testBlock, new CompositeBlock(this.teardownBlocks)));
     }
 
     public void addChild(final Context childContext) {
-        description.addChild(childContext.description);
-        childContext.addContextSetup(new CompositeBlock(contextSetupBlocks));
-        childContext.addTestSetup(new CompositeBlock(setupBlocks));
-        childContext.addTestTeardown(new CompositeBlock(teardownBlocks));
-        executables.add(childContext);
+        this.description.addChild(childContext.description);
+        childContext.addContextSetup(new CompositeBlock(this.contextSetupBlocks));
+        childContext.addTestSetup(new CompositeBlock(this.setupBlocks));
+        childContext.addTestTeardown(new CompositeBlock(this.teardownBlocks));
+        this.executables.add(childContext);
     }
 
 
