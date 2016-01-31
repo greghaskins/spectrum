@@ -54,7 +54,7 @@ class Suite extends Runner {
 	}
 
 	public void beforeAll(final Block block) {
-		this.beforeAll.addBlock(new RunOnceBlock(block));
+		this.beforeAll.addBlock(new IdempotentBlock(block));
 	}
 
 	public void afterAll(final Block block) {
