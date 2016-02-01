@@ -1,26 +1,31 @@
 package com.greghaskins.spectrum;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.greghaskins.spectrum.Spectrum.Block;
 
 class CompositeBlock implements Block {
 
-    private final Iterable<? extends Block> blocks;
+	private final List<Block> blocks;
 
-    public CompositeBlock(final Iterable<? extends Block> blocks) {
+    public CompositeBlock(final List<Block> blocks) {
         this.blocks = blocks;
     }
 
-    public CompositeBlock(final Block... blocks) {
-        this(Arrays.asList(blocks));
-    }
+    public CompositeBlock() {
+		this(new ArrayList<Block>());
+	}
 
     @Override
     public void run() throws Throwable {
-        for (final Block block : blocks) {
+        for (final Block block : this.blocks) {
             block.run();
         }
+    }
+
+    public void addBlock(final Block block) {
+    	this.blocks.add(block);
     }
 
 }
