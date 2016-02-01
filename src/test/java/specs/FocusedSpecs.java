@@ -17,32 +17,37 @@ import helpers.SpectrumRunner;
 public class FocusedSpecs {{
 
 	describe("Focused specs", () -> {
-		
+
 		it("are declared with `fit`", () -> {
-			Result result = SpectrumRunner.run(getSpecWithFocusedTests());
+			final Result result = SpectrumRunner.run(getSuiteWithFocusedTests());
 			assertThat(result.getFailureCount(), is(0));
 		});
+
+		it("mark siblings as ignored so they don't get forgotten", () -> {
+			final Result result = SpectrumRunner.run(getSuiteWithFocusedTests());
+			assertThat(result.getIgnoreCount(), is(1));
+		});
 	});
-	
+
 }
-private static Class<?> getSpecWithFocusedTests() {
-	class Spec {{
-		
+private static Class<?> getSuiteWithFocusedTests() {
+	class Suite {{
+
 		describe("A spec that", () -> {
-		
+
 			fit("is focused and will run", () -> {
-				assertThat(true, is(false));
+				assertThat(true, is(true));
 			});
-			
+
 			it("is not focused and will not run", () -> {
 				assertThat(true, is(false));
 			});
-		
+
 		});
-		
+
 	}}
-	
-	return Spec.class;
+
+	return Suite.class;
 }
 }
 

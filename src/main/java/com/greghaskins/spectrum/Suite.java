@@ -2,7 +2,9 @@ package com.greghaskins.spectrum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -20,6 +22,7 @@ class Suite extends Runner {
 	private final CompositeBlock afterEach = new CompositeBlock();
 
 	private final List<Runner> children = new ArrayList<Runner>();
+	private final Set<Runner> focusedChildren = new HashSet<Runner>();
 
 	private final Description description;
 
@@ -45,6 +48,12 @@ class Suite extends Runner {
 		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
 		final Spec spec = new Spec(specDescription, specBlockInContext);
 		addChild(spec);
+		return spec;
+	}
+
+	public Spec addFocusedSpec(final String name, final Block block) {
+		final Spec spec = addSpec(name, block);
+		this.focusedChildren.add(spec);
 		return spec;
 	}
 
@@ -82,7 +91,15 @@ class Suite extends Runner {
 
 	private void runChildren(final RunNotifier notifier) {
 		for (final Runner child : this.children) {
+			runChild(child, notifier);
+		}
+	}
+
+	private void runChild(final Runner child, final RunNotifier notifier) {
+		if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
 			child.run(notifier);
+		} else {
+			notifier.fireTestIgnored(child.getDescription());
 		}
 	}
 
