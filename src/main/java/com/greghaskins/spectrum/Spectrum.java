@@ -38,6 +38,22 @@ public class Spectrum extends Runner {
     }
 
     /**
+     * Focus on this specific suite, while ignoring others.
+     *
+     * @param context
+     *            Description of the context for this suite
+     * @param block
+     *            {@link Block} with one or more calls to {@link #it(String, Block) it} that define each expected behavior
+     *
+     * @see {@link #describe(String, Block) describe}
+     *
+     */
+    public static void fdescribe(final String context, final Block block) {
+    	final Suite suite = getCurrentSuite().addFocusedSuite(context);
+    	beginDefintion(suite, block);
+    }
+
+    /**
      * Declare a spec, or test, for an expected behavior of the system in this suite context.
      *
      * @param behavior
@@ -51,7 +67,7 @@ public class Spectrum extends Runner {
     }
 
     /**
-     * Focus on this specific spec, while not running others.
+     * Focus on this specific spec, while ignoring others.
      *
      * @param behavior
      *            Description of the expected behavior

@@ -1,6 +1,7 @@
 package specs;
 
 import static com.greghaskins.spectrum.Spectrum.describe;
+import static com.greghaskins.spectrum.Spectrum.fdescribe;
 import static com.greghaskins.spectrum.Spectrum.fit;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,6 +30,20 @@ public class FocusedSpecs {{
 		});
 	});
 
+	describe("Focused suites", () -> {
+
+		it("are declared with `fdescribe`", () -> {
+			final Result result = SpectrumRunner.run(getSuiteWithFocusedSubSuites());
+			assertThat(result.getFailureCount(), is(0));
+		});
+
+		it("ignores tests that aren't focused", ()-> {
+			final Result result = SpectrumRunner.run(getSuiteWithFocusedSubSuites());
+			assertThat(result.getIgnoreCount(), is(2));
+		});
+
+	});
+
 }
 private static Class<?> getSuiteWithFocusedTests() {
 	class Suite {{
@@ -49,6 +64,33 @@ private static Class<?> getSuiteWithFocusedTests() {
 
 	return Suite.class;
 }
+private static Class<?> getSuiteWithFocusedSubSuites() {
+	class Suite {{
+		describe("an unfocused suite", () -> {
+			it("is ignored", () -> {
+				assertThat(true, is(false));
+			});
+		});
+
+		fdescribe("focused describe", () -> {
+			it("will run", () -> {
+				assertThat(true, is(true));
+			});
+			it("will also run", () -> {
+				assertThat(true, is(true));
+			});
+		});
+
+		fdescribe("another focused describe", () -> {
+			fit("is focused and will run", () -> {
+				assertThat(true, is(true));
+			});
+			it("is not focused and will not run", () -> {
+				assertThat(false, is(true));
+			});
+		});
+
+	}}
+	return Suite.class;
 }
-
-
+}

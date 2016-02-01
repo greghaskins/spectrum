@@ -43,6 +43,12 @@ class Suite extends Runner {
 		return suite;
 	}
 
+	public Suite addFocusedSuite(final String name) {
+		final Suite suite = addSuite(name);
+		this.focusedChildren.add(suite);
+		return suite;
+	}
+
 	public Spec addSpec(final String name, final Block block) {
 		final CompositeBlock specBlockInContext = new CompositeBlock(Arrays.asList(this.beforeAll, this.beforeEach, block, this.afterEach));
 		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
