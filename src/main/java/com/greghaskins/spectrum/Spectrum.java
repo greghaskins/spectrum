@@ -146,7 +146,7 @@ public class Spectrum extends Runner {
         this.rootSuite.run(notifier);
     }
 
-    private static void beginDefintion(final Suite suite, final Block definitionBlock) {
+    synchronized private static void beginDefintion(final Suite suite, final Block definitionBlock) {
         suiteStack.push(suite);
         try {
             definitionBlock.run();
@@ -156,7 +156,7 @@ public class Spectrum extends Runner {
         suiteStack.pop();
     }
 
-    private static Suite getCurrentSuite() {
+    synchronized private static Suite getCurrentSuite() {
         return suiteStack.peek();
     }
 
