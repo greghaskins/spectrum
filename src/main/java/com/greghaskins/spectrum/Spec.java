@@ -1,13 +1,12 @@
 package com.greghaskins.spectrum;
 
 import org.junit.runner.Description;
-import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import com.greghaskins.spectrum.Spectrum.Block;
 
-class Spec extends Runner {
+class Spec implements Child {
 
 	private final Block block;
 	private final Description description;

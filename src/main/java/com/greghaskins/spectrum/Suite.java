@@ -7,13 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.runner.Description;
-import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import com.greghaskins.spectrum.Spectrum.Block;
 
-class Suite extends Runner {
+class Suite implements Child {
 
 	private final CompositeBlock beforeAll = new CompositeBlock();
 	private final CompositeBlock afterAll = new CompositeBlock();
@@ -21,8 +20,8 @@ class Suite extends Runner {
 	private final CompositeBlock beforeEach = new CompositeBlock();
 	private final CompositeBlock afterEach = new CompositeBlock();
 
-	private final List<Runner> children = new ArrayList<Runner>();
-	private final Set<Runner> focusedChildren = new HashSet<Runner>();
+	private final List<Child> children = new ArrayList<Child>();
+	private final Set<Child> focusedChildren = new HashSet<Child>();
 
 	private final Description description;
 
@@ -63,9 +62,9 @@ class Suite extends Runner {
 		return spec;
 	}
 
-	private void addChild(final Runner runner) {
-		this.description.addChild(runner.getDescription());
-		this.children.add(runner);
+	private void addChild(final Child child) {
+		this.description.addChild(child.getDescription());
+		this.children.add(child);
 	}
 
 	public void beforeAll(final Block block) {
@@ -96,12 +95,12 @@ class Suite extends Runner {
 	}
 
 	private void runChildren(final RunNotifier notifier) {
-		for (final Runner child : this.children) {
+		for (final Child child : this.children) {
 			runChild(child, notifier);
 		}
 	}
 
-	private void runChild(final Runner child, final RunNotifier notifier) {
+	private void runChild(final Child child, final RunNotifier notifier) {
 		if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
 			child.run(notifier);
 		} else {
@@ -127,7 +126,7 @@ class Suite extends Runner {
 	@Override
 	public int testCount() {
 		int count = 0;
-		for (final Runner child : this.children) {
+		for (final Child child : this.children) {
 			count += child.testCount();
 		}
 		return count;
