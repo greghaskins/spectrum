@@ -24,21 +24,21 @@ public class Spectrum extends Runner {
     }
 
     /**
-     * Declare a test suite to describe the expected behaviors of the system in a given context.
+     * Declare a test suite that describes the expected behavior of the system in a given context.
      *
      * @param context
-     *            Description of the test context
+     *            Description of the context for this suite
      * @param block
      *            {@link Block} with one or more calls to {@link #it(String, Block) it} that define each expected behavior
      *
      */
     public static void describe(final String context, final Block block) {
-        final Context newContext = new Context(Description.createSuiteDescription(context));
-        enterContext(newContext, block);
+    	final Suite suite = getCurrentSuite().addSuite(context);
+        beginDefintion(suite, block);
     }
 
     /**
-     * Declare a test for an expected behavior of the system.
+     * Declare a spec, or test, for an expected behavior of the system in this suite context.
      *
      * @param behavior
      *            Description of the expected behavior
@@ -47,11 +47,11 @@ public class Spectrum extends Runner {
      *            if that expectation is not met.
      */
     public static void it(final String behavior, final Block block) {
-        getCurrentContext().addTest(behavior, block);
+        getCurrentSuite().addSpec(behavior, block);
     }
 
     /**
-     * Declare a {@link Block} to be run before each test in the current context.
+     * Declare a {@link Block} to be run before each spec in the suite.
      *
      * <p>
      * Use this to perform setup actions that are common across tests in the context. If multiple {@code beforeEach} blocks are
@@ -59,44 +59,44 @@ public class Spectrum extends Runner {
      * </p>
      *
      * @param block
-     *            {@link Block} to run before each test
+     *            {@link Block} to run once before each spec
      */
     public static void beforeEach(final Block block) {
-        getCurrentContext().addTestSetup(block);
+        getCurrentSuite().beforeEach(block);
     }
 
     /**
-     * Declare a {@link Block} to be run after each test in the current context.
+     * Declare a {@link Block} to be run after each spec in the current suite.
      *
      * <p>
-     * Use this to perform teardown or cleanup actions that are common across tests in this context. If multiple
+     * Use this to perform teardown or cleanup actions that are common across specs in this suite. If multiple
      * {@code afterEach} blocks are declared, they will run in declaration order.
      * </p>
      *
      * @param block
-     *            {@link Block} to run after each test
+     *            {@link Block} to run once after each spec
      */
     public static void afterEach(final Block block) {
-        getCurrentContext().addTestTeardown(block);
+        getCurrentSuite().afterEach(block);
     }
 
     /**
-     * Declare a {@link Block} to be run once before all the tests in the current context.
+     * Declare a {@link Block} to be run once before all the specs in the current suite begin.
      *
      * <p>
      * Use {@code beforeAll} and {@link #afterAll(Block) afterAll} blocks with caution: since they only run once, shared state
-     * <strong>will</strong> leak across tests.
+     * <strong>will</strong> leak across specs.
      * </p>
      *
      * @param block
-     *            {@link Block} to run once before all tests
+     *            {@link Block} to run once before all specs in this suite
      */
     public static void beforeAll(final Block block) {
-        getCurrentContext().addContextSetup(block);
+        getCurrentSuite().beforeAll(block);
     }
 
     /**
-     * Declare a {@link Block} to be run once after all the tests in the current context.
+     * Declare a {@link Block} to be run once after all the specs in the current suite have run.
      *
      * <p>
      * Use {@link #beforeAll(Block) beforeAll} and {@code afterAll} blocks with caution: since they only run once, shared state
@@ -104,10 +104,10 @@ public class Spectrum extends Runner {
      * </p>
      *
      * @param block
-     *            {@link Block} to run once after all tests
+     *            {@link Block} to run once after all specs in this suite
      */
     public static void afterAll(final Block block) {
-        getCurrentContext().addContextTeardown(block);
+        getCurrentSuite().afterAll(block);
     }
 
     public static <T> Value<T> value(@SuppressWarnings("unused") final Class<T> type) {
@@ -126,44 +126,38 @@ public class Spectrum extends Runner {
         }
     }
 
-    private static final Deque<Context> globalContexts = new ArrayDeque<Context>();
-    static {
-        globalContexts.push(new Context(Description.createSuiteDescription("Spectrum tests")));
-    }
+    private static final Deque<Suite> suiteStack = new ArrayDeque<Suite>();
 
-    private final Description description;
-    private final Context rootContext;
+    private final Suite rootSuite;
 
     public Spectrum(final Class<?> testClass) {
-        description = Description.createSuiteDescription(testClass);
-        rootContext = new Context(description);
-        enterContext(rootContext, new ConstructorBlock(testClass));
+        final Description description = Description.createSuiteDescription(testClass);
+        this.rootSuite = new Suite(description);
+        beginDefintion(this.rootSuite, new ConstructorBlock(testClass));
     }
 
     @Override
     public Description getDescription() {
-        return description;
+        return this.rootSuite.getDescription();
     }
 
     @Override
     public void run(final RunNotifier notifier) {
-        rootContext.execute(notifier);
+        this.rootSuite.run(notifier);
     }
 
-    private static void enterContext(final Context context, final Block block) {
-        getCurrentContext().addChild(context);
-
-        globalContexts.push(context);
+    synchronized private static void beginDefintion(final Suite suite, final Block definitionBlock) {
+        suiteStack.push(suite);
         try {
-            block.run();
+            definitionBlock.run();
         } catch (final Throwable e) {
             it("encountered an error", new FailingBlock(e));
         }
-        globalContexts.pop();
+        suiteStack.pop();
     }
 
-    private static Context getCurrentContext() {
-        return globalContexts.peek();
+    synchronized private static Suite getCurrentSuite() {
+        return suiteStack.peek();
     }
 
 }
