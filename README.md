@@ -163,6 +163,21 @@ public class ExampleSpec {{
 }}
 ```
 
+## Supported Features
+
+Spectrum moving toward a `1.0` release with close alignment to Jasmine's API. The library already supports a nice subset of those features:
+
+- [x] `describe`
+- [x] `it`
+- [x] `beforeEach` / `afterEach`
+- [x] `beforeAll` / `afterAll`
+- [x] `fit` / `fdescribe`
+- [ ] `xit` / `xdescribe`
+
+### Non-Features
+
+Unlike some BDD-style frameworks, Spectrum is _only_ a test runner. Assertions, expectations, mocks, and matchers are the purview of other libraries.
+
 ## Getting Started
 
 Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/maven/Spectrum/view), so make sure you have jCenter declared as a repository in your build config. Future inclusion in Maven Central (see [#12](https://github.com/greghaskins/spectrum/issues/12)) will make this even easier.
