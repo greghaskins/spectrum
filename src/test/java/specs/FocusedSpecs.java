@@ -20,14 +20,24 @@ public class FocusedSpecs {{
 	describe("Focused specs", () -> {
 
 		it("are declared with `fit`", () -> {
-			final Result result = SpectrumRunner.run(getSuiteWithFocusedTests());
+			final Result result = SpectrumRunner.run(getSuiteWithFocusedSpecs());
 			assertThat(result.getFailureCount(), is(0));
 		});
 
 		it("mark siblings as ignored so they don't get forgotten", () -> {
-			final Result result = SpectrumRunner.run(getSuiteWithFocusedTests());
+			final Result result = SpectrumRunner.run(getSuiteWithFocusedSpecs());
 			assertThat(result.getIgnoreCount(), is(1));
 		});
+
+		describe("when nested in a separate suite", () -> {
+
+			it("cause specs in other suites to be ignored", () -> {
+				final Result result = SpectrumRunner.run(getSuiteWithNestedFocusedSpecs());
+				assertThat(result.getFailureCount(), is(0));
+				assertThat(result.getIgnoreCount(), is(1));
+			});
+		});
+
 	});
 
 	describe("Focused suites", () -> {
@@ -42,10 +52,18 @@ public class FocusedSpecs {{
 			assertThat(result.getIgnoreCount(), is(2));
 		});
 
+		describe("when nested", () -> {
+			it("cause specs in other suites to be ignored", () -> {
+				final Result result = SpectrumRunner.run(getSuiteWithNestedFocusedSuites());
+				assertThat(result.getFailureCount(), is(0));
+				assertThat(result.getIgnoreCount(), is(1));
+			});
+		});
+
 	});
 
 }
-private static Class<?> getSuiteWithFocusedTests() {
+private static Class<?> getSuiteWithFocusedSpecs() {
 	class Suite {{
 
 		describe("A spec that", () -> {
@@ -59,11 +77,27 @@ private static Class<?> getSuiteWithFocusedTests() {
 			});
 
 		});
-
 	}}
 
 	return Suite.class;
 }
+
+private static  Class<?> getSuiteWithNestedFocusedSpecs() {
+	class Suite {{
+
+		it("should not run because it isn't focused", () -> {
+			assertThat(true, is(false));
+		});
+
+		describe("a nested context", () -> {
+			fit("is focused and will run", () -> {
+				assertThat(true, is(true));
+			});
+		});
+	}}
+	return Suite.class;
+}
+
 private static Class<?> getSuiteWithFocusedSubSuites() {
 	class Suite {{
 		describe("an unfocused suite", () -> {
@@ -93,4 +127,32 @@ private static Class<?> getSuiteWithFocusedSubSuites() {
 	}}
 	return Suite.class;
 }
+
+private static  Class<?> getSuiteWithNestedFocusedSuites() {
+	class Suite {{
+
+		describe("an unfocused suite", () -> {
+			it("should not run because it isn't focused", () -> {
+				assertThat(true, is(false));
+			});
+		});
+
+		describe("a nested context", () -> {
+
+			fdescribe("with a focused sub-suite", () -> {
+				it("is focused and will run", () -> {
+					assertThat(true, is(true));
+				});
+			});
+		});
+
+		describe("another nested context", () -> {
+			fit("with a focused spec", () -> {
+				assertThat(true, is(true));
+			});
+		});
+	}}
+	return Suite.class;
+}
+
 }

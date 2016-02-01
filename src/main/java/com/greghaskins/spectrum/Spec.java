@@ -10,11 +10,13 @@ class Spec implements Child {
 
 	private final Block block;
 	private final Description description;
+	private final Parent parent;
 
 
-	public Spec(final Description description, final Block block) {
+	public Spec(final Description description, final Block block, final Parent parent) {
 		this.description = description;
 		this.block = block;
+		this.parent = parent;
 	}
 
 	@Override
@@ -37,6 +39,11 @@ class Spec implements Child {
 	@Override
 	public int testCount() {
 		return 1;
+	}
+
+	@Override
+	public void focus() {
+		this.parent.focus(this);
 	}
 
 }

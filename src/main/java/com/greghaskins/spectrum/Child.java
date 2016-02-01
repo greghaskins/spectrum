@@ -3,12 +3,14 @@ package com.greghaskins.spectrum;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
-interface Child  {
+interface Child {
 
-    public Description getDescription();
+    Description getDescription();
 
-    public void run(RunNotifier notifier);
+    void run(RunNotifier notifier);
 
-    public int testCount();
+    int testCount();
+
+    void focus();
 
 }

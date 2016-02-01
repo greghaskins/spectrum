@@ -45,11 +45,12 @@ public class Spectrum extends Runner {
      * @param block
      *            {@link Block} with one or more calls to {@link #it(String, Block) it} that define each expected behavior
      *
-     * @see {@link #describe(String, Block) describe}
+     * @see #describe(String, Block)
      *
      */
     public static void fdescribe(final String context, final Block block) {
-    	final Suite suite = getCurrentSuite().addFocusedSuite(context);
+    	final Suite suite = getCurrentSuite().addSuite(context);
+    	suite.focus();
     	beginDefintion(suite, block);
     }
 
@@ -75,10 +76,10 @@ public class Spectrum extends Runner {
      *            {@link Block} that verifies the system behaves as expected and throws a {@link java.lang.Throwable Throwable}
      *            if that expectation is not met.
      *
-     * @see {@link #it(String, Block) it}
+     * @see #it(String, Block)
      */
     public static void fit(final String behavior, final Block block) {
-        getCurrentSuite().addFocusedSpec(behavior, block);
+        getCurrentSuite().addSpec(behavior, block).focus();
     }
 
     /**
@@ -163,7 +164,7 @@ public class Spectrum extends Runner {
 
     public Spectrum(final Class<?> testClass) {
         final Description description = Description.createSuiteDescription(testClass);
-        this.rootSuite = new Suite(description);
+        this.rootSuite = Suite.rootSuite(description);
         beginDefintion(this.rootSuite, new ConstructorBlock(testClass));
     }
 

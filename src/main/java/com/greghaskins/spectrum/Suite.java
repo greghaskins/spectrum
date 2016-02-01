@@ -12,7 +12,7 @@ import org.junit.runner.notification.RunNotifier;
 
 import com.greghaskins.spectrum.Spectrum.Block;
 
-class Suite implements Child {
+class Suite implements Parent, Child {
 
 	private final CompositeBlock beforeAll = new CompositeBlock();
 	private final CompositeBlock afterAll = new CompositeBlock();
@@ -24,17 +24,19 @@ class Suite implements Child {
 	private final Set<Child> focusedChildren = new HashSet<Child>();
 
 	private final Description description;
+	private final Parent parent;
 
-	public Suite(final Description description) {
+	public static Suite rootSuite(final Description description) {
+		return new Suite(description, Parent.NONE);
+	}
+
+	private Suite(final Description description, final Parent parent) {
 		this.description = description;
+		this.parent = parent;
 	}
 
 	public Suite addSuite(final String name) {
-		return addSuite(Description.createSuiteDescription(name));
-	}
-
-	public Suite addSuite(final Description description) {
-		final Suite suite = new Suite(description);
+		final Suite suite = new Suite(Description.createSuiteDescription(name), this);
 		suite.beforeAll(this.beforeAll);
 		suite.beforeEach(this.beforeEach);
 		suite.afterEach(this.afterEach);
@@ -42,23 +44,14 @@ class Suite implements Child {
 		return suite;
 	}
 
-	public Suite addFocusedSuite(final String name) {
-		final Suite suite = addSuite(name);
-		this.focusedChildren.add(suite);
-		return suite;
-	}
-
 	public Spec addSpec(final String name, final Block block) {
-		final CompositeBlock specBlockInContext = new CompositeBlock(Arrays.asList(this.beforeAll, this.beforeEach, block, this.afterEach));
 		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
-		final Spec spec = new Spec(specDescription, specBlockInContext);
-		addChild(spec);
-		return spec;
-	}
 
-	public Spec addFocusedSpec(final String name, final Block block) {
-		final Spec spec = addSpec(name, block);
-		this.focusedChildren.add(spec);
+		final CompositeBlock specBlockInContext = new CompositeBlock(
+				Arrays.asList(this.beforeAll, this.beforeEach, block, this.afterEach));
+
+		final Spec spec = new Spec(specDescription, specBlockInContext, this);
+		addChild(spec);
 		return spec;
 	}
 
@@ -81,6 +74,12 @@ class Suite implements Child {
 
 	public void afterEach(final Block block) {
 		this.afterEach.addBlock(block);
+	}
+
+	@Override
+	public void focus(final Child child) {
+		this.focusedChildren.add(child);
+		focus();
 	}
 
 	@Override
@@ -112,7 +111,8 @@ class Suite implements Child {
 		try {
 			this.afterAll.run();
 		} catch (final Throwable e) {
-			final Description failureDescription = Description.createTestDescription(this.description.getClassName(), "error in afterAll");
+			final Description failureDescription = Description.createTestDescription(this.description.getClassName(),
+					"error in afterAll");
 			this.description.addChild(failureDescription);
 			notifier.fireTestFailure(new Failure(failureDescription, e));
 		}
@@ -130,6 +130,11 @@ class Suite implements Child {
 			count += child.testCount();
 		}
 		return count;
+	}
+
+	@Override
+	public void focus() {
+		this.parent.focus(this);
 	}
 
 }
