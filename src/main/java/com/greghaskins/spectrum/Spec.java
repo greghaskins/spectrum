@@ -1,21 +1,22 @@
 package com.greghaskins.spectrum;
 
 import org.junit.runner.Description;
-import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import com.greghaskins.spectrum.Spectrum.Block;
 
-class Spec extends Runner {
+class Spec implements Child {
 
 	private final Block block;
 	private final Description description;
+	private final Parent parent;
 
 
-	public Spec(final Description description, final Block block) {
+	public Spec(final Description description, final Block block, final Parent parent) {
 		this.description = description;
 		this.block = block;
+		this.parent = parent;
 	}
 
 	@Override
@@ -38,6 +39,11 @@ class Spec extends Runner {
 	@Override
 	public int testCount() {
 		return 1;
+	}
+
+	@Override
+	public void focus() {
+		this.parent.focus(this);
 	}
 
 }

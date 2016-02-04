@@ -2,16 +2,17 @@ package com.greghaskins.spectrum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.runner.Description;
-import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import com.greghaskins.spectrum.Spectrum.Block;
 
-class Suite extends Runner {
+class Suite implements Parent, Child {
 
 	private final CompositeBlock beforeAll = new CompositeBlock();
 	private final CompositeBlock afterAll = new CompositeBlock();
@@ -19,20 +20,23 @@ class Suite extends Runner {
 	private final CompositeBlock beforeEach = new CompositeBlock();
 	private final CompositeBlock afterEach = new CompositeBlock();
 
-	private final List<Runner> children = new ArrayList<Runner>();
+	private final List<Child> children = new ArrayList<Child>();
+	private final Set<Child> focusedChildren = new HashSet<Child>();
 
 	private final Description description;
+	private final Parent parent;
 
-	public Suite(final Description description) {
+	public static Suite rootSuite(final Description description) {
+		return new Suite(description, Parent.NONE);
+	}
+
+	private Suite(final Description description, final Parent parent) {
 		this.description = description;
+		this.parent = parent;
 	}
 
 	public Suite addSuite(final String name) {
-		return addSuite(Description.createSuiteDescription(name));
-	}
-
-	public Suite addSuite(final Description description) {
-		final Suite suite = new Suite(description);
+		final Suite suite = new Suite(Description.createSuiteDescription(name), this);
 		suite.beforeAll(this.beforeAll);
 		suite.beforeEach(this.beforeEach);
 		suite.afterEach(this.afterEach);
@@ -41,16 +45,19 @@ class Suite extends Runner {
 	}
 
 	public Spec addSpec(final String name, final Block block) {
-		final CompositeBlock specBlockInContext = new CompositeBlock(Arrays.asList(this.beforeAll, this.beforeEach, block, this.afterEach));
 		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
-		final Spec spec = new Spec(specDescription, specBlockInContext);
+
+		final CompositeBlock specBlockInContext = new CompositeBlock(
+				Arrays.asList(this.beforeAll, this.beforeEach, block, this.afterEach));
+
+		final Spec spec = new Spec(specDescription, specBlockInContext, this);
 		addChild(spec);
 		return spec;
 	}
 
-	private void addChild(final Runner runner) {
-		this.description.addChild(runner.getDescription());
-		this.children.add(runner);
+	private void addChild(final Child child) {
+		this.description.addChild(child.getDescription());
+		this.children.add(child);
 	}
 
 	public void beforeAll(final Block block) {
@@ -70,6 +77,12 @@ class Suite extends Runner {
 	}
 
 	@Override
+	public void focus(final Child child) {
+		this.focusedChildren.add(child);
+		focus();
+	}
+
+	@Override
 	public void run(final RunNotifier notifier) {
 		if (this.testCount() == 0) {
 			notifier.fireTestIgnored(this.description);
@@ -81,8 +94,16 @@ class Suite extends Runner {
 	}
 
 	private void runChildren(final RunNotifier notifier) {
-		for (final Runner child : this.children) {
+		for (final Child child : this.children) {
+			runChild(child, notifier);
+		}
+	}
+
+	private void runChild(final Child child, final RunNotifier notifier) {
+		if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
 			child.run(notifier);
+		} else {
+			notifier.fireTestIgnored(child.getDescription());
 		}
 	}
 
@@ -90,7 +111,8 @@ class Suite extends Runner {
 		try {
 			this.afterAll.run();
 		} catch (final Throwable e) {
-			final Description failureDescription = Description.createTestDescription(this.description.getClassName(), "error in afterAll");
+			final Description failureDescription = Description.createTestDescription(this.description.getClassName(),
+					"error in afterAll");
 			this.description.addChild(failureDescription);
 			notifier.fireTestFailure(new Failure(failureDescription, e));
 		}
@@ -104,10 +126,15 @@ class Suite extends Runner {
 	@Override
 	public int testCount() {
 		int count = 0;
-		for (final Runner child : this.children) {
+		for (final Child child : this.children) {
 			count += child.testCount();
 		}
 		return count;
+	}
+
+	@Override
+	public void focus() {
+		this.parent.focus(this);
 	}
 
 }
