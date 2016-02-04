@@ -165,7 +165,7 @@ public class ExampleSpec {{
 
 ## Supported Features
 
-Spectrum moving toward a `1.0` release with close alignment to Jasmine's API. The library already supports a nice subset of those features:
+Spectrum moving toward a `1.0` release with close alignment to Jasmine's test declaration API. The library already supports a nice subset of those features:
 
 - [x] `describe`
 - [x] `it`
@@ -201,7 +201,7 @@ Then add the Spectrum dependency for your tests:
 
 ```groovy
 dependencies {
-	testCompile 'com.greghaskins:spectrum:0.5.0'
+	testCompile 'com.greghaskins:spectrum:0.6.0'
 }
 
 ```
@@ -227,7 +227,7 @@ Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
 		<dependency>
 			<groupId>com.greghaskins</groupId>
 			<artifactId>spectrum</artifactId>
-			<version>0.5.0</version>
+			<version>0.6.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
