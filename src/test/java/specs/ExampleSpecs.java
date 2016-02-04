@@ -27,7 +27,7 @@ import com.greghaskins.spectrum.Spectrum.Value;
 
 
 @RunWith(Spectrum.class)
-public class ExampleSpec {{
+public class ExampleSpecs {{
 
     describe("A spec", () -> {
 
@@ -65,9 +65,9 @@ public class ExampleSpec {{
 
     });
 
-    describe("A spec using beforeEach and afterEach", () -> {
+    describe("A suite using beforeEach and afterEach", () -> {
 
-        final List<String> items = new ArrayList<String>();
+        final List<String> items = new ArrayList<>();
 
         beforeEach(() -> {
             items.add("foo");
@@ -86,12 +86,12 @@ public class ExampleSpec {{
             items.add("bogus");
         });
 
-        it("runs them before every test", () -> {
+        it("runs them before every spec", () -> {
             assertThat(items, contains("foo", "bar"));
             items.add("bogus");
         });
 
-        it("runs afterEach after every test", () -> {
+        it("runs afterEach after every spec", () -> {
             assertThat(items, not(contains("bogus")));
         });
 
@@ -138,15 +138,15 @@ public class ExampleSpec {{
 
     });
 
-    describe("A spec using beforeAll", () -> {
+    describe("A suite using beforeAll", () -> {
 
-        final List<Integer> numbers = new ArrayList<Integer>();
+        final List<Integer> numbers = new ArrayList<>();
 
         beforeAll(() -> {
             numbers.add(1);
         });
 
-        it("sets the initial state before any tests run", () -> {
+        it("sets the initial state before any specs run", () -> {
             assertThat(numbers, contains(1));
             numbers.add(2);
         });
@@ -162,12 +162,12 @@ public class ExampleSpec {{
                 numbers.add(3);
             });
 
-            it("so proceed with caution; this *will* leak shared state across tests", () -> {
+            it("so proceed with caution; this *will* leak shared state across specs", () -> {
                 assertThat(numbers, contains(1, 2, 3));
             });
         });
 
-        it("cleans up after running all tests in the describe block", () -> {
+        it("cleans up after running all specs in the describe block", () -> {
             assertThat(numbers, is(empty()));
         });
 

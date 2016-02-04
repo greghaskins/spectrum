@@ -10,11 +10,11 @@ Spectrum
 
 ## Example
 
-> see also [ExampleSpec.java](src/test/java/specs/ExampleSpec.java)
+> from [ExampleSpecs.java](src/test/java/specs/ExampleSpecs.java)
 
 ```java
 @RunWith(Spectrum.class)
-public class ExampleSpec {{
+public class ExampleSpecs {{
 
     describe("A spec", () -> {
 
@@ -52,9 +52,9 @@ public class ExampleSpec {{
 
     });
 
-    describe("A spec using beforeEach and afterEach", () -> {
+    describe("A suite using beforeEach and afterEach", () -> {
 
-        final List<String> items = new ArrayList<String>();
+        final List<String> items = new ArrayList<>();
 
         beforeEach(() -> {
             items.add("foo");
@@ -73,12 +73,12 @@ public class ExampleSpec {{
             items.add("bogus");
         });
 
-        it("runs them before every test", () -> {
+        it("runs them before every spec", () -> {
             assertThat(items, contains("foo", "bar"));
             items.add("bogus");
         });
 
-        it("runs afterEach after every test", () -> {
+        it("runs afterEach after every spec", () -> {
             assertThat(items, not(contains("bogus")));
         });
 
@@ -125,15 +125,15 @@ public class ExampleSpec {{
 
     });
 
-    describe("A spec using beforeAll", () -> {
+    describe("A suite using beforeAll", () -> {
 
-        final List<Integer> numbers = new ArrayList<Integer>();
+        final List<Integer> numbers = new ArrayList<>();
 
         beforeAll(() -> {
             numbers.add(1);
         });
 
-        it("sets the initial state before any tests run", () -> {
+        it("sets the initial state before any specs run", () -> {
             assertThat(numbers, contains(1));
             numbers.add(2);
         });
@@ -149,18 +149,59 @@ public class ExampleSpec {{
                 numbers.add(3);
             });
 
-            it("so proceed with caution; this *will* leak shared state across tests", () -> {
+            it("so proceed with caution; this *will* leak shared state across specs", () -> {
                 assertThat(numbers, contains(1, 2, 3));
             });
         });
 
-        it("cleans up after running all tests in the describe block", () -> {
+        it("cleans up after running all specs in the describe block", () -> {
             assertThat(numbers, is(empty()));
         });
 
     });
 
 }}
+```
+
+### Focused Specs
+
+You can focus the runner on particular spec with `fit` or a suite with `fdescribe` so that only those specs get executed.
+
+> from [FocusedSpecs.java](src/test/java/specs/FocusedSpecs.java)
+
+```java
+describe("Focused specs", () -> {
+
+  fit("is focused and will run", () -> {
+    assertThat(true, is(true));
+  });
+
+  it("is not focused and will not run", () -> {
+    throw new Exception();
+  });
+
+  fdescribe("a focused suite", () -> {
+
+    it("will run", () -> {
+      assertThat(true, is(true));
+    });
+
+    it("all its specs", () -> {
+      assertThat(true, is(true));
+    });
+  });
+
+  fdescribe("another focused suite, with focused and unfocused specs", () -> {
+
+    fit("will run focused specs", () -> {
+      assertThat(true, is(true));
+    });
+
+    it("ignores unfocused specs", () -> {
+      throw new Exception();
+    });
+  });
+});
 ```
 
 ## Supported Features
