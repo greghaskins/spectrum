@@ -1,9 +1,11 @@
 package specs;
 
+import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.fdescribe;
 import static com.greghaskins.spectrum.Spectrum.fit;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.value;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -11,6 +13,7 @@ import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.Spectrum.Value;
 
 import helpers.SpectrumRunner;
 
@@ -62,6 +65,24 @@ public class FocusedSpecs {{
 
 	});
 
+	describe("Focused specs example", () -> {
+
+		final Value<Result> result = value(Result.class);
+
+		beforeEach(() -> {
+			result.value = SpectrumRunner.run(getFocusedSpecsExample());
+		});
+
+		it("has two ignored specs", () -> {
+			assertThat(result.value.getIgnoreCount(), is(2));
+		});
+
+		it("does not run unfocused specs", () -> {
+			assertThat(result.value.getFailureCount(), is(0));
+		});
+
+	});
+
 }
 private static Class<?> getSuiteWithFocusedSpecs() {
 	class Suite {{
@@ -81,6 +102,8 @@ private static Class<?> getSuiteWithFocusedSpecs() {
 
 	return Suite.class;
 }
+
+
 
 private static  Class<?> getSuiteWithNestedFocusedSpecs() {
 	class Suite {{
@@ -153,6 +176,46 @@ private static  Class<?> getSuiteWithNestedFocusedSuites() {
 		});
 	}}
 	return Suite.class;
+}
+
+private static Class<?> getFocusedSpecsExample() {
+	class FocusedSpecsExample {{
+
+		describe("Focused specs", () -> {
+
+			fit("is focused and will run", () -> {
+				assertThat(true, is(true));
+			});
+
+			it("is not focused and will not run", () -> {
+				throw new Exception();
+			});
+
+			fdescribe("a focused suite", () -> {
+
+				it("will run", () -> {
+					assertThat(true, is(true));
+				});
+
+				it("all its specs", () -> {
+					assertThat(true, is(true));
+				});
+			});
+
+			fdescribe("another focused suite, with focused and unfocused specs", () -> {
+
+				fit("will run focused specs", () -> {
+					assertThat(true, is(true));
+				});
+
+				it("ignores unfocused specs", () -> {
+					throw new Exception();
+				});
+			});
+		});
+
+	}}
+	return FocusedSpecsExample.class;
 }
 
 }
