@@ -287,6 +287,40 @@ public class FixturesSpec {{
 
 		});
 
+		describe("when another afterEach explodes", () -> {
+
+			it("still run, too", () -> {
+				final Result result = SpectrumRunner.run(getSuiteWithExplodingAndNonExplodingAfterEach());
+				assertThat(result.getFailureCount(), is(1));
+				assertThat(result.getFailures().get(0).getMessage(), containsString("boom"));
+			});
+
+		});
+
+		final ArrayList<String> items = new ArrayList<>();
+
+		describe("in multiples", () -> {
+
+			it("run in reverse order", () -> {
+				assertThat(items, hasSize(0));
+			});
+
+			afterEach(() -> {
+				items.add("after1");
+			});
+			afterEach(() -> {
+				items.add("after2");
+			});
+			afterEach(() -> {
+				items.add("after3");
+			});
+
+		});
+
+		it("run in reverse declaration order", () -> {
+			assertThat(items, contains("after3", "after2", "after1"));
+		});
+
 	});
 
 }
@@ -407,6 +441,37 @@ private static Class<?> getSuiteWithExplodingSpec(){
 			describe("boom", () -> {
 				it("explodes", () -> {
 					items.add("foo");
+					throw new Exception("boom");
+				});
+
+				afterEach(()->{
+					items.clear();
+				});
+			});
+
+			it("should still run afterEach blocks", () -> {
+				assertThat(items, hasSize(0));
+			});
+
+
+		});
+	}}
+	return Suite.class;
+}
+
+private static Class<?> getSuiteWithExplodingAndNonExplodingAfterEach(){
+
+	class Suite {{
+		describe("suite with exploding spec", () -> {
+
+			final ArrayList<String> items = new ArrayList<>();
+
+			describe("boom", () -> {
+				it("explodes", () -> {
+					items.add("foo");
+				});
+
+				afterEach(() -> {
 					throw new Exception("boom");
 				});
 

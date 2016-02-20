@@ -18,7 +18,7 @@ class Suite implements Parent, Child {
 	private final CompositeBlock afterAll = new CompositeBlock();
 
 	private final CompositeBlock beforeEach = new CompositeBlock();
-	private final CompositeBlock afterEach = new CompositeBlock();
+	private final AfterEachBlock afterEach = new AfterEachBlock();
 
 	private final List<Child> children = new ArrayList<Child>();
 	private final Set<Child> focusedChildren = new HashSet<Child>();
