@@ -10,6 +10,7 @@ import static com.greghaskins.spectrum.Spectrum.value;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
@@ -274,6 +275,20 @@ public class FixturesSpec {{
 
     });
 
+	describe("afterEach blocks", () -> {
+
+		describe("when a spec explodes", () -> {
+
+			it("still run", () -> {
+				final Result result = SpectrumRunner.run(getSuiteWithExplodingSpec());
+				assertThat(result.getFailureCount(), is(1));
+				assertThat(result.getFailures().get(0).getMessage(), containsString("boom"));
+			});
+
+		});
+
+	});
+
 }
 
 private static Class<?> getSpecWithExplodingBeforeEach(){
@@ -375,11 +390,39 @@ private static Class<?> getSpecWithExplodingAfterAll(){
 
                 });
 
-            });
-        });
+			});
+		});
 
-    }}
-    return Spec.class;
+	}}
+	return Spec.class;
+}
+
+private static Class<?> getSuiteWithExplodingSpec(){
+
+	class Suite {{
+		describe("suite with exploding spec", () -> {
+
+			final ArrayList<String> items = new ArrayList<>();
+
+			describe("boom", () -> {
+				it("explodes", () -> {
+					items.add("foo");
+					throw new Exception("boom");
+				});
+
+				afterEach(()->{
+					items.clear();
+				});
+			});
+
+			it("should still run afterEach blocks", () -> {
+				assertThat(items, hasSize(0));
+			});
+
+
+		});
+	}}
+	return Suite.class;
 }
 
 }

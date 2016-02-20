@@ -47,8 +47,8 @@ class Suite implements Parent, Child {
 	public Spec addSpec(final String name, final Block block) {
 		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
 
-		final CompositeBlock specBlockInContext = new CompositeBlock(
-				Arrays.asList(this.beforeAll, this.beforeEach, block, this.afterEach));
+		final Block specBlockInContext = new TryFinallyBlock(new CompositeBlock(
+				Arrays.asList(this.beforeAll, this.beforeEach, block)), this.afterEach);
 
 		final Spec spec = new Spec(specDescription, specBlockInContext, this);
 		addChild(spec);
