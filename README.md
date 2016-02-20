@@ -242,7 +242,7 @@ Then add the Spectrum dependency for your tests:
 
 ```groovy
 dependencies {
-	testCompile 'com.greghaskins:spectrum:0.6.0'
+	testCompile 'com.greghaskins:spectrum:0.6.1'
 }
 
 ```
@@ -268,7 +268,7 @@ Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
 		<dependency>
 			<groupId>com.greghaskins</groupId>
 			<artifactId>spectrum</artifactId>
-			<version>0.6.0</version>
+			<version>0.6.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
