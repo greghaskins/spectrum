@@ -18,7 +18,7 @@ class Suite implements Parent, Child {
 	private final CompositeBlock afterAll = new CompositeBlock();
 
 	private final CompositeBlock beforeEach = new CompositeBlock();
-	private final CompositeBlock afterEach = new CompositeBlock();
+	private final AfterEachBlock afterEach = new AfterEachBlock();
 
 	private final List<Child> children = new ArrayList<Child>();
 	private final Set<Child> focusedChildren = new HashSet<Child>();
@@ -47,8 +47,8 @@ class Suite implements Parent, Child {
 	public Spec addSpec(final String name, final Block block) {
 		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
 
-		final CompositeBlock specBlockInContext = new CompositeBlock(
-				Arrays.asList(this.beforeAll, this.beforeEach, block, this.afterEach));
+		final Block specBlockInContext = new TryFinallyBlock(new CompositeBlock(
+				Arrays.asList(this.beforeAll, this.beforeEach, block)), this.afterEach);
 
 		final Spec spec = new Spec(specDescription, specBlockInContext, this);
 		addChild(spec);
