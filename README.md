@@ -274,3 +274,7 @@ Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
 	</dependencies>
 </project>
 ```
+
+## Can I Contribute?
+
+Yes please! See [CONTRIBUTING.md](./CONTRIBUTING.md).

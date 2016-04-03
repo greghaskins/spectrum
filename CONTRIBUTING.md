@@ -1,6 +1,6 @@
 # How to contribute to Spectrum
 
-_Awesome_. Thanks the help – we can use it! This document has a few notes to help you get started contributing to the project.
+_Awesome_. Thanks the help – we can use it! This document has a few notes for getting started contributing to the project.
 
 ## Communication
 
@@ -61,3 +61,4 @@ This project essentially follows the GitHub Flow. See [this overview](https://gu
 - [Write good commit messages](http://chris.beams.io/posts/git-commit/)
 - This project follows [semantic versioning](http://semver.org/). If your change will break backward-compatibility, please clearly indicate that in your pull request.
 - Don't add any external dependencies (especially `compile` dependencies). The production code should depend only on `junit` to make integration as easy as possible.
+- Avoid using features in production code that are not backward-compatible to Java 6. Test code can use Java 8 lambdas and other features. This is open for discussion in [#27](https://github.com/greghaskins/spectrum/issues/27).
