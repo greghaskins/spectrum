@@ -12,28 +12,29 @@ import org.junit.runner.RunWith;
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Value;
 
-
 @RunWith(Spectrum.class)
-public class MutableWrapperSpec {{
+public class MutableWrapperSpec {
+  {
 
     describe("The Value convenience type", () -> {
 
-        it("allows you to set the value of a 'final' variable", () -> {
-            final Value<Integer> counter = value(Integer.class);
-            counter.value = 0;
-            counter.value = 1;
-            assertThat(counter.value, is(1));
-        });
+      it("allows you to set the value of a 'final' variable", () -> {
+        final Value<Integer> counter = value(Integer.class);
+        counter.value = 0;
+        counter.value = 1;
+        assertThat(counter.value, is(1));
+      });
 
-        it("can be given a starting value", () -> {
-            final Value<Double> pi = value(3.14);
-            assertThat(pi.value, is(3.14));
-        });
+      it("can be given a starting value", () -> {
+        final Value<Double> pi = value(3.14);
+        assertThat(pi.value, is(3.14));
+      });
 
-        it("has a default value of null if not specified", () -> {
-            final Value<String> name = value(String.class);
-            assertThat(name.value, is(nullValue()));
-        });
+      it("has a default value of null if not specified", () -> {
+        final Value<String> name = value(String.class);
+        assertThat(name.value, is(nullValue()));
+      });
 
     });
-}}
+  }
+}

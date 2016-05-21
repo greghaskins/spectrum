@@ -11,21 +11,21 @@ import org.junit.runner.Result;
 
 public class WhenRunningTheSpec {
 
-    private Result result;
+  private Result result;
 
-    @Before
-    public void before() throws Exception {
-        result = SpectrumRunner.run(Fixture.getSpecThatThrowsAnExceptionInConstructor());
-    }
+  @Before
+  public void before() throws Exception {
+    result = SpectrumRunner.run(Fixture.getSpecThatThrowsAnExceptionInConstructor());
+  }
 
-    @Test
-    public void thereIsOneFailure() throws Exception {
-        assertThat(result.getFailureCount(), is(1));
-    }
+  @Test
+  public void thereIsOneFailure() throws Exception {
+    assertThat(result.getFailureCount(), is(1));
+  }
 
-    @Test
-    public void theFailureExplainsWhatHappened() throws Exception {
-        assertThat(result.getFailures().get(0), is(failure("encountered an error", Fixture.SomeException.class, "kaboom")));
-    }
+  @Test
+  public void theFailureExplainsWhatHappened() throws Exception {
+    assertThat(result.getFailures().get(0), is(failure("encountered an error", Fixture.SomeException.class, "kaboom")));
+  }
 
 }

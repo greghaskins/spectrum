@@ -5,17 +5,19 @@ import static com.greghaskins.spectrum.Spectrum.it;
 
 class Fixture {
 
-    public static Class<?> getSpecWithOnePassingTest() {
-        class Spec {{
-            describe("a spec with one passing test", () -> {
+  public static Class<?> getSpecWithOnePassingTest() {
+    class Spec {
+      {
+        describe("a spec with one passing test", () -> {
 
-                it("should pass", () -> {
+          it("should pass", () -> {
 
-                });
+          });
 
-            });
-        }}
-        return Spec.class;
+        });
+      }
     }
+    return Spec.class;
+  }
 
 }

@@ -16,46 +16,49 @@ import com.greghaskins.spectrum.Spectrum;
 
 @SuppressWarnings("unchecked")
 @RunWith(Spectrum.class)
-public class NestingSpec {{
+public class NestingSpec {
+  {
 
     describe("A spec with tests and nested contexts", () -> {
 
-        it("runs them in declaration order", () -> {
-            final Result result = SpectrumRunner.run(getSpecWithTestsAndNestedContextsThatAllFail());
+      it("runs them in declaration order", () -> {
+        final Result result = SpectrumRunner.run(getSpecWithTestsAndNestedContextsThatAllFail());
 
-            assertThat(result.getFailureCount(), is(3));
-            assertThat(result.getFailures(), contains(
-                    failure("fails the first test", AssertionError.class, "boom 1"),
-                    failure("fails the second test", AssertionError.class, "boom 2"),
-                    failure("fails the third test", AssertionError.class, "boom 3")));
-        });
+        assertThat(result.getFailureCount(), is(3));
+        assertThat(result.getFailures(),
+            contains(failure("fails the first test", AssertionError.class, "boom 1"),
+                failure("fails the second test", AssertionError.class, "boom 2"),
+                failure("fails the third test", AssertionError.class, "boom 3")));
+      });
 
     });
 
-}
+  }
 
-private static Class<?> getSpecWithTestsAndNestedContextsThatAllFail(){
-    class Spec {{
+  private static Class<?> getSpecWithTestsAndNestedContextsThatAllFail() {
+    class Spec {
+      {
         describe("A spec where everything fails", () -> {
 
-            it("fails the first test", () -> {
-                fail("boom 1");
+          it("fails the first test", () -> {
+            fail("boom 1");
+          });
+
+          describe("including the inner context", () -> {
+
+            it("fails the second test", () -> {
+              fail("boom 2");
             });
 
-            describe("including the inner context", () -> {
+          });
 
-                it("fails the second test", () -> {
-                    fail("boom 2");
-                });
-
-            });
-
-            it("fails the third test", () -> {
-                fail("boom 3");
-            });
+          it("fails the third test", () -> {
+            fail("boom 3");
+          });
 
         });
-    }}
+      }
+    }
     return Spec.class;
-}
+  }
 }

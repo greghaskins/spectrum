@@ -5,12 +5,12 @@ import org.junit.runner.notification.RunNotifier;
 
 interface Child {
 
-    Description getDescription();
+  Description getDescription();
 
-    void run(RunNotifier notifier);
+  void run(RunNotifier notifier);
 
-    int testCount();
+  int testCount();
 
-    void focus();
+  void focus();
 
 }

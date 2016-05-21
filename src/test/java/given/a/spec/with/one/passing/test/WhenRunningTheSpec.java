@@ -10,21 +10,21 @@ import org.junit.runner.Result;
 
 public class WhenRunningTheSpec {
 
-    private Result result;
+  private Result result;
 
-    @Before
-    public void before() throws Exception {
-        result = SpectrumRunner.run(Fixture.getSpecWithOnePassingTest());
-    }
+  @Before
+  public void before() throws Exception {
+    result = SpectrumRunner.run(Fixture.getSpecWithOnePassingTest());
+  }
 
-    @Test
-    public void theRunCountIsOne() throws Exception {
-        assertThat(result.getRunCount(), is(1));
-    }
+  @Test
+  public void theRunCountIsOne() throws Exception {
+    assertThat(result.getRunCount(), is(1));
+  }
 
-    @Test
-    public void theRunIsSuccessful() throws Exception {
-        assertThat(result.wasSuccessful(), is(true));
-    }
+  @Test
+  public void theRunIsSuccessful() throws Exception {
+    assertThat(result.wasSuccessful(), is(true));
+  }
 
 }

@@ -14,35 +14,35 @@ import com.greghaskins.spectrum.Spectrum;
 
 public class WhenRunningTheTests {
 
-    private static final String CONTEXT_NAME = "a spec with three passing and two failing tests";
+  private static final String CONTEXT_NAME = "a spec with three passing and two failing tests";
 
-    private RunNotifier runNotifier;
+  private RunNotifier runNotifier;
 
-    @Before
-    public void before() throws Exception {
-        final Runner runner = new Spectrum(Fixture.getSpecWithPassingAndFailingTests());
-        runNotifier = mock(RunNotifier.class);
+  @Before
+  public void before() throws Exception {
+    final Runner runner = new Spectrum(Fixture.getSpecWithPassingAndFailingTests());
+    runNotifier = mock(RunNotifier.class);
 
-        runner.run(runNotifier);
-    }
+    runner.run(runNotifier);
+  }
 
-    @Test
-    public void theStartFailureAndFinishedNotificationsAreFiredForFailingTests() throws Exception {
-        final Description descriptionOfFailingTest = Description.createTestDescription(CONTEXT_NAME, "fails test 1");
+  @Test
+  public void theStartFailureAndFinishedNotificationsAreFiredForFailingTests() throws Exception {
+    final Description descriptionOfFailingTest = Description.createTestDescription(CONTEXT_NAME, "fails test 1");
 
-        final InOrder inOrder = Mockito.inOrder(runNotifier);
-        inOrder.verify(runNotifier).fireTestStarted(descriptionOfFailingTest);
-        inOrder.verify(runNotifier).fireTestFailure(Mockito.any());
-        inOrder.verify(runNotifier).fireTestFinished(descriptionOfFailingTest);
-    }
+    final InOrder inOrder = Mockito.inOrder(runNotifier);
+    inOrder.verify(runNotifier).fireTestStarted(descriptionOfFailingTest);
+    inOrder.verify(runNotifier).fireTestFailure(Mockito.any());
+    inOrder.verify(runNotifier).fireTestFinished(descriptionOfFailingTest);
+  }
 
-    @Test
-    public void theStartAndFinishedNotificationsAreFiredForPassingTests() throws Exception {
-        final Description descriptionOfPassingTest = Description.createTestDescription(CONTEXT_NAME, "passes test 3");
+  @Test
+  public void theStartAndFinishedNotificationsAreFiredForPassingTests() throws Exception {
+    final Description descriptionOfPassingTest = Description.createTestDescription(CONTEXT_NAME, "passes test 3");
 
-        final InOrder inOrder = Mockito.inOrder(runNotifier);
-        inOrder.verify(runNotifier).fireTestStarted(descriptionOfPassingTest);
-        inOrder.verify(runNotifier).fireTestFinished(descriptionOfPassingTest);
-    }
+    final InOrder inOrder = Mockito.inOrder(runNotifier);
+    inOrder.verify(runNotifier).fireTestStarted(descriptionOfPassingTest);
+    inOrder.verify(runNotifier).fireTestFinished(descriptionOfPassingTest);
+  }
 
 }
