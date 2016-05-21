@@ -44,7 +44,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts { archives sourcesJar, javadocJar }
 
 spotless {
-  java { eclipseFormatFile 'gradle/spotless.eclipseformat.xml' }
+  java { eclipseFormatFile 'config/eclipse-java-google-style.xml' }
   format 'text', {
     target '**/*.gradle', '**/*.md', '**/.gitignore'
 
