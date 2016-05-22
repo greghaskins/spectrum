@@ -19,7 +19,7 @@ public class MutableWrapperSpec {
     describe("The Value convenience type", () -> {
 
       it("allows you to set the value of a 'final' variable", () -> {
-        final Value<Integer> counter = value(Integer.class);
+        final Value<Integer> counter = value();
         counter.value = 0;
         counter.value = 1;
         assertThat(counter.value, is(1));
@@ -31,7 +31,7 @@ public class MutableWrapperSpec {
       });
 
       it("has a default value of null if not specified", () -> {
-        final Value<String> name = value(String.class);
+        final Value<String> name = value();
         assertThat(name.value, is(nullValue()));
       });
 

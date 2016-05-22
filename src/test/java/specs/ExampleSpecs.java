@@ -103,7 +103,7 @@ public class ExampleSpecs {
 
     describe("The Value convenience wrapper", () -> {
 
-      final Value<Integer> counter = value(Integer.class);
+      final Value<Integer> counter = value();
 
       beforeEach(() -> {
         counter.value = 0;
@@ -124,7 +124,7 @@ public class ExampleSpecs {
       });
 
       it("has a null value if not specified", () -> {
-        final Value<String> name = value(String.class);
+        final Value<String> name = value();
         assertThat(name.value, is(nullValue()));
       });
 
