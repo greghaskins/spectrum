@@ -144,7 +144,7 @@ public class Spectrum extends Runner {
    * @return A new wrapper object with <tt>null</tt> instance of <tt>T</tt>.
    */
   public static <T> Value<T> value() {
-    return new Value<T>(null);
+    return new Value<>(null);
   }
 
   /**
@@ -171,7 +171,7 @@ public class Spectrum extends Runner {
    * @return A new wrapper object around <tt>startingValue</tt>.
    */
   public static <T> Value<T> value(final T startingValue) {
-    return new Value<T>(startingValue);
+    return new Value<>(startingValue);
   }
 
   public static class Value<T> {
@@ -182,7 +182,7 @@ public class Spectrum extends Runner {
     }
   }
 
-  private static final Deque<Suite> suiteStack = new ArrayDeque<Suite>();
+  private static final Deque<Suite> suiteStack = new ArrayDeque<>();
 
   private final Suite rootSuite;
 

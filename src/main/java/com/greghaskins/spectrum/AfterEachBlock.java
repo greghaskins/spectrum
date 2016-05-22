@@ -10,7 +10,7 @@ class AfterEachBlock implements Block {
   private final List<Block> blocks;
 
   public AfterEachBlock() {
-    this.blocks = new ArrayList<Block>();
+    this.blocks = new ArrayList<>();
   }
 
   @Override

@@ -32,7 +32,7 @@ public class FixturesSpec {
 
     describe("A spec using beforeEach and afterEach", () -> {
 
-      final List<String> items = new ArrayList<String>();
+      final List<String> items = new ArrayList<>();
 
       beforeEach(() -> {
         items.add("foo");
@@ -73,8 +73,8 @@ public class FixturesSpec {
 
     describe("Multiple beforeEach and afterEach blocks", () -> {
 
-      final List<String> words = new ArrayList<String>();
-      final ArrayList<Integer> numbers = new ArrayList<Integer>();
+      final List<String> words = new ArrayList<>();
+      final ArrayList<Integer> numbers = new ArrayList<>();
 
       afterEach(() -> {
         words.clear();
@@ -132,7 +132,7 @@ public class FixturesSpec {
 
     describe("A suite using beforeAll", () -> {
 
-      final List<String> items = new ArrayList<String>();
+      final List<String> items = new ArrayList<>();
 
       beforeAll(() -> {
         items.add("foo");
@@ -153,7 +153,7 @@ public class FixturesSpec {
 
       describe("with nested children", () -> {
 
-        final ArrayList<Integer> numbers = new ArrayList<Integer>();
+        final ArrayList<Integer> numbers = new ArrayList<>();
 
         beforeAll(() -> {
           numbers.add(1);
@@ -177,8 +177,8 @@ public class FixturesSpec {
 
     describe("A spec using afterAll", () -> {
 
-      final List<String> items = new ArrayList<String>();
-      final List<Integer> numbers = new ArrayList<Integer>();
+      final List<String> items = new ArrayList<>();
+      final List<Integer> numbers = new ArrayList<>();
 
       describe("with some tests", () -> {
 
@@ -259,7 +259,7 @@ public class FixturesSpec {
 
     describe("A spec with no tests", () -> {
 
-      final List<String> items = new ArrayList<String>();
+      final List<String> items = new ArrayList<>();
       final Block addItem = () -> {
         items.add("foo");
       };
