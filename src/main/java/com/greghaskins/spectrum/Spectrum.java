@@ -214,7 +214,9 @@ public class Spectrum extends Runner {
     try {
       definitionBlock.run();
     } catch (final Throwable error) {
-      it("encountered an error", new FailingBlock(error));
+      it("encountered an error", () -> {
+        throw error;
+      });
     }
     suiteStack.pop();
   }

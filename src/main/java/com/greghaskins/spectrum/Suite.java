@@ -7,7 +7,6 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,16 +45,27 @@ class Suite implements Parent, Child {
   }
 
   public Spec addSpec(final String name, final Block block) {
-    final Description specDescription =
-        Description.createTestDescription(this.description.getClassName(), name);
-
-    final Block specBlockInContext = new TryFinallyBlock(
-        new CompositeBlock(Arrays.asList(this.beforeAll, this.beforeEach, block)), this.afterEach);
-
-    final Spec spec = new Spec(specDescription, specBlockInContext, this);
+    final Spec spec = createSpec(name, block);
     addChild(spec);
 
     return spec;
+  }
+
+  private Spec createSpec(final String name, final Block block) {
+    final Description specDescription =
+        Description.createTestDescription(this.description.getClassName(), name);
+
+    final Block specBlockInContext = () -> {
+      try {
+        this.beforeAll.run();
+        this.beforeEach.run();
+        block.run();
+      } finally {
+        this.afterEach.run();
+      }
+    };
+
+    return new Spec(specDescription, specBlockInContext, this);
   }
 
   private void addChild(final Child child) {
@@ -102,9 +112,7 @@ class Suite implements Parent, Child {
   }
 
   private void runChildren(final RunNotifier notifier) {
-    for (final Child child : this.children) {
-      runChild(child, notifier);
-    }
+    this.children.forEach((child) -> runChild(child, notifier));
   }
 
   private void runChild(final Child child, final RunNotifier notifier) {
@@ -133,14 +141,7 @@ class Suite implements Parent, Child {
 
   @Override
   public int testCount() {
-    int count = 0;
-    for (final Child child : this.children) {
-      count += child.testCount();
-    }
-
-    return count;
+    return this.children.stream().mapToInt((child) -> child.testCount()).sum();
   }
-
-
 
 }
