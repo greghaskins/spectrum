@@ -3,13 +3,13 @@ package given.a.spec.with.constructor.parameters;
 import static matchers.IsFailure.failure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import helpers.SpectrumRunner;
 
+import com.greghaskins.spectrum.UnableToConstructSpecException;
+
+import helpers.SpectrumRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Result;
-
-import com.greghaskins.spectrum.UnableToConstructSpecException;
 
 public class WhenRunningTheSpec {
 
@@ -27,8 +27,9 @@ public class WhenRunningTheSpec {
 
   @Test
   public void theFailureExplainsWhatHappened() throws Exception {
-    assertThat(result.getFailures().get(0), is(failure("encountered an error", UnableToConstructSpecException.class,
-        Fixture.getSpecThatRequiresAConstructorParameter().getName())));
+    assertThat(result.getFailures().get(0),
+        is(failure("encountered an error", UnableToConstructSpecException.class,
+            Fixture.getSpecThatRequiresAConstructorParameter().getName())));
   }
 
 }

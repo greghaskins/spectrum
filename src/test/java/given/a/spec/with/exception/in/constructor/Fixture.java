@@ -10,6 +10,7 @@ class Fixture {
         }
       }
     }
+
     return Spec.class;
   }
 

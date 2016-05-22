@@ -1,10 +1,10 @@
 package com.greghaskins.spectrum;
 
+import com.greghaskins.spectrum.Spectrum.Block;
+
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
-
-import com.greghaskins.spectrum.Spectrum.Block;
 
 class Spec implements Child {
 
@@ -28,8 +28,8 @@ class Spec implements Child {
     notifier.fireTestStarted(this.description);
     try {
       this.block.run();
-    } catch (final Throwable e) {
-      notifier.fireTestFailure(new Failure(this.description, e));
+    } catch (final Throwable error) {
+      notifier.fireTestFailure(new Failure(this.description, error));
     }
     notifier.fireTestFinished(this.description);
   }

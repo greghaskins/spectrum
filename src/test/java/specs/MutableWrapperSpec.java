@@ -7,10 +7,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-import org.junit.runner.RunWith;
-
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Value;
+
+import org.junit.runner.RunWith;
 
 @RunWith(Spectrum.class)
 public class MutableWrapperSpec {

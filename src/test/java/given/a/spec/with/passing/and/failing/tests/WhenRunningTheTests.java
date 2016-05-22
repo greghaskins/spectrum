@@ -2,6 +2,8 @@ package given.a.spec.with.passing.and.failing.tests;
 
 import static org.mockito.Mockito.mock;
 
+import com.greghaskins.spectrum.Spectrum;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -9,8 +11,6 @@ import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-
-import com.greghaskins.spectrum.Spectrum;
 
 public class WhenRunningTheTests {
 
@@ -28,7 +28,8 @@ public class WhenRunningTheTests {
 
   @Test
   public void theStartFailureAndFinishedNotificationsAreFiredForFailingTests() throws Exception {
-    final Description descriptionOfFailingTest = Description.createTestDescription(CONTEXT_NAME, "fails test 1");
+    final Description descriptionOfFailingTest =
+        Description.createTestDescription(CONTEXT_NAME, "fails test 1");
 
     final InOrder inOrder = Mockito.inOrder(runNotifier);
     inOrder.verify(runNotifier).fireTestStarted(descriptionOfFailingTest);
@@ -38,7 +39,8 @@ public class WhenRunningTheTests {
 
   @Test
   public void theStartAndFinishedNotificationsAreFiredForPassingTests() throws Exception {
-    final Description descriptionOfPassingTest = Description.createTestDescription(CONTEXT_NAME, "passes test 3");
+    final Description descriptionOfPassingTest =
+        Description.createTestDescription(CONTEXT_NAME, "passes test 3");
 
     final InOrder inOrder = Mockito.inOrder(runNotifier);
     inOrder.verify(runNotifier).fireTestStarted(descriptionOfPassingTest);

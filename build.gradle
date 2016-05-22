@@ -7,6 +7,7 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'maven-publish'
+apply plugin: 'checkstyle'
 
 repositories { mavenCentral() }
 
@@ -44,7 +45,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts { archives sourcesJar, javadocJar }
 
 spotless {
-  java { eclipseFormatFile 'config/eclipse-java-google-style.xml' }
+  java {
+    eclipseFormatFile 'config/eclipse-java-google-style.xml'
+    importOrderFile 'config/spectrum.importorder'
+    custom 'separate return from previous statements', {
+      it.replaceAll(/([^\s\{])\n( *)return /, '$1\n\n$2return ')
+    }
+  }
   format 'text', {
     target '**/*.gradle', '**/*.md', '**/.gitignore'
 
@@ -55,6 +62,30 @@ spotless {
 }
 
 classes { dependsOn 'spotlessApply' }
+
+checkstyle {
+  toolVersion = '6.18'
+  configFile = rootProject.file('config/google_checks.xml')
+}
+
+def verifyCheckstyleWarningsTask (name, warningsFileName) {
+  task(name) {
+    doFirst {
+      def warningsFile = file("build/reports/checkstyle/$warningsFileName")
+      if (warningsFile.exists() && warningsFile.text.contains('<error ')) {
+        throw new GradleException("There are Checkstyle warnings!\nSee $warningsFile for more info.")
+      }
+    }
+  }
+}
+
+checkstyleMain {
+  finalizedBy verifyCheckstyleWarningsTask('strictCheckstyleMain', 'main.xml')
+}
+
+checkstyleTest {
+  finalizedBy verifyCheckstyleWarningsTask('strictCheckstyleTest', 'test.xml')
+}
 
 publishing {
   publications {

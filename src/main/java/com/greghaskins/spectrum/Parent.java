@@ -7,8 +7,7 @@ interface Parent {
   static final Parent NONE = new Parent() {
 
     @Override
-    public void focus(final Child child) {
-    }
+    public void focus(final Child child) {}
   };
 
 }

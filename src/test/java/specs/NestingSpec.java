@@ -7,12 +7,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
-import helpers.SpectrumRunner;
-
-import org.junit.runner.Result;
-import org.junit.runner.RunWith;
 
 import com.greghaskins.spectrum.Spectrum;
+
+import helpers.SpectrumRunner;
+import org.junit.runner.Result;
+import org.junit.runner.RunWith;
 
 @SuppressWarnings("unchecked")
 @RunWith(Spectrum.class)
@@ -59,6 +59,7 @@ public class NestingSpec {
         });
       }
     }
+
     return Spec.class;
   }
 }

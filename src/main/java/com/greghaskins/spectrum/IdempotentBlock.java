@@ -22,16 +22,16 @@ class IdempotentBlock implements Block {
   private static Block runBlockOnce(final Block block) {
     try {
       block.run();
+
       return new EmptyBlock();
-    } catch (final Throwable e) {
-      return new FailingBlock(e);
+    } catch (final Throwable error) {
+      return new FailingBlock(error);
     }
   }
 
   private static class EmptyBlock implements Block {
     @Override
-    public void run() {
-    }
+    public void run() {}
   }
 
 }

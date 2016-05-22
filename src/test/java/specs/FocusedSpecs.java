@@ -9,13 +9,12 @@ import static com.greghaskins.spectrum.Spectrum.value;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import org.junit.runner.Result;
-import org.junit.runner.RunWith;
-
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Value;
 
 import helpers.SpectrumRunner;
+import org.junit.runner.Result;
+import org.junit.runner.RunWith;
 
 @RunWith(Spectrum.class)
 public class FocusedSpecs {
@@ -122,6 +121,7 @@ public class FocusedSpecs {
         });
       }
     }
+
     return Suite.class;
   }
 
@@ -154,6 +154,7 @@ public class FocusedSpecs {
 
       }
     }
+
     return Suite.class;
   }
 
@@ -183,6 +184,7 @@ public class FocusedSpecs {
         });
       }
     }
+
     return Suite.class;
   }
 
@@ -225,6 +227,7 @@ public class FocusedSpecs {
 
       }
     }
+
     return FocusedSpecsExample.class;
   }
 

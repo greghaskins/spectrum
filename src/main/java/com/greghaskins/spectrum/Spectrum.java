@@ -1,11 +1,11 @@
 package com.greghaskins.spectrum;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class Spectrum extends Runner {
 
@@ -26,10 +26,9 @@ public class Spectrum extends Runner {
   /**
    * Declare a test suite that describes the expected behavior of the system in a given context.
    *
-   * @param context
-   *            Description of the context for this suite
-   * @param block
-   *            {@link Block} with one or more calls to {@link #it(String, Block) it} that define each expected behavior
+   * @param context Description of the context for this suite
+   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
+   *        each expected behavior
    *
    */
   public static void describe(final String context, final Block block) {
@@ -40,10 +39,9 @@ public class Spectrum extends Runner {
   /**
    * Focus on this specific suite, while ignoring others.
    *
-   * @param context
-   *            Description of the context for this suite
-   * @param block
-   *            {@link Block} with one or more calls to {@link #it(String, Block) it} that define each expected behavior
+   * @param context Description of the context for this suite
+   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
+   *        each expected behavior
    *
    * @see #describe(String, Block)
    *
@@ -57,11 +55,9 @@ public class Spectrum extends Runner {
   /**
    * Declare a spec, or test, for an expected behavior of the system in this suite context.
    *
-   * @param behavior
-   *            Description of the expected behavior
-   * @param block
-   *            {@link Block} that verifies the system behaves as expected and throws a {@link java.lang.Throwable Throwable}
-   *            if that expectation is not met.
+   * @param behavior Description of the expected behavior
+   * @param block {@link Block} that verifies the system behaves as expected and throws a
+   *        {@link java.lang.Throwable Throwable} if that expectation is not met.
    */
   public static void it(final String behavior, final Block block) {
     getCurrentSuite().addSpec(behavior, block);
@@ -70,11 +66,9 @@ public class Spectrum extends Runner {
   /**
    * Focus on this specific spec, while ignoring others.
    *
-   * @param behavior
-   *            Description of the expected behavior
-   * @param block
-   *            {@link Block} that verifies the system behaves as expected and throws a {@link java.lang.Throwable Throwable}
-   *            if that expectation is not met.
+   * @param behavior Description of the expected behavior
+   * @param block {@link Block} that verifies the system behaves as expected and throws a
+   *        {@link java.lang.Throwable Throwable} if that expectation is not met.
    *
    * @see #it(String, Block)
    */
@@ -86,12 +80,11 @@ public class Spectrum extends Runner {
    * Declare a {@link Block} to be run before each spec in the suite.
    *
    * <p>
-   * Use this to perform setup actions that are common across tests in the context. If multiple {@code beforeEach} blocks are
-   * declared, they will run in declaration order.
+   * Use this to perform setup actions that are common across tests in the context. If multiple
+   * {@code beforeEach} blocks are declared, they will run in declaration order.
    * </p>
    *
-   * @param block
-   *            {@link Block} to run once before each spec
+   * @param block {@link Block} to run once before each spec
    */
   public static void beforeEach(final Block block) {
     getCurrentSuite().beforeEach(block);
@@ -101,12 +94,11 @@ public class Spectrum extends Runner {
    * Declare a {@link Block} to be run after each spec in the current suite.
    *
    * <p>
-   * Use this to perform teardown or cleanup actions that are common across specs in this suite. If multiple
-   * {@code afterEach} blocks are declared, they will run in declaration order.
+   * Use this to perform teardown or cleanup actions that are common across specs in this suite. If
+   * multiple {@code afterEach} blocks are declared, they will run in declaration order.
    * </p>
    *
-   * @param block
-   *            {@link Block} to run once after each spec
+   * @param block {@link Block} to run once after each spec
    */
   public static void afterEach(final Block block) {
     getCurrentSuite().afterEach(block);
@@ -116,12 +108,11 @@ public class Spectrum extends Runner {
    * Declare a {@link Block} to be run once before all the specs in the current suite begin.
    *
    * <p>
-   * Use {@code beforeAll} and {@link #afterAll(Block) afterAll} blocks with caution: since they only run once, shared state
-   * <strong>will</strong> leak across specs.
+   * Use {@code beforeAll} and {@link #afterAll(Block) afterAll} blocks with caution: since they
+   * only run once, shared state <strong>will</strong> leak across specs.
    * </p>
    *
-   * @param block
-   *            {@link Block} to run once before all specs in this suite
+   * @param block {@link Block} to run once before all specs in this suite
    */
   public static void beforeAll(final Block block) {
     getCurrentSuite().beforeAll(block);
@@ -131,12 +122,11 @@ public class Spectrum extends Runner {
    * Declare a {@link Block} to be run once after all the specs in the current suite have run.
    *
    * <p>
-   * Use {@link #beforeAll(Block) beforeAll} and {@code afterAll} blocks with caution: since they only run once, shared state
-   * <strong>will</strong> leak across tests.
+   * Use {@link #beforeAll(Block) beforeAll} and {@code afterAll} blocks with caution: since they
+   * only run once, shared state <strong>will</strong> leak across tests.
    * </p>
    *
-   * @param block
-   *            {@link Block} to run once after all specs in this suite
+   * @param block {@link Block} to run once after all specs in this suite
    */
   public static void afterAll(final Block block) {
     getCurrentSuite().afterAll(block);
@@ -162,6 +152,13 @@ public class Spectrum extends Runner {
 
   private final Suite rootSuite;
 
+  /**
+   * Main constructor called via reflection by the JUnit runtime.
+   *
+   * @param testClass The class file that defines the current suite
+   *
+   * @see org.junit.runner.Runner
+   */
   public Spectrum(final Class<?> testClass) {
     final Description description = Description.createSuiteDescription(testClass);
     this.rootSuite = Suite.rootSuite(description);
@@ -178,17 +175,17 @@ public class Spectrum extends Runner {
     this.rootSuite.run(notifier);
   }
 
-  synchronized private static void beginDefintion(final Suite suite, final Block definitionBlock) {
+  private static synchronized void beginDefintion(final Suite suite, final Block definitionBlock) {
     suiteStack.push(suite);
     try {
       definitionBlock.run();
-    } catch (final Throwable e) {
-      it("encountered an error", new FailingBlock(e));
+    } catch (final Throwable error) {
+      it("encountered an error", new FailingBlock(error));
     }
     suiteStack.pop();
   }
 
-  synchronized private static Suite getCurrentSuite() {
+  private static synchronized Suite getCurrentSuite() {
     return suiteStack.peek();
   }
 

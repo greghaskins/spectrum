@@ -1,10 +1,10 @@
 package helpers;
 
+import com.greghaskins.spectrum.Spectrum;
+
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
-
-import com.greghaskins.spectrum.Spectrum;
 
 public class SpectrumRunner {
 

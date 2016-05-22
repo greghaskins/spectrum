@@ -6,12 +6,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 
+import com.greghaskins.spectrum.Spectrum;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
-
-import com.greghaskins.spectrum.Spectrum;
 
 public class WhenDescribingTheSpec {
 
@@ -19,14 +19,16 @@ public class WhenDescribingTheSpec {
 
   @Before
   public void before() throws Exception {
-    final Description rootDescription = new Spectrum(getSpecWithNestedDescribeBlocks()).getDescription();
+    final Description rootDescription =
+        new Spectrum(getSpecWithNestedDescribeBlocks()).getDescription();
     mainDescription = rootDescription.getChildren().get(0);
   }
 
   @Test
   public void theMainDescriptionHasTwoContextsAsChildren() throws Exception {
-    assertThat(mainDescription.getChildren(), contains(Description.createSuiteDescription("with a first child context"),
-        Description.createSuiteDescription("with a second child context")));
+    assertThat(mainDescription.getChildren(),
+        contains(Description.createSuiteDescription("with a first child context"),
+            Description.createSuiteDescription("with a second child context")));
   }
 
   @Test
@@ -72,6 +74,7 @@ public class WhenDescribingTheSpec {
         });
       }
     }
+
     return Spec.class;
   }
 

@@ -4,13 +4,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
+import com.greghaskins.spectrum.Spectrum;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
 
-import com.greghaskins.spectrum.Spectrum;
+import java.util.ArrayList;
 
 public class WhenDescribingTheSpec {
 
@@ -29,7 +29,8 @@ public class WhenDescribingTheSpec {
   @Test
   public void theTestsGetTheirClassNameFromTheContainingDescribeBlock() throws Exception {
     for (final Description testDescription : getFirstContext().getChildren()) {
-      assertThat(testDescription.getClassName(), is("a spec with three passing and two failing tests"));
+      assertThat(testDescription.getClassName(),
+          is("a spec with three passing and two failing tests"));
     }
   }
 

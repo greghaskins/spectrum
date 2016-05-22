@@ -7,8 +7,8 @@ import org.junit.runner.notification.Failure;
 
 public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
 
-  public static Matcher<Failure> failure(final String methodName, final Class<? extends Throwable> exceptionType,
-      final String failureMessage) {
+  public static Matcher<Failure> failure(final String methodName,
+      final Class<? extends Throwable> exceptionType, final String failureMessage) {
     return new IsFailure(methodName, exceptionType, failureMessage);
   }
 
@@ -16,7 +16,8 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
   private final String failureMessage;
   private final String methodName;
 
-  IsFailure(final String methodName, final Class<? extends Throwable> exceptionType, final String failureMessage) {
+  IsFailure(final String methodName, final Class<? extends Throwable> exceptionType,
+      final String failureMessage) {
     this.exceptionType = exceptionType;
     this.failureMessage = failureMessage;
     this.methodName = methodName;
@@ -26,7 +27,8 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
   protected boolean matchesSafely(final Failure item, final Description mismatchDescription) {
     final String actualMethodName = getMethodName(item);
     final Throwable exception = item.getException();
-    final Class<? extends Throwable> actualExceptionType = exception == null ? null : exception.getClass();
+    final Class<? extends Throwable> actualExceptionType =
+        exception == null ? null : exception.getClass();
     final String actualMessage = exception == null ? null : item.getMessage();
 
     describeTo(mismatchDescription, actualMethodName, actualExceptionType, actualMessage);
@@ -42,6 +44,7 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
     } else {
       actualMethodName = failure.getDescription().getMethodName();
     }
+
     return actualMethodName;
   }
 
@@ -52,7 +55,8 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
 
   private void describeTo(final Description description, final String methodName,
       final Class<? extends Throwable> exceptionType, final String failureMessage) {
-    description.appendText("Failure with test name ").appendValue(methodName).appendText(" with exception type ")
-        .appendValue(exceptionType).appendText(" and message ").appendValue(failureMessage);
+    description.appendText("Failure with test name ").appendValue(methodName)
+        .appendText(" with exception type ").appendValue(exceptionType).appendText(" and message ")
+        .appendValue(failureMessage);
   }
 }

@@ -1,9 +1,9 @@
 package com.greghaskins.spectrum;
 
+import com.greghaskins.spectrum.Spectrum.Block;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-
-import com.greghaskins.spectrum.Spectrum.Block;
 
 class ConstructorBlock implements Block {
 
@@ -16,13 +16,13 @@ class ConstructorBlock implements Block {
   @Override
   public void run() throws Throwable {
     try {
-      final Constructor<?> constructor = klass.getDeclaredConstructor();
+      final Constructor<?> constructor = this.klass.getDeclaredConstructor();
       constructor.setAccessible(true);
       constructor.newInstance();
-    } catch (final InvocationTargetException e) {
-      throw e.getTargetException();
-    } catch (final Exception e) {
-      throw new UnableToConstructSpecException(klass, e);
+    } catch (final InvocationTargetException invocationTargetException) {
+      throw invocationTargetException.getTargetException();
+    } catch (final Exception error) {
+      throw new UnableToConstructSpecException(this.klass, error);
     }
   }
 

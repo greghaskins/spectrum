@@ -4,12 +4,12 @@ import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import helpers.SpectrumRunner;
-
-import org.junit.runner.Result;
-import org.junit.runner.RunWith;
 
 import com.greghaskins.spectrum.Spectrum;
+
+import helpers.SpectrumRunner;
+import org.junit.runner.Result;
+import org.junit.runner.RunWith;
 
 @RunWith(Spectrum.class)
 public class RunnerSpec {
@@ -44,6 +44,7 @@ public class RunnerSpec {
 
       }
     }
+
     return Spec.class;
   }
 }

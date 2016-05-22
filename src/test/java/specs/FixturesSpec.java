@@ -14,18 +14,17 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.runner.Result;
-import org.junit.runner.RunWith;
-import org.junit.runner.notification.Failure;
-
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
 import com.greghaskins.spectrum.Spectrum.Value;
 
 import helpers.SpectrumRunner;
+import org.junit.runner.Result;
+import org.junit.runner.RunWith;
+import org.junit.runner.notification.Failure;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(Spectrum.class)
 public class FixturesSpec {
@@ -345,6 +344,7 @@ public class FixturesSpec {
 
       }
     }
+
     return Spec.class;
   }
 
@@ -365,6 +365,7 @@ public class FixturesSpec {
 
       }
     }
+
     return Spec.class;
   }
 
@@ -407,6 +408,7 @@ public class FixturesSpec {
 
       }
     }
+
     return Spec.class;
   }
 
@@ -439,6 +441,7 @@ public class FixturesSpec {
 
       }
     }
+
     return Spec.class;
   }
 
@@ -468,6 +471,7 @@ public class FixturesSpec {
         });
       }
     }
+
     return Suite.class;
   }
 
@@ -500,6 +504,7 @@ public class FixturesSpec {
         });
       }
     }
+
     return Suite.class;
 
   }

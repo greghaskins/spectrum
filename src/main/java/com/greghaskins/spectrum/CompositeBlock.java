@@ -1,9 +1,9 @@
 package com.greghaskins.spectrum;
 
+import com.greghaskins.spectrum.Spectrum.Block;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.greghaskins.spectrum.Spectrum.Block;
 
 class CompositeBlock implements Block {
 

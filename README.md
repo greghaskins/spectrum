@@ -109,7 +109,7 @@ public class ExampleSpecs {
         counter.value++;
       });
 
-      it("lets you work around Java's requirement that closures only reference `final` variables", () -> {
+      it("lets you work around Java's requirement that closures only use `final` variables", () -> {
         counter.value++;
         assertThat(counter.value, is(2));
       });

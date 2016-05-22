@@ -16,14 +16,14 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.runner.RunWith;
-
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
 import com.greghaskins.spectrum.Spectrum.Value;
+
+import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(Spectrum.class)
 public class ExampleSpecs {
@@ -121,7 +121,7 @@ public class ExampleSpecs {
         counter.value++;
       });
 
-      it("lets you work around Java's requirement that closures only reference `final` variables", () -> {
+      it("lets you work around Java's requirement that closures only use `final` variables", () -> {
         counter.value++;
         assertThat(counter.value, is(2));
       });

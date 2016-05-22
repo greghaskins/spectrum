@@ -3,8 +3,8 @@ package given.a.spec.with.exception.in.describe.block;
 import static matchers.IsFailure.failure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import helpers.SpectrumRunner;
 
+import helpers.SpectrumRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Result;
@@ -25,7 +25,8 @@ public class WhenRunningTheSpec {
 
   @Test
   public void theFailureExplainsWhatHappened() throws Exception {
-    assertThat(result.getFailures().get(0), is(failure("encountered an error", Fixture.SomeException.class, "kaboom")));
+    assertThat(result.getFailures().get(0),
+        is(failure("encountered an error", Fixture.SomeException.class, "kaboom")));
   }
 
 }

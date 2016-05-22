@@ -1,16 +1,16 @@
 package com.greghaskins.spectrum;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.greghaskins.spectrum.Spectrum.Block;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
-import com.greghaskins.spectrum.Spectrum.Block;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 class Suite implements Parent, Child {
 
@@ -41,17 +41,20 @@ class Suite implements Parent, Child {
     suite.beforeEach(this.beforeEach);
     suite.afterEach(this.afterEach);
     addChild(suite);
+
     return suite;
   }
 
   public Spec addSpec(final String name, final Block block) {
-    final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
+    final Description specDescription =
+        Description.createTestDescription(this.description.getClassName(), name);
 
     final Block specBlockInContext = new TryFinallyBlock(
         new CompositeBlock(Arrays.asList(this.beforeAll, this.beforeEach, block)), this.afterEach);
 
     final Spec spec = new Spec(specDescription, specBlockInContext, this);
     addChild(spec);
+
     return spec;
   }
 
@@ -83,8 +86,13 @@ class Suite implements Parent, Child {
   }
 
   @Override
+  public void focus() {
+    this.parent.focus(this);
+  }
+
+  @Override
   public void run(final RunNotifier notifier) {
-    if (this.testCount() == 0) {
+    if (testCount() == 0) {
       notifier.fireTestIgnored(this.description);
       runChildren(notifier);
     } else {
@@ -110,11 +118,11 @@ class Suite implements Parent, Child {
   private void runAfterAll(final RunNotifier notifier) {
     try {
       this.afterAll.run();
-    } catch (final Throwable e) {
-      final Description failureDescription = Description.createTestDescription(this.description.getClassName(),
-          "error in afterAll");
+    } catch (final Throwable error) {
+      final Description failureDescription =
+          Description.createTestDescription(this.description.getClassName(), "error in afterAll");
       this.description.addChild(failureDescription);
-      notifier.fireTestFailure(new Failure(failureDescription, e));
+      notifier.fireTestFailure(new Failure(failureDescription, error));
     }
   }
 
@@ -129,12 +137,10 @@ class Suite implements Parent, Child {
     for (final Child child : this.children) {
       count += child.testCount();
     }
+
     return count;
   }
 
-  @Override
-  public void focus() {
-    this.parent.focus(this);
-  }
+
 
 }
