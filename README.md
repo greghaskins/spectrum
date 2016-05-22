@@ -21,14 +21,7 @@ public class ExampleSpecs {
 
       final int foo = 1;
 
-      it("is just a code block with a run() method", new Block() {
-        @Override
-        public void run() throws Throwable {
-          assertEquals(1, foo);
-        }
-      });
-
-      it("can also be a lambda function, which is a lot prettier", () -> {
+      it("is just a lambda function that verifies something", () -> {
         assertEquals(1, foo);
       });
 
@@ -228,7 +221,7 @@ Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/
 ### Dependencies
 
  - JUnit 4
- - Java 8
+ - Java 8 (for your tests; systems under test can use older versions)
 
 ### Gradle
 
