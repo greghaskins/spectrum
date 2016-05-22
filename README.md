@@ -14,153 +14,155 @@ Spectrum
 
 ```java
 @RunWith(Spectrum.class)
-public class ExampleSpecs {{
+public class ExampleSpecs {
+  {
 
     describe("A spec", () -> {
 
-        final int foo = 1;
+      final int foo = 1;
 
-        it("is just a code block with a run() method", new Block() {
-            @Override
-            public void run() throws Throwable {
-                assertEquals(1, foo);
-            }
+      it("is just a code block with a run() method", new Block() {
+        @Override
+        public void run() throws Throwable {
+          assertEquals(1, foo);
+        }
+      });
+
+      it("can also be a lambda function, which is a lot prettier", () -> {
+        assertEquals(1, foo);
+      });
+
+      it("can use any assertion library you like", () -> {
+        org.junit.Assert.assertEquals(1, foo);
+        org.hamcrest.MatcherAssert.assertThat(true, is(true));
+      });
+
+      describe("nested inside a second describe", () -> {
+
+        final int bar = 1;
+
+        it("can reference both scopes as needed", () -> {
+          assertThat(bar, is(equalTo(foo)));
         });
 
-        it("can also be a lambda function, which is a lot prettier", () -> {
-            assertEquals(1, foo);
-        });
+      });
 
-        it("can use any assertion library you like", () -> {
-            org.junit.Assert.assertEquals(1, foo);
-            org.hamcrest.MatcherAssert.assertThat(true, is(true));
-        });
-
-        describe("nested inside a second describe", () -> {
-
-            final int bar = 1;
-
-            it("can reference both scopes as needed", () -> {
-                assertThat(bar, is(equalTo(foo)));
-            });
-
-        });
-
-        it("can have `it`s and `describe`s in any order", () -> {
-            assertThat(foo, is(1));
-        });
+      it("can have `it`s and `describe`s in any order", () -> {
+        assertThat(foo, is(1));
+      });
 
     });
 
     describe("A suite using beforeEach and afterEach", () -> {
 
-        final List<String> items = new ArrayList<>();
+      final List<String> items = new ArrayList<>();
+
+      beforeEach(() -> {
+        items.add("foo");
+      });
+
+      beforeEach(() -> {
+        items.add("bar");
+      });
+
+      afterEach(() -> {
+        items.clear();
+      });
+
+      it("runs the beforeEach() blocks in order", () -> {
+        assertThat(items, contains("foo", "bar"));
+        items.add("bogus");
+      });
+
+      it("runs them before every spec", () -> {
+        assertThat(items, contains("foo", "bar"));
+        items.add("bogus");
+      });
+
+      it("runs afterEach after every spec", () -> {
+        assertThat(items, not(contains("bogus")));
+      });
+
+      describe("when nested", () -> {
 
         beforeEach(() -> {
-            items.add("foo");
+          items.add("baz");
         });
 
-        beforeEach(() -> {
-            items.add("bar");
+        it("runs beforeEach and afterEach from inner and outer scopes", () -> {
+          assertThat(items, contains("foo", "bar", "baz"));
         });
 
-        afterEach(() -> {
-            items.clear();
-        });
-
-        it("runs the beforeEach() blocks in order", () -> {
-            assertThat(items, contains("foo", "bar"));
-            items.add("bogus");
-        });
-
-        it("runs them before every spec", () -> {
-            assertThat(items, contains("foo", "bar"));
-            items.add("bogus");
-        });
-
-        it("runs afterEach after every spec", () -> {
-            assertThat(items, not(contains("bogus")));
-        });
-
-        describe("when nested", () -> {
-
-            beforeEach(() -> {
-                items.add("baz");
-            });
-
-            it("runs beforeEach and afterEach from inner and outer scopes", () -> {
-                assertThat(items, contains("foo", "bar", "baz"));
-            });
-
-        });
+      });
 
     });
 
     describe("The Value convenience wrapper", () -> {
 
-        final Value<Integer> counter = value(Integer.class);
+      final Value<Integer> counter = value(Integer.class);
 
-        beforeEach(() -> {
-            counter.value = 0;
-        });
+      beforeEach(() -> {
+        counter.value = 0;
+      });
 
-        beforeEach(() -> {
-            counter.value++;
-        });
+      beforeEach(() -> {
+        counter.value++;
+      });
 
-        it("lets you work around Java's requirement that closures only reference `final` variables", () -> {
-            counter.value++;
-            assertThat(counter.value, is(2));
-        });
+      it("lets you work around Java's requirement that closures only use `final` variables", () -> {
+        counter.value++;
+        assertThat(counter.value, is(2));
+      });
 
-        it("can optionally have an initial value set", () -> {
-            final Value<String> name = value("Alice");
-            assertThat(name.value, is("Alice"));
-        });
+      it("can optionally have an initial value set", () -> {
+        final Value<String> name = value("Alice");
+        assertThat(name.value, is("Alice"));
+      });
 
-        it("has a null value if not specified", () -> {
-            final Value<String> name = value(String.class);
-            assertThat(name.value, is(nullValue()));
-        });
+      it("has a null value if not specified", () -> {
+        final Value<String> name = value(String.class);
+        assertThat(name.value, is(nullValue()));
+      });
 
     });
 
     describe("A suite using beforeAll", () -> {
 
-        final List<Integer> numbers = new ArrayList<>();
+      final List<Integer> numbers = new ArrayList<>();
 
-        beforeAll(() -> {
-            numbers.add(1);
+      beforeAll(() -> {
+        numbers.add(1);
+      });
+
+      it("sets the initial state before any specs run", () -> {
+        assertThat(numbers, contains(1));
+        numbers.add(2);
+      });
+
+      describe("and afterAll", () -> {
+
+        afterAll(() -> {
+          numbers.clear();
         });
 
-        it("sets the initial state before any specs run", () -> {
-            assertThat(numbers, contains(1));
-            numbers.add(2);
+        it("does not reset anything between tests", () -> {
+          assertThat(numbers, contains(1, 2));
+          numbers.add(3);
         });
 
-        describe("and afterAll", () -> {
-
-            afterAll(() -> {
-                numbers.clear();
-            });
-
-            it("does not reset anything between tests", () -> {
-                assertThat(numbers, contains(1, 2));
-                numbers.add(3);
-            });
-
-            it("so proceed with caution; this *will* leak shared state across specs", () -> {
-                assertThat(numbers, contains(1, 2, 3));
-            });
+        it("so proceed with caution; this *will* leak shared state across specs", () -> {
+          assertThat(numbers, contains(1, 2, 3));
         });
+      });
 
-        it("cleans up after running all specs in the describe block", () -> {
-            assertThat(numbers, is(empty()));
-        });
+      it("cleans up after running all specs in the describe block", () -> {
+        assertThat(numbers, is(empty()));
+      });
 
     });
 
-}}
+  }
+}
 ```
 
 ### Focused Specs
@@ -242,7 +244,7 @@ Then add the Spectrum dependency for your tests:
 
 ```groovy
 dependencies {
-	testCompile 'com.greghaskins:spectrum:0.6.1'
+  testCompile 'com.greghaskins:spectrum:0.6.1'
 }
 
 ```
@@ -264,14 +266,14 @@ Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
 
 ```xml
 <project>
-	<dependencies>
-		<dependency>
-			<groupId>com.greghaskins</groupId>
-			<artifactId>spectrum</artifactId>
-			<version>0.6.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.greghaskins</groupId>
+      <artifactId>spectrum</artifactId>
+      <version>0.6.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
 ```
 

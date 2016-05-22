@@ -26,6 +26,7 @@
 *.classpath
 *.project
 *.settings
+*.checkstyle
 /bin
 /subprojects/*/bin
 .DS_Store

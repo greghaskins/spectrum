@@ -1,140 +1,146 @@
 package com.greghaskins.spectrum;
 
+import com.greghaskins.spectrum.Spectrum.Block;
+
+import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunNotifier;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunNotifier;
-
-import com.greghaskins.spectrum.Spectrum.Block;
-
 class Suite implements Parent, Child {
 
-	private final CompositeBlock beforeAll = new CompositeBlock();
-	private final CompositeBlock afterAll = new CompositeBlock();
+  private final CompositeBlock beforeAll = new CompositeBlock();
+  private final CompositeBlock afterAll = new CompositeBlock();
 
-	private final CompositeBlock beforeEach = new CompositeBlock();
-	private final AfterEachBlock afterEach = new AfterEachBlock();
+  private final CompositeBlock beforeEach = new CompositeBlock();
+  private final AfterEachBlock afterEach = new AfterEachBlock();
 
-	private final List<Child> children = new ArrayList<Child>();
-	private final Set<Child> focusedChildren = new HashSet<Child>();
+  private final List<Child> children = new ArrayList<Child>();
+  private final Set<Child> focusedChildren = new HashSet<Child>();
 
-	private final Description description;
-	private final Parent parent;
+  private final Description description;
+  private final Parent parent;
 
-	public static Suite rootSuite(final Description description) {
-		return new Suite(description, Parent.NONE);
-	}
+  public static Suite rootSuite(final Description description) {
+    return new Suite(description, Parent.NONE);
+  }
 
-	private Suite(final Description description, final Parent parent) {
-		this.description = description;
-		this.parent = parent;
-	}
+  private Suite(final Description description, final Parent parent) {
+    this.description = description;
+    this.parent = parent;
+  }
 
-	public Suite addSuite(final String name) {
-		final Suite suite = new Suite(Description.createSuiteDescription(name), this);
-		suite.beforeAll(this.beforeAll);
-		suite.beforeEach(this.beforeEach);
-		suite.afterEach(this.afterEach);
-		addChild(suite);
-		return suite;
-	}
+  public Suite addSuite(final String name) {
+    final Suite suite = new Suite(Description.createSuiteDescription(name), this);
+    suite.beforeAll(this.beforeAll);
+    suite.beforeEach(this.beforeEach);
+    suite.afterEach(this.afterEach);
+    addChild(suite);
 
-	public Spec addSpec(final String name, final Block block) {
-		final Description specDescription = Description.createTestDescription(this.description.getClassName(), name);
+    return suite;
+  }
 
-		final Block specBlockInContext = new TryFinallyBlock(new CompositeBlock(
-				Arrays.asList(this.beforeAll, this.beforeEach, block)), this.afterEach);
+  public Spec addSpec(final String name, final Block block) {
+    final Description specDescription =
+        Description.createTestDescription(this.description.getClassName(), name);
 
-		final Spec spec = new Spec(specDescription, specBlockInContext, this);
-		addChild(spec);
-		return spec;
-	}
+    final Block specBlockInContext = new TryFinallyBlock(
+        new CompositeBlock(Arrays.asList(this.beforeAll, this.beforeEach, block)), this.afterEach);
 
-	private void addChild(final Child child) {
-		this.description.addChild(child.getDescription());
-		this.children.add(child);
-	}
+    final Spec spec = new Spec(specDescription, specBlockInContext, this);
+    addChild(spec);
 
-	public void beforeAll(final Block block) {
-		this.beforeAll.addBlock(new IdempotentBlock(block));
-	}
+    return spec;
+  }
 
-	public void afterAll(final Block block) {
-		this.afterAll.addBlock(block);
-	}
+  private void addChild(final Child child) {
+    this.description.addChild(child.getDescription());
+    this.children.add(child);
+  }
 
-	public void beforeEach(final Block block) {
-		this.beforeEach.addBlock(block);
-	}
+  public void beforeAll(final Block block) {
+    this.beforeAll.addBlock(new IdempotentBlock(block));
+  }
 
-	public void afterEach(final Block block) {
-		this.afterEach.addBlock(block);
-	}
+  public void afterAll(final Block block) {
+    this.afterAll.addBlock(block);
+  }
 
-	@Override
-	public void focus(final Child child) {
-		this.focusedChildren.add(child);
-		focus();
-	}
+  public void beforeEach(final Block block) {
+    this.beforeEach.addBlock(block);
+  }
 
-	@Override
-	public void run(final RunNotifier notifier) {
-		if (this.testCount() == 0) {
-			notifier.fireTestIgnored(this.description);
-			runChildren(notifier);
-		} else {
-			runChildren(notifier);
-			runAfterAll(notifier);
-		}
-	}
+  public void afterEach(final Block block) {
+    this.afterEach.addBlock(block);
+  }
 
-	private void runChildren(final RunNotifier notifier) {
-		for (final Child child : this.children) {
-			runChild(child, notifier);
-		}
-	}
+  @Override
+  public void focus(final Child child) {
+    this.focusedChildren.add(child);
+    focus();
+  }
 
-	private void runChild(final Child child, final RunNotifier notifier) {
-		if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
-			child.run(notifier);
-		} else {
-			notifier.fireTestIgnored(child.getDescription());
-		}
-	}
+  @Override
+  public void focus() {
+    this.parent.focus(this);
+  }
 
-	private void runAfterAll(final RunNotifier notifier) {
-		try {
-			this.afterAll.run();
-		} catch (final Throwable e) {
-			final Description failureDescription = Description.createTestDescription(this.description.getClassName(),
-					"error in afterAll");
-			this.description.addChild(failureDescription);
-			notifier.fireTestFailure(new Failure(failureDescription, e));
-		}
-	}
+  @Override
+  public void run(final RunNotifier notifier) {
+    if (testCount() == 0) {
+      notifier.fireTestIgnored(this.description);
+      runChildren(notifier);
+    } else {
+      runChildren(notifier);
+      runAfterAll(notifier);
+    }
+  }
 
-	@Override
-	public Description getDescription() {
-		return this.description;
-	}
+  private void runChildren(final RunNotifier notifier) {
+    for (final Child child : this.children) {
+      runChild(child, notifier);
+    }
+  }
 
-	@Override
-	public int testCount() {
-		int count = 0;
-		for (final Child child : this.children) {
-			count += child.testCount();
-		}
-		return count;
-	}
+  private void runChild(final Child child, final RunNotifier notifier) {
+    if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
+      child.run(notifier);
+    } else {
+      notifier.fireTestIgnored(child.getDescription());
+    }
+  }
 
-	@Override
-	public void focus() {
-		this.parent.focus(this);
-	}
+  private void runAfterAll(final RunNotifier notifier) {
+    try {
+      this.afterAll.run();
+    } catch (final Throwable error) {
+      final Description failureDescription =
+          Description.createTestDescription(this.description.getClassName(), "error in afterAll");
+      this.description.addChild(failureDescription);
+      notifier.fireTestFailure(new Failure(failureDescription, error));
+    }
+  }
+
+  @Override
+  public Description getDescription() {
+    return this.description;
+  }
+
+  @Override
+  public int testCount() {
+    int count = 0;
+    for (final Child child : this.children) {
+      count += child.testCount();
+    }
+
+    return count;
+  }
+
+
 
 }
