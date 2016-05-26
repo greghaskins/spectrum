@@ -32,7 +32,7 @@ public class ExampleSpecs {
 
       final int foo = 1;
 
-      it("is just a lambda function that verifies something", () -> {
+      it("is just a code block that verifies something", () -> {
         assertEquals(1, foo);
       });
 
