@@ -23,15 +23,21 @@ class IdempotentBlock implements Block {
     try {
       block.run();
 
-      return new EmptyBlock();
+      return alwaysPass();
     } catch (final Throwable error) {
-      return new FailingBlock(error);
+      return alwaysFail(error);
     }
   }
 
-  private static class EmptyBlock implements Block {
-    @Override
-    public void run() {}
+  private static Block alwaysPass() {
+    return () -> {
+    };
+  }
+
+  private static Block alwaysFail(final Throwable error) {
+    return () -> {
+      throw error;
+    };
   }
 
 }

@@ -67,7 +67,7 @@ public class FocusedSpecs {
 
     describe("Focused specs example", () -> {
 
-      final Value<Result> result = value(Result.class);
+      final Value<Result> result = value();
 
       beforeEach(() -> {
         result.value = SpectrumRunner.run(getFocusedSpecsExample());

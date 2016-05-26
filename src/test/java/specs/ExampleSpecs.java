@@ -17,7 +17,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 
 import com.greghaskins.spectrum.Spectrum;
-import com.greghaskins.spectrum.Spectrum.Block;
 import com.greghaskins.spectrum.Spectrum.Value;
 
 import org.junit.runner.RunWith;
@@ -33,14 +32,7 @@ public class ExampleSpecs {
 
       final int foo = 1;
 
-      it("is just a code block with a run() method", new Block() {
-        @Override
-        public void run() throws Throwable {
-          assertEquals(1, foo);
-        }
-      });
-
-      it("can also be a lambda function, which is a lot prettier", () -> {
+      it("is just a code block that verifies something", () -> {
         assertEquals(1, foo);
       });
 
@@ -111,7 +103,7 @@ public class ExampleSpecs {
 
     describe("The Value convenience wrapper", () -> {
 
-      final Value<Integer> counter = value(Integer.class);
+      final Value<Integer> counter = value();
 
       beforeEach(() -> {
         counter.value = 0;
@@ -132,7 +124,7 @@ public class ExampleSpecs {
       });
 
       it("has a null value if not specified", () -> {
-        final Value<String> name = value(String.class);
+        final Value<String> name = value();
         assertThat(name.value, is(nullValue()));
       });
 

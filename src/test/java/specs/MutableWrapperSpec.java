@@ -13,13 +13,14 @@ import com.greghaskins.spectrum.Spectrum.Value;
 import org.junit.runner.RunWith;
 
 @RunWith(Spectrum.class)
+@SuppressWarnings("deprecation")
 public class MutableWrapperSpec {
   {
 
     describe("The Value convenience type", () -> {
 
       it("allows you to set the value of a 'final' variable", () -> {
-        final Value<Integer> counter = value(Integer.class);
+        final Value<Integer> counter = value();
         counter.value = 0;
         counter.value = 1;
         assertThat(counter.value, is(1));
@@ -31,8 +32,13 @@ public class MutableWrapperSpec {
       });
 
       it("has a default value of null if not specified", () -> {
-        final Value<String> name = value(String.class);
+        final Value<String> name = value();
         assertThat(name.value, is(nullValue()));
+      });
+
+      it("can take an explicit class parameter, for backward compatibility with ~0.6.1", () -> {
+        final Value<String> stringValue = value(String.class);
+        assertThat(stringValue.value, is(nullValue()));
       });
 
     });

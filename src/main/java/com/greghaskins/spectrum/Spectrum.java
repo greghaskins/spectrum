@@ -13,6 +13,7 @@ public class Spectrum extends Runner {
    * A generic code block with a {@link #run()} method.
    *
    */
+  @FunctionalInterface
   public static interface Block {
 
     /**
@@ -132,12 +133,46 @@ public class Spectrum extends Runner {
     getCurrentSuite().afterAll(block);
   }
 
-  public static <T> Value<T> value(@SuppressWarnings("unused") final Class<T> type) {
-    return new Value<T>(null);
+
+
+  /**
+   * Create a new Value wrapper. This is just a pointer to an instance of type <tt>T</tt>, which is
+   * <tt>null</tt> by default. Having a reference that can be <tt>final</tt> , but with a mutable
+   * <tt>value</tt> is helpful when working with Java closures.
+   *
+   * @param <T> The type of object to wrap
+   *
+   * @return A new wrapper object with <tt>null</tt> instance of <tt>T</tt>.
+   */
+  public static <T> Value<T> value() {
+    return new Value<>(null);
   }
 
+  /**
+   * Deprecated. Use {@link #value()} instead.
+   *
+   * @param <T> The type of object to wrap
+   * @param type Class of type <tt>T</tt> to wrap
+   *
+   * @return A new wrapper object with <tt>null</tt> instance of <tt>T</tt>.
+   */
+  @Deprecated
+  public static <T> Value<T> value(final Class<T> type) {
+    return value();
+  }
+
+  /**
+   * Create a new Value wrapper. This is just a pointer to an instance of type <tt>T</tt>,
+   * initialized to <tt>startingValue</tt> by default. Having a reference that can be <tt>final</tt>
+   * , but with a mutable <tt>value</tt> is helpful when working with Java closures.
+   *
+   * @param <T> The type of object to wrap
+   * @param startingValue The initial value to wrap.
+   *
+   * @return A new wrapper object around <tt>startingValue</tt>.
+   */
   public static <T> Value<T> value(final T startingValue) {
-    return new Value<T>(startingValue);
+    return new Value<>(startingValue);
   }
 
   public static class Value<T> {
@@ -148,7 +183,7 @@ public class Spectrum extends Runner {
     }
   }
 
-  private static final Deque<Suite> suiteStack = new ArrayDeque<Suite>();
+  private static final Deque<Suite> suiteStack = new ArrayDeque<>();
 
   private final Suite rootSuite;
 
@@ -180,7 +215,9 @@ public class Spectrum extends Runner {
     try {
       definitionBlock.run();
     } catch (final Throwable error) {
-      it("encountered an error", new FailingBlock(error));
+      it("encountered an error", () -> {
+        throw error;
+      });
     }
     suiteStack.pop();
   }

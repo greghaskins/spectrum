@@ -14,7 +14,7 @@ class CompositeBlock implements Block {
   }
 
   public CompositeBlock() {
-    this(new ArrayList<Block>());
+    this(new ArrayList<>());
   }
 
   @Override
