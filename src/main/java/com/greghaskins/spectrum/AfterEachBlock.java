@@ -15,17 +15,17 @@ class AfterEachBlock implements Block {
 
   @Override
   public void run() throws Throwable {
-    runAllBlocksInReverseOrder(this.blocks.size() - 1);
+    runRemainingBlocksInReverseOrder(this.blocks.size() - 1);
   }
 
-  private void runAllBlocksInReverseOrder(final int index) throws Throwable {
-    if (index < 0) {
+  private void runRemainingBlocksInReverseOrder(final int currentIndex) throws Throwable {
+    if (currentIndex < 0) {
       return;
     }
     try {
-      this.blocks.get(index).run();
+      this.blocks.get(currentIndex).run();
     } finally {
-      runAllBlocksInReverseOrder(index - 1);
+      runRemainingBlocksInReverseOrder(currentIndex - 1);
     }
   }
 
