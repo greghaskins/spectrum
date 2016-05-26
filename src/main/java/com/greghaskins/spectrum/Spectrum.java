@@ -13,6 +13,7 @@ public class Spectrum extends Runner {
    * A generic code block with a {@link #run()} method.
    *
    */
+  @FunctionalInterface
   public static interface Block {
 
     /**
