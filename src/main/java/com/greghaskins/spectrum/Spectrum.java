@@ -14,7 +14,7 @@ public class Spectrum extends Runner {
    *
    */
   @FunctionalInterface
-  public static interface Block {
+  public interface Block {
 
     /**
      * Execute the code block, raising any {@code Throwable} that may occur.
@@ -54,6 +54,34 @@ public class Spectrum extends Runner {
   }
 
   /**
+   * Ignore the specific suite.
+   *
+   * @param context Description of the context for this suite
+   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
+   *        each expected behavior
+   *
+   * @see #describe(String, Block)
+   *
+   */
+  public static void xdescribe(final String context, final Block block) {
+    final Suite suite = getCurrentSuite().addSuite(context);
+    suite.ignore();
+    beginDefintion(suite, block);
+  }
+
+  /**
+   * Ignore the specific suite.
+   *
+   * @param context Description of the context for this suite
+   *
+   * @see #describe(String, Block)
+   *
+   */
+  public static void xdescribe(final String context) {
+    xdescribe(context, () -> {});
+  }
+
+  /**
    * Declare a spec, or test, for an expected behavior of the system in this suite context.
    *
    * @param behavior Description of the expected behavior
@@ -75,6 +103,29 @@ public class Spectrum extends Runner {
    */
   public static void fit(final String behavior, final Block block) {
     getCurrentSuite().addSpec(behavior, block).focus();
+  }
+
+  /**
+   * Mark this specific spec as ignored.
+   *
+   * @param behavior Description of the expected behavior
+   * @param block {@link Block} that verifies the system behaves as expected, but won't be run.
+   *
+   * @see #it(String, Block)
+   */
+  public static void xit(final String behavior, final Block block) {
+    getCurrentSuite().addSpec(behavior, block).ignore();
+  }
+
+  /**
+   * Mark this specific spec as ignored.
+   *
+   * @param behavior Description of the expected behavior
+   *
+   * @see #it(String, Block)
+   */
+  public static void xit(final String behavior) {
+    xit(behavior, () -> {});
   }
 
   /**
