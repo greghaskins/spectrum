@@ -13,4 +13,6 @@ interface Child {
 
   void focus();
 
+  void ignore();
+
 }
