@@ -2,6 +2,7 @@ package specs;
 
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
+import static com.greghaskins.spectrum.Spectrum.fdescribe;
 import static com.greghaskins.spectrum.Spectrum.fit;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.value;
@@ -62,13 +63,13 @@ public class IgnoredSpecs {
           assertThat(result.getIgnoreCount(), is(1));
         });
 
-        describe("and the nested suite has a focus", () -> {
+        describe("and the nested suite and spec have a focus", () -> {
           it("ignores the focus", () -> {
             final Result result =
                 SpectrumRunner.run(getSuiteWithNestedIgnoredSuitesAndFocusedSpecs());
             assertThat(result.getFailureCount(), is(0));
             assertThat(result.getRunCount(), is(1));
-            assertThat(result.getIgnoreCount(), is(1));
+            assertThat(result.getIgnoreCount(), is(2));
           });
         });
       });
@@ -176,7 +177,13 @@ public class IgnoredSpecs {
 
         xdescribe("a nested ignored context", () -> {
           describe("with a sub-suite", () -> {
-            fit("will not run forcued test", () -> {
+            fit("will not run focused test", () -> {
+              assertThat(true, is(false));
+            });
+          });
+
+          fdescribe("with focused sub-suite", () -> {
+            it("will not run regular test", () -> {
               assertThat(true, is(false));
             });
           });
