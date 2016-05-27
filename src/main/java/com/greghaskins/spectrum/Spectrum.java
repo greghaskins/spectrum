@@ -78,7 +78,8 @@ public class Spectrum extends Runner {
    *
    */
   public static void xdescribe(final String context) {
-    xdescribe(context, () -> {});
+    xdescribe(context, () -> {
+    });
   }
 
   /**
@@ -125,7 +126,8 @@ public class Spectrum extends Runner {
    * @see #it(String, Block)
    */
   public static void xit(final String behavior) {
-    xit(behavior, () -> {});
+    xit(behavior, () -> {
+    });
   }
 
   /**

@@ -98,19 +98,22 @@ class Suite implements Parent, Child {
   }
 
   @Override
-  public boolean isIgnored() {
-    return this.ignored;
-  }
-
-  @Override
   public void focus() {
-    if (this.ignored) return;
+    if (this.ignored) {
+      return;
+    }
+
     this.parent.focus(this);
   }
 
   @Override
   public void ignore() {
     this.ignored = true;
+  }
+
+  @Override
+  public boolean isIgnored() {
+    return this.ignored;
   }
 
   @Override

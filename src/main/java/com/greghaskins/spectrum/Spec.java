@@ -48,7 +48,10 @@ class Spec implements Child {
 
   @Override
   public void focus() {
-    if (this.ignored) return;
+    if (this.ignored) {
+      return;
+    }
+
     this.parent.focus(this);
   }
 

@@ -8,7 +8,7 @@ interface Parent {
 
   Parent NONE = new Parent() {
     @Override
-    public void focus(Child child) { }
+    public void focus(Child child) {}
 
     @Override
     public boolean isIgnored() {

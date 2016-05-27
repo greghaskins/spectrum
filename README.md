@@ -226,7 +226,7 @@ describe("Ignored specs", () -> {
             it("all its specs", () -> {
                 throw new Exception();
             });
-            
+
             fit("including focused specs", () -> {
                 throw new Exception();
             });
