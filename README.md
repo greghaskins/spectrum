@@ -199,6 +199,42 @@ describe("Focused specs", () -> {
 });
 ```
 
+### Ignored Specs
+
+You can ignore the runner on particular spec with `xit` or a suite with `xdescribe` so that only those specs get ignored. Nested focused specs will also be ignored.
+
+> from [IgnoredSpecs.java](src/test/java/specs/IgnoredSpecs.java)
+
+```java
+describe("Ignored specs", () -> {
+
+    xit("is ignored and will not run", () -> {
+        throw new Exception();
+    });
+
+    it("is not ignored and will run", () -> {
+        assertThat(true, is(true));
+    });
+
+    xdescribe("an ignored suite", () -> {
+
+        it("will not run", () -> {
+            throw new Exception();
+        });
+
+        describe("with nesting", () -> {
+            it("all its specs", () -> {
+                throw new Exception();
+            });
+
+            fit("including focused specs", () -> {
+                throw new Exception();
+            });
+        });
+    });
+});
+```
+
 ## Supported Features
 
 Spectrum moving toward a `1.0` release with close alignment to Jasmine's test declaration API. The library already supports a nice subset of those features:
@@ -208,7 +244,7 @@ Spectrum moving toward a `1.0` release with close alignment to Jasmine's test de
 - [x] `beforeEach` / `afterEach`
 - [x] `beforeAll` / `afterAll`
 - [x] `fit` / `fdescribe`
-- [ ] `xit` / `xdescribe`
+- [x] `xit` / `xdescribe`
 
 ### Non-Features
 

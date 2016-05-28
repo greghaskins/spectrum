@@ -24,6 +24,7 @@ class Suite implements Parent, Child {
 
   private final Description description;
   private final Parent parent;
+  private boolean ignored;
 
   public static Suite rootSuite(final Description description) {
     return new Suite(description, Parent.NONE);
@@ -32,6 +33,7 @@ class Suite implements Parent, Child {
   private Suite(final Description description, final Parent parent) {
     this.description = description;
     this.parent = parent;
+    this.ignored = parent.isIgnored();
   }
 
   public Suite addSuite(final String name) {
@@ -97,7 +99,21 @@ class Suite implements Parent, Child {
 
   @Override
   public void focus() {
+    if (this.ignored) {
+      return;
+    }
+
     this.parent.focus(this);
+  }
+
+  @Override
+  public void ignore() {
+    this.ignored = true;
+  }
+
+  @Override
+  public boolean isIgnored() {
+    return this.ignored;
   }
 
   @Override

@@ -4,10 +4,15 @@ interface Parent {
 
   void focus(Child child);
 
-  static final Parent NONE = new Parent() {
+  boolean isIgnored();
+
+  Parent NONE = new Parent() {
+    @Override
+    public void focus(Child child) {}
 
     @Override
-    public void focus(final Child child) {}
+    public boolean isIgnored() {
+      return false;
+    }
   };
-
 }
