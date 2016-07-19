@@ -56,7 +56,7 @@ public class IgnoredSpecs {
       });
 
       describe("with nesting", () -> {
-        it("cause specs in other suites to also be ignored", () -> {
+        it("cause specs in nested suites to also be ignored", () -> {
           final Result result = SpectrumRunner.run(getSuiteWithNestedIgnoredSuites());
           assertThat(result.getFailureCount(), is(0));
           assertThat(result.getRunCount(), is(1));
@@ -82,11 +82,7 @@ public class IgnoredSpecs {
         result.value = SpectrumRunner.run(getIgnoredSpecsExample());
       });
 
-      it("has three ignored specs", () -> {
-        assertThat(result.value.getIgnoreCount(), is(4));
-      });
-
-      it("does not run unfocused specs", () -> {
+      it("does not run ignored specs", () -> {
         assertThat(result.value.getFailureCount(), is(0));
       });
     });
@@ -224,9 +220,11 @@ public class IgnoredSpecs {
       {
         describe("Ignored specs", () -> {
 
-          xit("is ignored and will not run", () -> {
+          xit("with xit will not run", () -> {
             throw new Exception();
           });
+
+          xit("without a block are also ignored");
 
           it("is not ignored and will run", () -> {
             assertThat(true, is(true));
@@ -239,11 +237,11 @@ public class IgnoredSpecs {
             });
 
             describe("with nesting", () -> {
-              it("all its specs", () -> {
+              it("will also ignore all its specs", () -> {
                 throw new Exception();
               });
 
-              fit("including focused specs", () -> {
+              fit("even focused specs are ignored", () -> {
                 throw new Exception();
               });
             });

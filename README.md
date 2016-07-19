@@ -201,7 +201,7 @@ describe("Focused specs", () -> {
 
 ### Ignored Specs
 
-You can ignore the runner on particular spec with `xit` or a suite with `xdescribe` so that only those specs get ignored. Nested focused specs will also be ignored.
+You can ignore a spec with `xit` or ignore all the specs in a suite with `xdescribe`.
 
 > from [IgnoredSpecs.java](src/test/java/specs/IgnoredSpecs.java)
 
