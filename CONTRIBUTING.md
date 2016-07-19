@@ -56,10 +56,10 @@ This project essentially follows the GitHub Flow. See [this overview](https://gu
 ## Code Guidelines
 
 - Use the `gradlew` build script before committing. The command line is the source of truth on [Travis-CI](https://travis-ci.org/greghaskins/spectrum). Each commit should run green.
+- You'll need `java` (version 8) and `git` on your system `PATH`
 - Write tests for Spectrum using Spectrum. [Dogfooding](https://en.wikipedia.org/wiki/Eating_your_own_dog_food) helps find bugs and reveal missing features. Put your specs in `src/test/java/specs`.
 - All functional and bugfix changes should be [test-driven](https://en.wikipedia.org/wiki/Test-driven_development).
 - [Write good commit messages](http://chris.beams.io/posts/git-commit/)
 - This project follows [semantic versioning](http://semver.org/). If your change will break backward-compatibility, please clearly indicate that in your pull request.
 - Don't add any external dependencies (especially `compile` dependencies). The production code should depend only on `junit` to make integration as easy as possible.
-- Avoid using features in production code that are not backward-compatible to Java 6. Test code can use Java 8 lambdas and other features. This is open for discussion in [#27](https://github.com/greghaskins/spectrum/issues/27).
 - Use the code formatting and Checkstyle rules in the `config/` folder with your IDE to catch style issues as you go. These are enforced by the Gradle build.
