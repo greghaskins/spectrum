@@ -112,7 +112,7 @@ public class Spectrum extends Runner {
    *
    * @see #it(String, Block)
    */
-  public static void xit(final String behavior) {
+  public static void it(final String behavior) {
     xit(behavior, () -> {
     });
   }

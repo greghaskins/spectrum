@@ -102,7 +102,7 @@ public class IgnoredSpecs {
             assertThat(true, is(false));
           });
 
-          xit("is ignored and has no block");
+          it("does not have a block and is ignored");
         });
       }
     }
@@ -223,7 +223,7 @@ public class IgnoredSpecs {
             throw new Exception();
           });
 
-          xit("without a block are also ignored");
+          it("without a block are also ignored");
 
           it("is not ignored and will run", () -> {
             assertThat(true, is(true));
