@@ -70,19 +70,6 @@ public class Spectrum extends Runner {
   }
 
   /**
-   * Ignore the specific suite.
-   *
-   * @param context Description of the context for this suite
-   *
-   * @see #describe(String, Block)
-   *
-   */
-  public static void xdescribe(final String context) {
-    xdescribe(context, () -> {
-    });
-  }
-
-  /**
    * Declare a spec, or test, for an expected behavior of the system in this suite context.
    *
    * @param behavior Description of the expected behavior

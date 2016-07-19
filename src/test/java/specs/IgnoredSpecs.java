@@ -52,7 +52,7 @@ public class IgnoredSpecs {
       it("ignores tests that are xdescribe", () -> {
         final Result result = SpectrumRunner.run(getSuiteWithIgnoredSubSuites());
         assertThat(result.getRunCount(), is(1));
-        assertThat(result.getIgnoreCount(), is(4));
+        assertThat(result.getIgnoreCount(), is(3));
       });
 
       describe("with nesting", () -> {
@@ -147,12 +147,11 @@ public class IgnoredSpecs {
             assertThat(true, is(false));
           });
 
-          it("will also not run a focused test", () -> {
+          fit("will also not run a focused test", () -> {
             assertThat(true, is(false));
           });
         });
 
-        xdescribe("ignored describe with no block");
       }
     }
 
