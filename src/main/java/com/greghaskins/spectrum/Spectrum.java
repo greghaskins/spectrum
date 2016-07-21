@@ -88,8 +88,7 @@ public class Spectrum extends Runner {
    * @see #xit(String, Block)
    */
   public static void it(final String behavior) {
-    xit(behavior, () -> {
-    });
+    getCurrentSuite().addSpec(behavior, null).ignore();
   }
 
   /**
@@ -114,7 +113,7 @@ public class Spectrum extends Runner {
    * @see #it(String, Block)
    */
   public static void xit(final String behavior, final Block block) {
-    getCurrentSuite().addSpec(behavior, block).ignore();
+    it(behavior);
   }
 
   /**
