@@ -81,7 +81,7 @@ public class Spectrum extends Runner {
   }
 
   /**
-   * Declare a pending spec (without a block) that will be marked as ignored.
+   * Declare a pending spec (without a block) that will be ignored.
    *
    * @param behavior Description of the expected behavior
    *
@@ -106,10 +106,10 @@ public class Spectrum extends Runner {
   }
 
   /**
-   * Mark this specific spec as ignored.
+   * Mark a spec as ignored so that it will be skipped.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link Block} that verifies the system behaves as expected, but won't be run.
+   * @param block {@link Block} that will not run, since this spec is ignored.
    *
    * @see #it(String, Block)
    */
