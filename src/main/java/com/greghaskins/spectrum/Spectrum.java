@@ -70,19 +70,6 @@ public class Spectrum extends Runner {
   }
 
   /**
-   * Ignore the specific suite.
-   *
-   * @param context Description of the context for this suite
-   *
-   * @see #describe(String, Block)
-   *
-   */
-  public static void xdescribe(final String context) {
-    xdescribe(context, () -> {
-    });
-  }
-
-  /**
    * Declare a spec, or test, for an expected behavior of the system in this suite context.
    *
    * @param behavior Description of the expected behavior
@@ -91,6 +78,17 @@ public class Spectrum extends Runner {
    */
   public static void it(final String behavior, final Block block) {
     getCurrentSuite().addSpec(behavior, block);
+  }
+
+  /**
+   * Declare a pending spec (without a block) that will be ignored.
+   *
+   * @param behavior Description of the expected behavior
+   *
+   * @see #xit(String, Block)
+   */
+  public static void it(final String behavior) {
+    getCurrentSuite().addSpec(behavior, null).ignore();
   }
 
   /**
@@ -107,27 +105,15 @@ public class Spectrum extends Runner {
   }
 
   /**
-   * Mark this specific spec as ignored.
+   * Mark a spec as ignored so that it will be skipped.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link Block} that verifies the system behaves as expected, but won't be run.
+   * @param block {@link Block} that will not run, since this spec is ignored.
    *
    * @see #it(String, Block)
    */
   public static void xit(final String behavior, final Block block) {
-    getCurrentSuite().addSpec(behavior, block).ignore();
-  }
-
-  /**
-   * Mark this specific spec as ignored.
-   *
-   * @param behavior Description of the expected behavior
-   *
-   * @see #it(String, Block)
-   */
-  public static void xit(final String behavior) {
-    xit(behavior, () -> {
-    });
+    it(behavior);
   }
 
   /**

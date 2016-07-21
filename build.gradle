@@ -30,7 +30,7 @@ jacocoTestReport {
   }
 }
 
-task wrapper(type: Wrapper) { gradleVersion = '2.12' }
+task wrapper(type: Wrapper) { gradleVersion = '2.14.1' }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
   classifier = 'sources'

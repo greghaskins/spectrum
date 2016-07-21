@@ -16,7 +16,8 @@ public class WhenDescribingTheSpec {
 
   @Before
   public void before() throws Exception {
-    description = new Spectrum(Fixture.getSpecThatRequiresAConstructorParameter()).getDescription();
+    this.description =
+        new Spectrum(Fixture.getSpecThatRequiresAConstructorParameter()).getDescription();
   }
 
   @Test
@@ -40,7 +41,7 @@ public class WhenDescribingTheSpec {
   }
 
   private Description getDescriptionForExplodingContext() {
-    return description;
+    return this.description;
   }
 
 }

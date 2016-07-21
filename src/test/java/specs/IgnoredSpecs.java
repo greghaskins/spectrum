@@ -52,11 +52,11 @@ public class IgnoredSpecs {
       it("ignores tests that are xdescribe", () -> {
         final Result result = SpectrumRunner.run(getSuiteWithIgnoredSubSuites());
         assertThat(result.getRunCount(), is(1));
-        assertThat(result.getIgnoreCount(), is(4));
+        assertThat(result.getIgnoreCount(), is(3));
       });
 
       describe("with nesting", () -> {
-        it("cause specs in other suites to also be ignored", () -> {
+        it("cause specs in nested suites to also be ignored", () -> {
           final Result result = SpectrumRunner.run(getSuiteWithNestedIgnoredSuites());
           assertThat(result.getFailureCount(), is(0));
           assertThat(result.getRunCount(), is(1));
@@ -82,11 +82,7 @@ public class IgnoredSpecs {
         result.value = SpectrumRunner.run(getIgnoredSpecsExample());
       });
 
-      it("has three ignored specs", () -> {
-        assertThat(result.value.getIgnoreCount(), is(4));
-      });
-
-      it("does not run unfocused specs", () -> {
+      it("does not run ignored specs", () -> {
         assertThat(result.value.getFailureCount(), is(0));
       });
     });
@@ -106,7 +102,7 @@ public class IgnoredSpecs {
             assertThat(true, is(false));
           });
 
-          xit("is ignored and has no block");
+          it("does not have a block and is ignored");
         });
       }
     }
@@ -151,12 +147,11 @@ public class IgnoredSpecs {
             assertThat(true, is(false));
           });
 
-          it("will also not run a focused test", () -> {
+          fit("will also not run a focused test", () -> {
             assertThat(true, is(false));
           });
         });
 
-        xdescribe("ignored describe with no block");
       }
     }
 
@@ -224,9 +219,11 @@ public class IgnoredSpecs {
       {
         describe("Ignored specs", () -> {
 
-          xit("is ignored and will not run", () -> {
+          xit("with xit will not run", () -> {
             throw new Exception();
           });
+
+          it("without a block are also ignored");
 
           it("is not ignored and will run", () -> {
             assertThat(true, is(true));
@@ -239,11 +236,11 @@ public class IgnoredSpecs {
             });
 
             describe("with nesting", () -> {
-              it("all its specs", () -> {
+              it("will also ignore all its specs", () -> {
                 throw new Exception();
               });
 
-              fit("including focused specs", () -> {
+              fit("even focused specs are ignored", () -> {
                 throw new Exception();
               });
             });

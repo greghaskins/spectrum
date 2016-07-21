@@ -21,24 +21,24 @@ public class WhenDescribingTheSpec {
   public void before() throws Exception {
     final Description rootDescription =
         new Spectrum(getSpecWithNestedDescribeBlocks()).getDescription();
-    mainDescription = rootDescription.getChildren().get(0);
+    this.mainDescription = rootDescription.getChildren().get(0);
   }
 
   @Test
   public void theMainDescriptionHasTwoContextsAsChildren() throws Exception {
-    assertThat(mainDescription.getChildren(),
+    assertThat(this.mainDescription.getChildren(),
         contains(Description.createSuiteDescription("with a first child context"),
             Description.createSuiteDescription("with a second child context")));
   }
 
   @Test
   public void theFirstSubContextHasThreeTests() throws Exception {
-    assertThat(mainDescription.getChildren().get(0).getChildren(), hasSize(3));
+    assertThat(this.mainDescription.getChildren().get(0).getChildren(), hasSize(3));
   }
 
   @Test
   public void theSecondSubContextHasOneTest() throws Exception {
-    assertThat(mainDescription.getChildren().get(1).getChildren(), hasSize(1));
+    assertThat(this.mainDescription.getChildren().get(1).getChildren(), hasSize(1));
   }
 
   private static Class<?> getSpecWithNestedDescribeBlocks() {

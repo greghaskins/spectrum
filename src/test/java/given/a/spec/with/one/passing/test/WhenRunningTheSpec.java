@@ -14,17 +14,17 @@ public class WhenRunningTheSpec {
 
   @Before
   public void before() throws Exception {
-    result = SpectrumRunner.run(Fixture.getSpecWithOnePassingTest());
+    this.result = SpectrumRunner.run(Fixture.getSpecWithOnePassingTest());
   }
 
   @Test
   public void theRunCountIsOne() throws Exception {
-    assertThat(result.getRunCount(), is(1));
+    assertThat(this.result.getRunCount(), is(1));
   }
 
   @Test
   public void theRunIsSuccessful() throws Exception {
-    assertThat(result.wasSuccessful(), is(true));
+    assertThat(this.result.wasSuccessful(), is(true));
   }
 
 }

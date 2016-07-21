@@ -201,7 +201,7 @@ describe("Focused specs", () -> {
 
 ### Ignored Specs
 
-You can ignore the runner on particular spec with `xit` or a suite with `xdescribe` so that only those specs get ignored. Nested focused specs will also be ignored.
+You can ignore a spec with `xit` or ignore all the specs in a suite with `xdescribe`.
 
 > from [IgnoredSpecs.java](src/test/java/specs/IgnoredSpecs.java)
 
@@ -273,7 +273,7 @@ Then add the Spectrum dependency for your tests:
 
 ```groovy
 dependencies {
-  testCompile 'com.greghaskins:spectrum:0.6.1'
+  testCompile 'com.greghaskins:spectrum:0.7.0'
 }
 
 ```
@@ -299,7 +299,7 @@ Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
     <dependency>
       <groupId>com.greghaskins</groupId>
       <artifactId>spectrum</artifactId>
-      <version>0.6.1</version>
+      <version>0.7.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

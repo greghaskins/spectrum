@@ -17,17 +17,17 @@ public class WhenRunningTheSpec {
 
   @Before
   public void before() throws Exception {
-    result = SpectrumRunner.run(Fixture.getSpecThatRequiresAConstructorParameter());
+    this.result = SpectrumRunner.run(Fixture.getSpecThatRequiresAConstructorParameter());
   }
 
   @Test
   public void thereIsOneFailure() throws Exception {
-    assertThat(result.getFailureCount(), is(1));
+    assertThat(this.result.getFailureCount(), is(1));
   }
 
   @Test
   public void theFailureExplainsWhatHappened() throws Exception {
-    assertThat(result.getFailures().get(0),
+    assertThat(this.result.getFailures().get(0),
         is(failure("encountered an error", UnableToConstructSpecException.class,
             Fixture.getSpecThatRequiresAConstructorParameter().getName())));
   }

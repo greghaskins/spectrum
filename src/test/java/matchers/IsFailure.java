@@ -33,8 +33,9 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
 
     describeTo(mismatchDescription, actualMethodName, actualExceptionType, actualMessage);
 
-    return methodName.equals(actualMethodName) && exceptionType.equals(actualExceptionType)
-        && failureMessage.equals(actualMessage);
+    return this.methodName.equals(actualMethodName)
+        && this.exceptionType.equals(actualExceptionType)
+        && this.failureMessage.equals(actualMessage);
   }
 
   private String getMethodName(final Failure failure) {
@@ -50,7 +51,7 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
 
   @Override
   public void describeTo(final Description description) {
-    describeTo(description, methodName, exceptionType, failureMessage);
+    describeTo(description, this.methodName, this.exceptionType, this.failureMessage);
   }
 
   private void describeTo(final Description description, final String methodName,

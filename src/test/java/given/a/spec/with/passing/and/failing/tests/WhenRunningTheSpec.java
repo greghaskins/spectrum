@@ -18,22 +18,22 @@ public class WhenRunningTheSpec {
 
   @Before
   public void before() throws Exception {
-    result = SpectrumRunner.run(Fixture.getSpecWithPassingAndFailingTests());
+    this.result = SpectrumRunner.run(Fixture.getSpecWithPassingAndFailingTests());
   }
 
   @Test
   public void fiveTestsAreRun() throws Exception {
-    assertThat(result.getRunCount(), is(5));
+    assertThat(this.result.getRunCount(), is(5));
   }
 
   @Test
   public void twoTestsFail() throws Exception {
-    assertThat(result.getFailureCount(), is(2));
+    assertThat(this.result.getFailureCount(), is(2));
   }
 
   @Test
   public void theFailuresDescribeWhatWentWrong() throws Exception {
-    final List<Failure> failures = result.getFailures();
+    final List<Failure> failures = this.result.getFailures();
     assertThat(failures.get(0),
         is(failure("fails test 1", AssertionError.class, "failure message one")));
     assertThat(failures.get(1),
