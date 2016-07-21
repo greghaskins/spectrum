@@ -18,7 +18,7 @@ public class WhenDescribingTheSpec {
 
   @Before
   public void before() throws Exception {
-    description = new Spectrum(Fixture.getSpecWithPassingAndFailingTests()).getDescription();
+    this.description = new Spectrum(Fixture.getSpecWithPassingAndFailingTests()).getDescription();
   }
 
   @Test
@@ -45,7 +45,7 @@ public class WhenDescribingTheSpec {
   }
 
   private Description getFirstContext() {
-    return description.getChildren().get(0);
+    return this.description.getChildren().get(0);
   }
 
 }

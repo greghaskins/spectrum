@@ -15,17 +15,17 @@ public class WhenRunningTheSpec {
 
   @Before
   public void before() throws Exception {
-    result = SpectrumRunner.run(Fixture.getSpecThatThrowsAnExceptionInConstructor());
+    this.result = SpectrumRunner.run(Fixture.getSpecThatThrowsAnExceptionInConstructor());
   }
 
   @Test
   public void thereIsOneFailure() throws Exception {
-    assertThat(result.getFailureCount(), is(1));
+    assertThat(this.result.getFailureCount(), is(1));
   }
 
   @Test
   public void theFailureExplainsWhatHappened() throws Exception {
-    assertThat(result.getFailures().get(0),
+    assertThat(this.result.getFailures().get(0),
         is(failure("encountered an error", Fixture.SomeException.class, "kaboom")));
   }
 

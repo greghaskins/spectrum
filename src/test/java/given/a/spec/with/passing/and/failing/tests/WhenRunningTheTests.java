@@ -10,6 +10,7 @@ import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
 import org.mockito.InOrder;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 public class WhenRunningTheTests {
@@ -21,9 +22,9 @@ public class WhenRunningTheTests {
   @Before
   public void before() throws Exception {
     final Runner runner = new Spectrum(Fixture.getSpecWithPassingAndFailingTests());
-    runNotifier = mock(RunNotifier.class);
+    this.runNotifier = mock(RunNotifier.class);
 
-    runner.run(runNotifier);
+    runner.run(this.runNotifier);
   }
 
   @Test
@@ -31,10 +32,10 @@ public class WhenRunningTheTests {
     final Description descriptionOfFailingTest =
         Description.createTestDescription(CONTEXT_NAME, "fails test 1");
 
-    final InOrder inOrder = Mockito.inOrder(runNotifier);
-    inOrder.verify(runNotifier).fireTestStarted(descriptionOfFailingTest);
-    inOrder.verify(runNotifier).fireTestFailure(Mockito.any());
-    inOrder.verify(runNotifier).fireTestFinished(descriptionOfFailingTest);
+    final InOrder inOrder = Mockito.inOrder(this.runNotifier);
+    inOrder.verify(this.runNotifier).fireTestStarted(descriptionOfFailingTest);
+    inOrder.verify(this.runNotifier).fireTestFailure(Matchers.any());
+    inOrder.verify(this.runNotifier).fireTestFinished(descriptionOfFailingTest);
   }
 
   @Test
@@ -42,9 +43,9 @@ public class WhenRunningTheTests {
     final Description descriptionOfPassingTest =
         Description.createTestDescription(CONTEXT_NAME, "passes test 3");
 
-    final InOrder inOrder = Mockito.inOrder(runNotifier);
-    inOrder.verify(runNotifier).fireTestStarted(descriptionOfPassingTest);
-    inOrder.verify(runNotifier).fireTestFinished(descriptionOfPassingTest);
+    final InOrder inOrder = Mockito.inOrder(this.runNotifier);
+    inOrder.verify(this.runNotifier).fireTestStarted(descriptionOfPassingTest);
+    inOrder.verify(this.runNotifier).fireTestFinished(descriptionOfPassingTest);
   }
 
 }

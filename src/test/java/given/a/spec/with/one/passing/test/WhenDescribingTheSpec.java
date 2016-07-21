@@ -16,17 +16,18 @@ public class WhenDescribingTheSpec {
 
   @Before
   public void before() throws Exception {
-    description = new Spectrum(Fixture.getSpecWithOnePassingTest()).getDescription();
+    this.description = new Spectrum(Fixture.getSpecWithOnePassingTest()).getDescription();
   }
 
   @Test
   public void theRootSuiteIsTheTestClass() throws Exception {
-    assertThat(description.getDisplayName(), is(Fixture.getSpecWithOnePassingTest().getName()));
+    assertThat(this.description.getDisplayName(),
+        is(Fixture.getSpecWithOnePassingTest().getName()));
   }
 
   @Test
   public void thereIsOneChildSuite() throws Exception {
-    assertThat(description.getChildren(), hasSize(1));
+    assertThat(this.description.getChildren(), hasSize(1));
   }
 
   @Test
@@ -45,7 +46,7 @@ public class WhenDescribingTheSpec {
   }
 
   private Description getFirstChildSuite() {
-    return description.getChildren().get(0);
+    return this.description.getChildren().get(0);
   }
 
 }

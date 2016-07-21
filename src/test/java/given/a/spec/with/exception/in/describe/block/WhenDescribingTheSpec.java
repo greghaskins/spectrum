@@ -16,7 +16,7 @@ public class WhenDescribingTheSpec {
 
   @Before
   public void before() throws Exception {
-    description =
+    this.description =
         new Spectrum(Fixture.getSpecThatThrowsAnExceptionInDescribeBlock()).getDescription();
   }
 
@@ -40,7 +40,7 @@ public class WhenDescribingTheSpec {
   }
 
   private Description getDescriptionForExplodingContext() {
-    return description.getChildren().get(0);
+    return this.description.getChildren().get(0);
   }
 
 }

@@ -57,6 +57,6 @@ class Spec implements Child {
 
   @Override
   public void ignore() {
-    ignored = true;
+    this.ignored = true;
   }
 }
