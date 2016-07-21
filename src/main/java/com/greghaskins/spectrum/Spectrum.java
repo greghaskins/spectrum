@@ -81,6 +81,18 @@ public class Spectrum extends Runner {
   }
 
   /**
+   * Declare a pending spec (without a block) that will be marked as ignored.
+   *
+   * @param behavior Description of the expected behavior
+   *
+   * @see #xit(String, Block)
+   */
+  public static void it(final String behavior) {
+    xit(behavior, () -> {
+    });
+  }
+
+  /**
    * Focus on this specific spec, while ignoring others.
    *
    * @param behavior Description of the expected behavior
@@ -103,18 +115,6 @@ public class Spectrum extends Runner {
    */
   public static void xit(final String behavior, final Block block) {
     getCurrentSuite().addSpec(behavior, block).ignore();
-  }
-
-  /**
-   * Mark this specific spec as ignored.
-   *
-   * @param behavior Description of the expected behavior
-   *
-   * @see #it(String, Block)
-   */
-  public static void it(final String behavior) {
-    xit(behavior, () -> {
-    });
   }
 
   /**
