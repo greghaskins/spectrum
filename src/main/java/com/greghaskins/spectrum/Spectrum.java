@@ -6,6 +6,8 @@ import org.junit.runner.notification.RunNotifier;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public class Spectrum extends Runner {
 
@@ -172,7 +174,26 @@ public class Spectrum extends Runner {
     getCurrentSuite().afterAll(block);
   }
 
+  /**
+   * Define a memoized helper function. The value will be cached across multiple calls in the same
+   * spec, but not across specs.
+   *
+   * <p>
+   * Note that {@code let} is lazy-evaluated: the {@code supplier} is not called until the first
+   * time it is used.
+   * </p>
+   *
+   * @param <T> The type of value
+   *
+   * @param supplier Function that generates the value
+   * @return memoized supplier
+   */
+  public static <T> Supplier<T> let(final Supplier<T> supplier) {
+    final ConcurrentHashMap<Supplier<T>, T> cache = new ConcurrentHashMap<>(1);
+    afterEach(() -> cache.clear());
 
+    return () -> cache.computeIfAbsent(supplier, s -> s.get());
+  }
 
   /**
    * Create a new Value wrapper. This is just a pointer to an instance of type <tt>T</tt>, which is
