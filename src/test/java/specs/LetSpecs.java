@@ -22,21 +22,22 @@ public class LetSpecs {
   {
     describe("The `let` helper function", () -> {
 
-      final Supplier<List<String>> words = let(() -> new ArrayList<>(asList("foo", "bar")));
+      final Supplier<List<String>> items = let(() -> new ArrayList<>(asList("foo", "bar")));
 
       it("is a way to supply a value for specs", () -> {
-        assertThat(words.get(), contains("foo", "bar"));
+        assertThat(items.get(), contains("foo", "bar"));
       });
 
-      it("caches the value so it doesn't get created multiple times", () -> {
-        words.get().add("baz");
-        words.get().add("blah");
-        assertThat(words.get(), is(sameInstance(words.get())));
-        assertThat(words.get(), contains("foo", "bar", "baz", "blah"));
+      it("caches the value so it doesn't get created multiple times for the same spec", () -> {
+        assertThat(items.get(), is(sameInstance(items.get())));
+
+        items.get().add("baz");
+        items.get().add("blah");
+        assertThat(items.get(), contains("foo", "bar", "baz", "blah"));
       });
 
       it("creates a fresh value for every spec", () -> {
-        assertThat(words.get(), contains("foo", "bar"));
+        assertThat(items.get(), contains("foo", "bar"));
       });
     });
   }
