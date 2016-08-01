@@ -235,9 +235,9 @@ describe("Ignored specs", () -> {
 });
 ```
 
-### Shared Variables Across Specs
+### Common Variable Initialization
 
-The `let` helper function makes it easier to initialize common variables that are used in multiple specs. This also helps work around Java's restriction that closures can only reference `final` variables in the containing scope. Values are cached within a spec, and lazily re-initialized between specs as in [RSpec #let](http://rspec.info/documentation/3.5/rspec-core/RSpec/Core/MemoizedHelpers/ClassMethods.html#let-instance_method).
+The `let` helper function makes it easy to initialize common variables that are used in multiple specs. This also helps work around Java's restriction that closures can only reference `final` variables in the containing scope. Values are cached within a spec, and lazily re-initialized between specs as in [RSpec #let](http://rspec.info/documentation/3.5/rspec-core/RSpec/Core/MemoizedHelpers/ClassMethods.html#let-instance_method).
 
 > from [LetSpecs.java](src/test/java/specs/LetSpecs.java)
 
