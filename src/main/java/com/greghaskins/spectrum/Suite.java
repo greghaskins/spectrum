@@ -71,7 +71,6 @@ class Suite implements Parent, Child {
   }
 
   private void addChild(final Child child) {
-    this.description.addChild(child.getDescription());
     this.children.add(child);
   }
 
@@ -143,21 +142,25 @@ class Suite implements Parent, Child {
     try {
       this.afterAll.run();
     } catch (final Throwable error) {
-      final Description failureDescription =
-          Description.createTestDescription(this.description.getClassName(), "error in afterAll");
-      this.description.addChild(failureDescription);
-      notifier.fireTestFailure(new Failure(failureDescription, error));
+      notifier.fireTestFailure(new Failure(this.description, error));
     }
   }
 
   @Override
   public Description getDescription() {
-    return this.description;
+    final Description copy = this.description.childlessCopy();
+    this.children.stream().forEach((child) -> copy.addChild(child.getDescription()));
+
+    return copy;
   }
 
   @Override
   public int testCount() {
     return this.children.stream().mapToInt((child) -> child.testCount()).sum();
+  }
+
+  public void removeAllChildren() {
+    this.children.clear();
   }
 
 }
