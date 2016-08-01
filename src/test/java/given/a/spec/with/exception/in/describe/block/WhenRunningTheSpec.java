@@ -19,7 +19,7 @@ public class WhenRunningTheSpec {
   }
 
   @Test
-  public void thereIsOneFailure() throws Exception {
+  public void thereIsOneAndOnlyOneFailure() throws Exception {
     assertThat(this.result.getFailureCount(), is(1));
   }
 
