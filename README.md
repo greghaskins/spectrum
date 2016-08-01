@@ -235,6 +235,35 @@ describe("Ignored specs", () -> {
 });
 ```
 
+### Common Variable Initialization
+
+The `let` helper function makes it easy to initialize common variables that are used in multiple specs. This also helps work around Java's restriction that closures can only reference `final` variables in the containing scope. Values are cached within a spec, and lazily re-initialized between specs as in [RSpec #let](http://rspec.info/documentation/3.5/rspec-core/RSpec/Core/MemoizedHelpers/ClassMethods.html#let-instance_method).
+
+> from [LetSpecs.java](src/test/java/specs/LetSpecs.java)
+
+```java
+describe("The `let` helper function", () -> {
+
+  final Supplier<List<String>> items = let(() -> new ArrayList<>(asList("foo", "bar")));
+
+  it("is a way to supply a value for specs", () -> {
+    assertThat(items.get(), contains("foo", "bar"));
+  });
+
+  it("caches the value so it doesn't get created multiple times for the same spec", () -> {
+    assertThat(items.get(), is(sameInstance(items.get())));
+
+    items.get().add("baz");
+    items.get().add("blah");
+    assertThat(items.get(), contains("foo", "bar", "baz", "blah"));
+  });
+
+  it("creates a fresh value for every spec", () -> {
+    assertThat(items.get(), contains("foo", "bar"));
+  });
+});
+```
+
 ## Supported Features
 
 Spectrum moving toward a `1.0` release with close alignment to Jasmine's test declaration API. The library already supports a nice subset of those features:

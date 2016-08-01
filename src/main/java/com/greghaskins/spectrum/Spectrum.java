@@ -6,6 +6,8 @@ import org.junit.runner.notification.RunNotifier;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public class Spectrum extends Runner {
 
@@ -33,7 +35,7 @@ public class Spectrum extends Runner {
    *
    */
   public static void describe(final String context, final Block block) {
-    final Suite suite = getCurrentSuite().addSuite(context);
+    final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
     beginDefintion(suite, block);
   }
 
@@ -48,7 +50,7 @@ public class Spectrum extends Runner {
    *
    */
   public static void fdescribe(final String context, final Block block) {
-    final Suite suite = getCurrentSuite().addSuite(context);
+    final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
     suite.focus();
     beginDefintion(suite, block);
   }
@@ -64,7 +66,7 @@ public class Spectrum extends Runner {
    *
    */
   public static void xdescribe(final String context, final Block block) {
-    final Suite suite = getCurrentSuite().addSuite(context);
+    final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
     suite.ignore();
     beginDefintion(suite, block);
   }
@@ -77,7 +79,7 @@ public class Spectrum extends Runner {
    *        {@link java.lang.Throwable Throwable} if that expectation is not met.
    */
   public static void it(final String behavior, final Block block) {
-    getCurrentSuite().addSpec(behavior, block);
+    getCurrentSuiteBeingDeclared().addSpec(behavior, block);
   }
 
   /**
@@ -88,7 +90,7 @@ public class Spectrum extends Runner {
    * @see #xit(String, Block)
    */
   public static void it(final String behavior) {
-    getCurrentSuite().addSpec(behavior, null).ignore();
+    getCurrentSuiteBeingDeclared().addSpec(behavior, null).ignore();
   }
 
   /**
@@ -101,7 +103,7 @@ public class Spectrum extends Runner {
    * @see #it(String, Block)
    */
   public static void fit(final String behavior, final Block block) {
-    getCurrentSuite().addSpec(behavior, block).focus();
+    getCurrentSuiteBeingDeclared().addSpec(behavior, block).focus();
   }
 
   /**
@@ -127,7 +129,7 @@ public class Spectrum extends Runner {
    * @param block {@link Block} to run once before each spec
    */
   public static void beforeEach(final Block block) {
-    getCurrentSuite().beforeEach(block);
+    getCurrentSuiteBeingDeclared().beforeEach(block);
   }
 
   /**
@@ -141,7 +143,7 @@ public class Spectrum extends Runner {
    * @param block {@link Block} to run once after each spec
    */
   public static void afterEach(final Block block) {
-    getCurrentSuite().afterEach(block);
+    getCurrentSuiteBeingDeclared().afterEach(block);
   }
 
   /**
@@ -155,7 +157,7 @@ public class Spectrum extends Runner {
    * @param block {@link Block} to run once before all specs in this suite
    */
   public static void beforeAll(final Block block) {
-    getCurrentSuite().beforeAll(block);
+    getCurrentSuiteBeingDeclared().beforeAll(block);
   }
 
   /**
@@ -169,10 +171,35 @@ public class Spectrum extends Runner {
    * @param block {@link Block} to run once after all specs in this suite
    */
   public static void afterAll(final Block block) {
-    getCurrentSuite().afterAll(block);
+    getCurrentSuiteBeingDeclared().afterAll(block);
   }
 
+  /**
+   * Define a memoized helper function. The value will be cached across multiple calls in the same
+   * spec, but not across specs.
+   *
+   * <p>
+   * Note that {@code let} is lazy-evaluated: the {@code supplier} is not called until the first
+   * time it is used.
+   * </p>
+   *
+   * @param <T> The type of value
+   *
+   * @param supplier Function that generates the value
+   * @return memoized supplier
+   */
+  public static <T> Supplier<T> let(final Supplier<T> supplier) {
+    final ConcurrentHashMap<Supplier<T>, T> cache = new ConcurrentHashMap<>(1);
+    afterEach(() -> cache.clear());
 
+    return () -> {
+      if (getCurrentSuiteBeingDeclared() == null) {
+        return cache.computeIfAbsent(supplier, s -> s.get());
+      }
+      throw new IllegalStateException("Cannot use the value from let() in a suite declaration. "
+          + "It may only be used in the context of a running spec.");
+    };
+  }
 
   /**
    * Create a new Value wrapper. This is just a pointer to an instance of type <tt>T</tt>, which is
@@ -262,7 +289,7 @@ public class Spectrum extends Runner {
     suiteStack.pop();
   }
 
-  private static synchronized Suite getCurrentSuite() {
+  private static synchronized Suite getCurrentSuiteBeingDeclared() {
     return suiteStack.peek();
   }
 
