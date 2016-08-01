@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
@@ -247,6 +248,7 @@ public class FixturesSpec {
         final Result result = SpectrumRunner.run(getSpecWithExplodingAfterAll());
         final Failure failure = result.getFailures().get(0);
         assertThat(failure.getDescription().getClassName(), is("Exploding afterAll"));
+        assertThat(failure.getDescription().getMethodName(), is(nullValue()));
       });
 
       it("have a failure on the first exception", () -> {

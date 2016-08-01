@@ -142,10 +142,7 @@ class Suite implements Parent, Child {
     try {
       this.afterAll.run();
     } catch (final Throwable error) {
-      final Description failureDescription =
-          Description.createTestDescription(this.description.getClassName(), "error in afterAll");
-      this.description.addChild(failureDescription);
-      notifier.fireTestFailure(new Failure(failureDescription, error));
+      notifier.fireTestFailure(new Failure(this.description, error));
     }
   }
 
