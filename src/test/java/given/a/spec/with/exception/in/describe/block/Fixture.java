@@ -1,14 +1,27 @@
 package given.a.spec.with.exception.in.describe.block;
 
 import static com.greghaskins.spectrum.Spectrum.describe;
+import static com.greghaskins.spectrum.Spectrum.it;
 
 class Fixture {
 
   public static Class<?> getSpecThatThrowsAnExceptionInDescribeBlock() {
+    @SuppressWarnings("unused")
     class Spec {
       {
         describe("an exploding context", () -> {
-          throw new SomeException("kaboom");
+
+          it("should not run", () -> {
+            throw new Exception();
+          });
+
+          if (true) {
+            throw new SomeException("kaboom");
+          }
+
+          it("also should not run", () -> {
+            throw new Exception();
+          });
         });
       }
     }

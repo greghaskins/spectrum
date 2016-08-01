@@ -254,6 +254,7 @@ public class Spectrum extends Runner {
     try {
       definitionBlock.run();
     } catch (final Throwable error) {
+      suite.removeAllChildren();
       it("encountered an error", () -> {
         throw error;
       });
