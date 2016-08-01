@@ -192,7 +192,13 @@ public class Spectrum extends Runner {
     final ConcurrentHashMap<Supplier<T>, T> cache = new ConcurrentHashMap<>(1);
     afterEach(() -> cache.clear());
 
-    return () -> cache.computeIfAbsent(supplier, s -> s.get());
+    return () -> {
+      if (getCurrentSuite() == null) {
+        return cache.computeIfAbsent(supplier, s -> s.get());
+      }
+      throw new IllegalStateException("Cannot use the value from let() in a suite declaration. "
+          + "It may only be used in the context of a running spec.");
+    };
   }
 
   /**
