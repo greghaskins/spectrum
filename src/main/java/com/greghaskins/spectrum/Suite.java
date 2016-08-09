@@ -65,7 +65,8 @@ class Suite implements Parent, Child {
       } catch (Throwable throwable) {
         try {
           this.afterEach.run();
-        } catch (Throwable t) {
+        } catch (Throwable ignored) {
+          // ignored
         }
         throw throwable;
       }

@@ -1,13 +1,14 @@
 package given.a.spec.with.exception.in.beforeeach.block.and.aftereach.block;
 
-import com.greghaskins.spectrum.Spectrum;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.Description;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+
+import com.greghaskins.spectrum.Spectrum;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.Description;
 
 public class WhenDescribingTheSpec {
 

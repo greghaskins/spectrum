@@ -1,13 +1,13 @@
 package given.a.spec.with.exception.in.aftereach.block;
 
+import static matchers.IsFailure.failure;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import helpers.SpectrumRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Result;
-
-import static matchers.IsFailure.failure;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
 public class WhenRunningTheSpec {
 
