@@ -6,11 +6,14 @@ import static com.greghaskins.spectrum.Spectrum.beforeAll;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.let;
 import static com.greghaskins.spectrum.Spectrum.value;
+import static com.greghaskins.spectrum.Spectrum.xdescribe;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -26,6 +29,9 @@ import org.junit.runner.notification.Failure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @RunWith(Spectrum.class)
 public class FixturesSpec {
@@ -325,6 +331,123 @@ public class FixturesSpec {
         assertThat(items, contains("after3", "after2", "after1"));
       });
 
+    });
+
+    xdescribe("Fixtures with multiple errors", () -> {
+
+      final Function<Supplier<Result>, Supplier<List<String>>> getFailureMessages =
+          (result) -> () -> result.get()
+              .getFailures()
+              .stream()
+              .map((failure) -> failure.getMessage())
+              .collect(Collectors.toList());
+
+      describe("in beforeEach and afterEach", () -> {
+
+        final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+          describe("an explosive suite", () -> {
+
+            beforeEach(() -> {
+              throw new Exception("boom beforeEach 1");
+            });
+            beforeEach(() -> {
+              throw new Exception("boom beforeEach 2");
+            });
+
+            afterEach(() -> {
+              throw new Exception("boom afterEach 1");
+            });
+            afterEach(() -> {
+              throw new Exception("boom afterEach 2");
+            });
+
+            it("explodes", () -> {
+              throw new Exception("boom in spec");
+            });
+          });
+        }));
+
+        final Supplier<List<String>> failureMessages = let(getFailureMessages.apply(result));
+
+        it("should stop running beforeEach blocks after the first error", () -> {
+          assertThat(failureMessages.get(), hasItem("boom beforeEach 1"));
+          assertThat(failureMessages.get(), not(hasItem("boom beforeEach 2")));
+        });
+
+        it("should report all errors individually", () -> {
+          assertThat(failureMessages.get(),
+              contains(
+                  "boom beforeEach 1",
+                  "boom afterEach 2",
+                  "boom afterEach 1"));
+        });
+
+      });
+
+      describe("in beforeAll and afterAll", () -> {
+
+        final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+          describe("an explosive suite", () -> {
+
+            beforeAll(() -> {
+              throw new Exception("boom beforeAll 1");
+            });
+            beforeAll(() -> {
+              throw new Exception("boom beforeAll 2");
+            });
+
+
+            beforeEach(() -> {
+              throw new Exception("boom beforeEach");
+            });
+
+            afterEach(() -> {
+              throw new Exception("boom afterEach");
+            });
+
+
+            afterAll(() -> {
+              throw new Exception("boom afterAll 1");
+            });
+            afterAll(() -> {
+              throw new Exception("boom afterAll 2");
+            });
+
+
+            it("explodes", () -> {
+              throw new Exception("boom in spec");
+            });
+          });
+        }));
+
+        final Supplier<List<String>> failureMessages = let(getFailureMessages.apply(result));
+
+        it("stop running beforeAll blocks after the first error", () -> {
+          assertThat(failureMessages.get(), hasItem("boom beforeAll 1"));
+          assertThat(failureMessages.get(), not(hasItem("boom beforeAll 2")));
+        });
+
+        it("does not run beforeEach", () -> {
+          assertThat(failureMessages.get(), not(hasItem("boom beforeEach")));
+        });
+
+        it("does not run afterEach", () -> {
+          assertThat(failureMessages.get(), not(hasItem("boom afterEach")));
+        });
+
+        it("does not run any specs", () -> {
+          assertThat(failureMessages.get(), not(hasItem("boom in spec")));
+        });
+
+        it("should report all errors individually", () -> {
+          assertThat(failureMessages.get(),
+              contains(
+                  "boom beforeAll 1",
+                  "boom afterAll 2",
+                  "boom afterAll 1"));
+        });
+
+      });
     });
 
   }
