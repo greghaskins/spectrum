@@ -58,13 +58,19 @@ class Suite implements Parent, Child {
         Description.createTestDescription(this.description.getClassName(), name);
 
     final Block specBlockInContext = () -> {
+      this.beforeAll.run();
       try {
-        this.beforeAll.run();
         this.beforeEach.run();
         block.run();
-      } finally {
-        this.afterEach.run();
+      } catch (Throwable throwable) {
+        try {
+          this.afterEach.run();
+        } catch (Throwable ignored) {
+          ignored.printStackTrace();
+        }
+        throw throwable;
       }
+      this.afterEach.run();
     };
 
     return new Spec(specDescription, specBlockInContext, this);
