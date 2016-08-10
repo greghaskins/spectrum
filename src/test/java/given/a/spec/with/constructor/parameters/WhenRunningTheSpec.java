@@ -4,9 +4,9 @@ import static matchers.IsFailure.failure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import com.greghaskins.spectrum.SpectrumHelper;
 import com.greghaskins.spectrum.UnableToConstructSpecException;
 
-import helpers.SpectrumRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Result;
@@ -17,7 +17,7 @@ public class WhenRunningTheSpec {
 
   @Before
   public void before() throws Exception {
-    this.result = SpectrumRunner.run(Fixture.getSpecThatRequiresAConstructorParameter());
+    this.result = SpectrumHelper.run(Fixture.getSpecThatRequiresAConstructorParameter());
   }
 
   @Test

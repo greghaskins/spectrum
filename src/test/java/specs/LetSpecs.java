@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
@@ -47,7 +48,7 @@ public class LetSpecs {
 
         final Supplier<Result> result = let(() -> {
           try {
-            return helpers.SpectrumRunner.run(getSuiteThatUsesLetValueOutsideSpec());
+            return SpectrumHelper.run(getSuiteThatUsesLetValueOutsideSpec());
           } catch (final Exception exception) {
             throw new RuntimeException(exception);
           }

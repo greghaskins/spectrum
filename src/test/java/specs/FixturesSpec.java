@@ -18,8 +18,8 @@ import static org.hamcrest.Matchers.nullValue;
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
 import com.greghaskins.spectrum.Spectrum.Value;
+import com.greghaskins.spectrum.SpectrumHelper;
 
-import helpers.SpectrumRunner;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
@@ -213,7 +213,7 @@ public class FixturesSpec {
     describe("A beforeEach block that explodes", () -> {
 
       it("causes all tests in that context to fail", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeEach());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingBeforeEach());
         assertThat(result.getFailureCount(), is(2));
       });
 
@@ -222,7 +222,7 @@ public class FixturesSpec {
     describe("An afterEach block that explodes", () -> {
 
       it("causes all tests in that context to fail", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingAfterEach());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingAfterEach());
         assertThat(result.getFailureCount(), is(2));
       });
 
@@ -231,7 +231,7 @@ public class FixturesSpec {
     describe("beforeAll blocks that explode", () -> {
 
       it("cause all tests in that context and its children to fail", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeAll());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingBeforeAll());
         assertThat(result.getFailureCount(), is(3));
       });
 
@@ -240,19 +240,19 @@ public class FixturesSpec {
     describe("afterAll blocks that explode", () -> {
 
       it("cause the context to fail once", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingAfterAll());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingAfterAll());
         assertThat(result.getFailureCount(), is(1));
       });
 
       it("have a failure associated with the context", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingAfterAll());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingAfterAll());
         final Failure failure = result.getFailures().get(0);
         assertThat(failure.getDescription().getClassName(), is("Exploding afterAll"));
         assertThat(failure.getDescription().getMethodName(), is(nullValue()));
       });
 
       it("have a failure on the first exception", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingAfterAll());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingAfterAll());
         final Failure failure = result.getFailures().get(0);
         assertThat(failure.getMessage(), is("boom one"));
       });
@@ -284,7 +284,7 @@ public class FixturesSpec {
       describe("when a spec explodes", () -> {
 
         it("still run", () -> {
-          final Result result = SpectrumRunner.run(getSuiteWithExplodingSpec());
+          final Result result = SpectrumHelper.run(getSuiteWithExplodingSpec());
           assertThat(result.getFailureCount(), is(1));
           assertThat(result.getFailures().get(0).getMessage(), containsString("boom"));
         });
@@ -294,7 +294,7 @@ public class FixturesSpec {
       describe("when another afterEach explodes", () -> {
 
         it("still run, too", () -> {
-          final Result result = SpectrumRunner.run(getSuiteWithExplodingAndNonExplodingAfterEach());
+          final Result result = SpectrumHelper.run(getSuiteWithExplodingAndNonExplodingAfterEach());
           assertThat(result.getFailureCount(), is(1));
           assertThat(result.getFailures().get(0).getMessage(), containsString("boom"));
         });

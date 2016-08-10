@@ -1,12 +1,10 @@
-package helpers;
-
-import com.greghaskins.spectrum.Spectrum;
+package com.greghaskins.spectrum;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
 
-public class SpectrumRunner {
+public class SpectrumHelper {
 
   public static Result run(final Class<?> specClass) throws Exception {
     return new JUnitCore().run(Request.runner(new Spectrum(specClass)));

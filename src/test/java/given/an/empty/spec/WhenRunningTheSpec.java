@@ -10,7 +10,7 @@ public class WhenRunningTheSpec {
 
   @Test
   public void theRunCountIsZero() throws Exception {
-    final Result result = helpers.SpectrumRunner.run(Fixture.getEmptySpec());
+    final Result result = com.greghaskins.spectrum.SpectrumHelper.run(Fixture.getEmptySpec());
     assertThat(result.getRunCount(), is(0));
   }
 

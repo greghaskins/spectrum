@@ -6,8 +6,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 
-import helpers.SpectrumRunner;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
@@ -18,7 +18,7 @@ public class RunnerSpec {
     describe("Contexts with no tests", () -> {
 
       it("are ignored", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithNoTests());
+        final Result result = SpectrumHelper.run(getSpecWithNoTests());
         assertThat(result.getIgnoreCount(), is(2));
       });
 
