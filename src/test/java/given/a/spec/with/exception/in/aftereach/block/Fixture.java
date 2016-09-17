@@ -7,7 +7,6 @@ import static com.greghaskins.spectrum.Spectrum.it;
 class Fixture {
 
   public static Class<?> getSpecThatThrowsAnExceptionInAfterEachBlock() {
-    @SuppressWarnings("unused")
     class Spec {
       {
         describe("an exploding afterEach", () -> {
