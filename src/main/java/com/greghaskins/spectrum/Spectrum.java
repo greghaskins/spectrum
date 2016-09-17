@@ -206,16 +206,19 @@ public class Spectrum extends Runner {
    * <tt>null</tt> by default. Having a reference that can be <tt>final</tt> , but with a mutable
    * <tt>value</tt> is helpful when working with Java closures.
    *
+   * @deprecated Use {@link #let(Supplier)} instead.
+   *
    * @param <T> The type of object to wrap
    *
    * @return A new wrapper object with <tt>null</tt> instance of <tt>T</tt>.
    */
+  @Deprecated
   public static <T> Value<T> value() {
     return new Value<>(null);
   }
 
   /**
-   * Deprecated. Use {@link #value()} instead.
+   * @deprecated Use {@link #let(Supplier)} instead.
    *
    * @param <T> The type of object to wrap
    * @param type Class of type <tt>T</tt> to wrap
@@ -232,15 +235,22 @@ public class Spectrum extends Runner {
    * initialized to <tt>startingValue</tt> by default. Having a reference that can be <tt>final</tt>
    * , but with a mutable <tt>value</tt> is helpful when working with Java closures.
    *
+   * @deprecated Use {@link #let(Supplier)} instead.
+   *
    * @param <T> The type of object to wrap
    * @param startingValue The initial value to wrap.
    *
    * @return A new wrapper object around <tt>startingValue</tt>.
    */
+  @Deprecated
   public static <T> Value<T> value(final T startingValue) {
     return new Value<>(startingValue);
   }
 
+  /**
+   * @deprecated Use {@link #let(Supplier)} instead.
+   */
+  @Deprecated
   public static class Value<T> {
     public T value;
 
