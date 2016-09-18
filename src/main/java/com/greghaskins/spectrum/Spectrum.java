@@ -188,7 +188,7 @@ public class Spectrum extends Runner {
    * @param supplier Function that generates the value
    * @return memoized supplier
    */
-  public static <T> Supplier<T> let(final Supplier<T> supplier) {
+  public static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
     final ConcurrentHashMap<Supplier<T>, T> cache = new ConcurrentHashMap<>(1);
     afterEach(() -> cache.clear());
 
@@ -201,12 +201,29 @@ public class Spectrum extends Runner {
     };
   }
 
+  @FunctionalInterface
+  public interface ThrowingSupplier<T> extends Supplier<T> {
+
+    T getOrThrow() throws Throwable;
+
+    @Override
+    default T get() {
+      try {
+        return getOrThrow();
+      } catch (final RuntimeException | Error unchecked) {
+        throw unchecked;
+      } catch (final Throwable checked) {
+        throw new RuntimeException(checked);
+      }
+    }
+  }
+
   /**
    * Create a new Value wrapper. This is just a pointer to an instance of type <tt>T</tt>, which is
    * <tt>null</tt> by default. Having a reference that can be <tt>final</tt> , but with a mutable
    * <tt>value</tt> is helpful when working with Java closures.
    *
-   * @deprecated Use {@link #let(Supplier)} instead.
+   * @deprecated Use {@link #let} instead.
    *
    * @param <T> The type of object to wrap
    *
@@ -218,7 +235,7 @@ public class Spectrum extends Runner {
   }
 
   /**
-   * @deprecated Use {@link #let(Supplier)} instead.
+   * @deprecated Use {@link #let} instead.
    *
    * @param <T> The type of object to wrap
    * @param type Class of type <tt>T</tt> to wrap
@@ -235,7 +252,7 @@ public class Spectrum extends Runner {
    * initialized to <tt>startingValue</tt> by default. Having a reference that can be <tt>final</tt>
    * , but with a mutable <tt>value</tt> is helpful when working with Java closures.
    *
-   * @deprecated Use {@link #let(Supplier)} instead.
+   * @deprecated Use {@link #let} instead.
    *
    * @param <T> The type of object to wrap
    * @param startingValue The initial value to wrap.
@@ -248,7 +265,7 @@ public class Spectrum extends Runner {
   }
 
   /**
-   * @deprecated Use {@link #let(Supplier)} instead.
+   * @deprecated Use {@link #let} instead.
    */
   @Deprecated
   public static class Value<T> {
