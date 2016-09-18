@@ -1,22 +1,22 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.fdescribe;
 import static com.greghaskins.spectrum.Spectrum.fit;
 import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.value;
+import static com.greghaskins.spectrum.Spectrum.let;
 import static com.greghaskins.spectrum.Spectrum.xdescribe;
 import static com.greghaskins.spectrum.Spectrum.xit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
-import com.greghaskins.spectrum.Spectrum.Value;
 
 import helpers.SpectrumRunner;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
+
+import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class IgnoredSpecs {
@@ -76,14 +76,10 @@ public class IgnoredSpecs {
     });
 
     describe("Ignored specs example", () -> {
-      final Value<Result> result = value();
-
-      beforeEach(() -> {
-        result.value = SpectrumRunner.run(getIgnoredSpecsExample());
-      });
+      final Supplier<Result> result = let(() -> SpectrumRunner.run(getIgnoredSpecsExample()));
 
       it("does not run ignored specs", () -> {
-        assertThat(result.value.getFailureCount(), is(0));
+        assertThat(result.get().getFailureCount(), is(0));
       });
     });
   }
