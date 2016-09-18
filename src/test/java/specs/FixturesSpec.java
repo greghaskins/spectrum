@@ -6,18 +6,17 @@ import static com.greghaskins.spectrum.Spectrum.beforeAll;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.value;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
-import com.greghaskins.spectrum.Spectrum.Value;
 
 import helpers.SpectrumRunner;
 import org.junit.runner.Result;
@@ -375,7 +374,7 @@ public class FixturesSpec {
     class Spec {
       {
 
-        final Value<Integer> executedSpecs = value(0);
+        final ArrayList<String> executedSpecs = new ArrayList<String>();
 
         describe("failing context", () -> {
 
@@ -388,24 +387,24 @@ public class FixturesSpec {
           });
 
           it("should fail once", () -> {
-            executedSpecs.value++;
+            executedSpecs.add("foo");
           });
 
           it("should also fail", () -> {
-            executedSpecs.value++;
+            executedSpecs.add("bar");
           });
 
           describe("failing child", () -> {
 
             it("fails too", () -> {
-              executedSpecs.value++;
+              executedSpecs.add("baz");
             });
 
           });
         });
 
         it("should not execute any specs", () -> {
-          assertThat(executedSpecs.value, is(0));
+          assertThat(executedSpecs, is(empty()));
         });
 
       }
