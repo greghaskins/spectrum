@@ -48,13 +48,8 @@ public class LetSpecs {
 
       describe("when trying to use a value outside a spec", () -> {
 
-        final Supplier<Result> result = let(() -> {
-          try {
-            return helpers.SpectrumRunner.run(getSuiteThatUsesLetValueOutsideSpec());
-          } catch (final Exception exception) {
-            throw new RuntimeException(exception);
-          }
-        });
+        final Supplier<Result> result =
+            let(() -> SpectrumRunner.run(getSuiteThatUsesLetValueOutsideSpec()));
 
         it("causes a failure", () -> {
           assertThat(result.get().getFailureCount(), is(1));
