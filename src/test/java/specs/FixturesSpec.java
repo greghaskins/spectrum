@@ -265,18 +265,25 @@ public class FixturesSpec {
 
     });
 
-    describe("A spec with no tests", () -> {
+    describe("A suite with no specs", () -> {
 
       final List<String> items = new ArrayList<>();
-      final Block addItem = () -> {
-        items.add("foo");
-      };
 
-      describe("spec", () -> {
-        beforeAll(addItem);
-        beforeEach(addItem);
-        afterEach(addItem);
-        afterAll(addItem);
+      beforeEach(() -> {
+        SpectrumHelper.run(() -> {
+
+          final Block addItem = () -> {
+            items.add("foo");
+          };
+
+          describe("suite without specs", () -> {
+            beforeAll(addItem);
+            beforeEach(addItem);
+            afterEach(addItem);
+            afterAll(addItem);
+          });
+
+        });
       });
 
       it("does not run fixture methods", () -> {
