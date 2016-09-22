@@ -188,7 +188,7 @@ public class Spectrum extends Runner {
    * @param supplier Function that generates the value
    * @return memoized supplier
    */
-  public static <T> Supplier<T> let(final Supplier<T> supplier) {
+  public static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
     final ConcurrentHashMap<Supplier<T>, T> cache = new ConcurrentHashMap<>(1);
     afterEach(() -> cache.clear());
 
@@ -201,53 +201,23 @@ public class Spectrum extends Runner {
     };
   }
 
-  /**
-   * Create a new Value wrapper. This is just a pointer to an instance of type <tt>T</tt>, which is
-   * <tt>null</tt> by default. Having a reference that can be <tt>final</tt> , but with a mutable
-   * <tt>value</tt> is helpful when working with Java closures.
-   *
-   * @param <T> The type of object to wrap
-   *
-   * @return A new wrapper object with <tt>null</tt> instance of <tt>T</tt>.
-   */
-  public static <T> Value<T> value() {
-    return new Value<>(null);
-  }
+  @FunctionalInterface
+  public interface ThrowingSupplier<T> extends Supplier<T> {
 
-  /**
-   * Deprecated. Use {@link #value()} instead.
-   *
-   * @param <T> The type of object to wrap
-   * @param type Class of type <tt>T</tt> to wrap
-   *
-   * @return A new wrapper object with <tt>null</tt> instance of <tt>T</tt>.
-   */
-  @Deprecated
-  public static <T> Value<T> value(final Class<T> type) {
-    return value();
-  }
+    T getOrThrow() throws Throwable;
 
-  /**
-   * Create a new Value wrapper. This is just a pointer to an instance of type <tt>T</tt>,
-   * initialized to <tt>startingValue</tt> by default. Having a reference that can be <tt>final</tt>
-   * , but with a mutable <tt>value</tt> is helpful when working with Java closures.
-   *
-   * @param <T> The type of object to wrap
-   * @param startingValue The initial value to wrap.
-   *
-   * @return A new wrapper object around <tt>startingValue</tt>.
-   */
-  public static <T> Value<T> value(final T startingValue) {
-    return new Value<>(startingValue);
-  }
-
-  public static class Value<T> {
-    public T value;
-
-    private Value(final T value) {
-      this.value = value;
+    @Override
+    default T get() {
+      try {
+        return getOrThrow();
+      } catch (final RuntimeException | Error unchecked) {
+        throw unchecked;
+      } catch (final Throwable checked) {
+        throw new RuntimeException(checked);
+      }
     }
   }
+
 
   private static final Deque<Suite> suiteStack = new ArrayDeque<>();
 

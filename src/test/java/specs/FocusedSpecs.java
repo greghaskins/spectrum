@@ -1,20 +1,20 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.fdescribe;
 import static com.greghaskins.spectrum.Spectrum.fit;
 import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.value;
+import static com.greghaskins.spectrum.Spectrum.let;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
-import com.greghaskins.spectrum.Spectrum.Value;
 import com.greghaskins.spectrum.SpectrumHelper;
 
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
+
+import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class FocusedSpecs {
@@ -67,18 +67,14 @@ public class FocusedSpecs {
 
     describe("Focused specs example", () -> {
 
-      final Value<Result> result = value();
-
-      beforeEach(() -> {
-        result.value = SpectrumHelper.run(getFocusedSpecsExample());
-      });
+      final Supplier<Result> result = let(() -> SpectrumHelper.run(getFocusedSpecsExample()));
 
       it("has two ignored specs", () -> {
-        assertThat(result.value.getIgnoreCount(), is(2));
+        assertThat(result.get().getIgnoreCount(), is(2));
       });
 
       it("does not run unfocused specs", () -> {
-        assertThat(result.value.getFailureCount(), is(0));
+        assertThat(result.get().getFailureCount(), is(0));
       });
 
     });

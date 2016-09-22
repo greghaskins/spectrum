@@ -6,8 +6,10 @@ import static com.greghaskins.spectrum.Spectrum.let;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 
 import com.greghaskins.spectrum.Spectrum;
@@ -46,13 +48,8 @@ public class LetSpecs {
 
       describe("when trying to use a value outside a spec", () -> {
 
-        final Supplier<Result> result = let(() -> {
-          try {
-            return SpectrumHelper.run(getSuiteThatUsesLetValueOutsideSpec());
-          } catch (final Exception exception) {
-            throw new RuntimeException(exception);
-          }
-        });
+        final Supplier<Result> result =
+            let(() -> SpectrumHelper.run(getSuiteThatUsesLetValueOutsideSpec()));
 
         it("causes a failure", () -> {
           assertThat(result.get().getFailureCount(), is(1));
@@ -65,6 +62,63 @@ public class LetSpecs {
               is("Cannot use the value from let() in a suite declaration. "
                   + "It may only be used in the context of a running spec."));
         });
+
+      });
+
+      describe("when errors happen in the supplier", () -> {
+
+        describe("checked exceptions", () -> {
+
+          it("should be wrapped in RuntimeException", () -> {
+            final Result result = SpectrumHelper.run(getSuiteWithLetThatThrowsCheckedException());
+
+            assertThat(result.getFailures(), hasSize(1));
+            final Failure failure = result.getFailures().get(0);
+            assertThat(failure.getException(), instanceOf(RuntimeException.class));
+            assertThat(failure.getException().getCause(), instanceOf(DummyException.class));
+          });
+
+        });
+
+        describe("runtime exceptions", () -> {
+
+          it("should be re-thrown as-is", () -> {
+            final Result result = SpectrumHelper.run(getSuiteWithLetThatThrowsRuntimeException());
+
+            assertThat(result.getFailures(), hasSize(1));
+            final Failure failure = result.getFailures().get(0);
+            assertThat(failure.getException(), instanceOf(DummyRuntimeException.class));
+            assertThat(failure.getException().getCause(), is(nullValue()));
+          });
+
+        });
+
+        describe("errors", () -> {
+
+          it("should be re-thrown as-is", () -> {
+            final Result result = SpectrumHelper.run(getSuiteWithLetThatThrowsError());
+
+            assertThat(result.getFailures(), hasSize(1));
+            final Failure failure = result.getFailures().get(0);
+            assertThat(failure.getException(), instanceOf(DummyError.class));
+            assertThat(failure.getException().getCause(), is(nullValue()));
+          });
+
+        });
+
+        describe("custom throwables", () -> {
+
+          it("should be wrapped in RuntimeException", () -> {
+            final Result result = SpectrumHelper.run(getSuiteWithLetThatThrowsCustomThrowable());
+
+            assertThat(result.getFailures(), hasSize(1));
+            final Failure failure = result.getFailures().get(0);
+            assertThat(failure.getException(), instanceOf(RuntimeException.class));
+            assertThat(failure.getException().getCause(), instanceOf(DummyThrowable.class));
+          });
+
+        });
+
 
       });
     });
@@ -84,6 +138,106 @@ public class LetSpecs {
           });
 
         });
+      }
+    }
+
+    return Suite.class;
+  }
+
+  private static class DummyException extends Exception {
+    private static final long serialVersionUID = 1L;
+  }
+
+  private static Class<?> getSuiteWithLetThatThrowsCheckedException() {
+    class Suite {
+      {
+        describe("a thing", () -> {
+
+          final Supplier<Object> dummy = let(() -> {
+            throw new DummyException();
+          });
+
+          it("should fail", () -> {
+            dummy.get();
+          });
+
+        });
+
+      }
+    }
+
+    return Suite.class;
+  }
+
+  private static class DummyRuntimeException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+  }
+
+  private static Class<?> getSuiteWithLetThatThrowsRuntimeException() {
+    class Suite {
+      {
+        describe("a thing", () -> {
+
+          final Supplier<Object> dummy = let(() -> {
+            throw new DummyRuntimeException();
+          });
+
+          it("should fail", () -> {
+            dummy.get();
+          });
+
+        });
+
+      }
+    }
+
+    return Suite.class;
+  }
+
+  private static class DummyError extends Error {
+    private static final long serialVersionUID = 1L;
+  }
+
+  private static Class<?> getSuiteWithLetThatThrowsError() {
+    class Suite {
+      {
+        describe("a thing", () -> {
+
+          final Supplier<Object> dummy = let(() -> {
+            throw new DummyError();
+          });
+
+          it("should fail", () -> {
+            dummy.get();
+          });
+
+        });
+
+      }
+    }
+
+    return Suite.class;
+  }
+
+  private static class DummyThrowable extends Throwable {
+    private static final long serialVersionUID = 1L;
+  }
+
+  private static Class<?> getSuiteWithLetThatThrowsCustomThrowable() {
+    class Suite {
+      {
+        describe("a thing", () -> {
+
+          final Supplier<Object> dummy = let(() -> {
+            throw new DummyThrowable();
+          });
+
+          it("should fail", () -> {
+            dummy.get();
+          });
+
+        });
+
       }
     }
 
