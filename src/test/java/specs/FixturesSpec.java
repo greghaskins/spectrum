@@ -351,25 +351,33 @@ public class FixturesSpec {
 
       describe("in beforeEach and afterEach", () -> {
 
+        final Supplier<List<String>> exceptionsThrown = let(() -> new ArrayList<>());
+
+        final Function<Throwable, Throwable> recordException = (throwable) -> {
+          exceptionsThrown.get().add(throwable.getMessage());
+
+          return throwable;
+        };
+
         final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
           describe("an explosive suite", () -> {
 
             beforeEach(() -> {
-              throw new Exception("boom beforeEach 1");
+              throw recordException.apply(new Exception("boom beforeEach 1"));
             });
             beforeEach(() -> {
-              throw new Exception("boom beforeEach 2");
+              throw recordException.apply(new Exception("boom beforeEach 2"));
             });
 
             afterEach(() -> {
-              throw new Exception("boom afterEach 1");
+              throw recordException.apply(new Exception("boom afterEach 1"));
             });
             afterEach(() -> {
-              throw new Exception("boom afterEach 2");
+              throw recordException.apply(new Exception("boom afterEach 2"));
             });
 
             it("explodes", () -> {
-              throw new Exception("boom in spec");
+              throw recordException.apply(new Exception("boom in spec"));
             });
           });
         }));
@@ -381,6 +389,10 @@ public class FixturesSpec {
           assertThat(failureMessages.get(), not(hasItem("boom beforeEach 2")));
         });
 
+        it("should not run any specs", () -> {
+          assertThat(exceptionsThrown.get(), not(hasItem("spec")));
+        });
+
         it("should report all errors individually", () -> {
           assertThat(failureMessages.get(),
               contains(
@@ -389,40 +401,52 @@ public class FixturesSpec {
                   "boom afterEach 1"));
         });
 
+        it("should report all exceptions as failures", () -> {
+          assertThat(failureMessages.get(), contains(exceptionsThrown.get().toArray()));
+        });
+
       });
 
       describe("in beforeAll and afterAll", () -> {
+
+        final Supplier<List<String>> exceptionsThrown = let(() -> new ArrayList<>());
+
+        final Function<Throwable, Throwable> recordException = (throwable) -> {
+          exceptionsThrown.get().add(throwable.getMessage());
+
+          return throwable;
+        };
 
         final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
           describe("an explosive suite", () -> {
 
             beforeAll(() -> {
-              throw new Exception("boom beforeAll 1");
+              throw recordException.apply(new Exception("boom beforeAll 1"));
             });
             beforeAll(() -> {
-              throw new Exception("boom beforeAll 2");
+              throw recordException.apply(new Exception("boom beforeAll 2"));
             });
 
 
             beforeEach(() -> {
-              throw new Exception("boom beforeEach");
+              throw recordException.apply(new Exception("boom beforeEach"));
             });
 
             afterEach(() -> {
-              throw new Exception("boom afterEach");
+              throw recordException.apply(new Exception("boom afterEach"));
             });
 
 
             afterAll(() -> {
-              throw new Exception("boom afterAll 1");
+              throw recordException.apply(new Exception("boom afterAll 1"));
             });
             afterAll(() -> {
-              throw new Exception("boom afterAll 2");
+              throw recordException.apply(new Exception("boom afterAll 2"));
             });
 
 
             it("explodes", () -> {
-              throw new Exception("boom in spec");
+              throw recordException.apply(new Exception("boom in spec"));
             });
           });
         }));
@@ -443,7 +467,7 @@ public class FixturesSpec {
         });
 
         it("does not run any specs", () -> {
-          assertThat(failureMessages.get(), not(hasItem("boom in spec")));
+          assertThat(exceptionsThrown.get(), not(hasItem("boom in spec")));
         });
 
         it("should report all errors individually", () -> {
@@ -452,6 +476,10 @@ public class FixturesSpec {
                   "boom beforeAll 1",
                   "boom afterAll 2",
                   "boom afterAll 1"));
+        });
+
+        it("should report all exceptions as failures", () -> {
+          assertThat(failureMessages.get(), contains(exceptionsThrown.get().toArray()));
         });
 
       });
