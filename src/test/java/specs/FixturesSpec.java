@@ -340,6 +340,120 @@ public class FixturesSpec {
 
     });
 
+    xdescribe("afterAll blocks", () -> {
+
+      final Supplier<List<String>> calls = let(() -> new ArrayList<>());
+
+      describe("when a spec explodes", () -> {
+
+        beforeEach(() -> SpectrumHelper.run(() -> {
+          describe("context", () -> {
+
+            afterAll(() -> {
+              calls.get().add("afterAll");
+            });
+
+            it("failing spec", () -> {
+              throw new Exception();
+            });
+
+          });
+        }));
+
+        it("still run", () -> {
+          assertThat(calls.get(), hasItem("afterAll"));
+        });
+
+      });
+
+      describe("when an afterEach explodes", () -> {
+
+        beforeEach(() -> SpectrumHelper.run(() -> {
+          describe("context", () -> {
+
+            afterEach(() -> {
+              calls.get().add("afterEach");
+              throw new Exception();
+            });
+
+            afterAll(() -> {
+              calls.get().add("afterAll");
+            });
+
+            it("passing spec", () -> {
+              calls.get().add("spec");
+            });
+
+          });
+        }));
+
+        it("still run", () -> {
+          assertThat(calls.get(), hasItem("afterAll"));
+        });
+
+      });
+
+      describe("when another afterAll explodes", () -> {
+
+        beforeEach(() -> SpectrumHelper.run(() -> {
+          describe("context", () -> {
+
+            afterAll(() -> {
+              calls.get().add("afterAll 1");
+              throw new Exception();
+            });
+
+            afterAll(() -> {
+              calls.get().add("afterAll 2");
+              throw new Exception();
+            });
+
+            it("passing spec", () -> {
+              calls.get().add("spec");
+            });
+
+          });
+        }));
+
+        it("still run", () -> {
+          assertThat(calls.get(), hasItem("afterAll 1"));
+          assertThat(calls.get(), hasItem("afterAll 2"));
+        });
+
+      });
+
+      describe("in multiples", () -> {
+
+        beforeEach(() -> SpectrumHelper.run(() -> {
+          describe("context", () -> {
+
+            afterAll(() -> {
+              calls.get().add("afterAll 1");
+            });
+
+            afterAll(() -> {
+              calls.get().add("afterAll 2");
+            });
+
+            afterAll(() -> {
+              calls.get().add("afterAll 3");
+            });
+
+            it("passing spec", () -> {
+              calls.get().add("spec");
+            });
+
+          });
+        }));
+
+        it("run in reverse declaration order", () -> {
+          assertThat(calls.get(), contains("afterAll 3", "afterAll 2", "afterAll 1"));
+        });
+
+      });
+
+    });
+
     xdescribe("Fixtures with multiple errors", () -> {
 
       final Function<Supplier<Result>, ThrowingSupplier<List<String>>> getFailureMessages =
