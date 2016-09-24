@@ -5,11 +5,11 @@ import com.greghaskins.spectrum.Spectrum.Block;
 import java.util.Deque;
 import java.util.LinkedList;
 
-class CompositeBlock implements Block {
+class SetupBlock implements Block {
 
   private final Deque<Block> blocks;
 
-  CompositeBlock() {
+  SetupBlock() {
     this.blocks = new LinkedList<>();
   }
 

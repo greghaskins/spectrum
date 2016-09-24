@@ -13,11 +13,11 @@ import java.util.Set;
 
 class Suite implements Parent, Child {
 
-  private final CompositeBlock beforeAll = new CompositeBlock();
-  private final AfterEachBlock afterAll = new AfterEachBlock();
+  private final SetupBlock beforeAll = new SetupBlock();
+  private final TeardownBlock afterAll = new TeardownBlock();
 
-  private final CompositeBlock beforeEach = new CompositeBlock();
-  private final AfterEachBlock afterEach = new AfterEachBlock();
+  private final SetupBlock beforeEach = new SetupBlock();
+  private final TeardownBlock afterEach = new TeardownBlock();
 
   private final List<Child> children = new ArrayList<>();
   private final Set<Child> focusedChildren = new HashSet<>();

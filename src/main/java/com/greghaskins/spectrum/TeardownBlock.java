@@ -8,11 +8,11 @@ import org.junit.runner.notification.RunNotifier;
 import java.util.Deque;
 import java.util.LinkedList;
 
-class AfterEachBlock implements NotifyingBlock {
+class TeardownBlock implements NotifyingBlock {
 
   private final Deque<NotifyingBlock> blocks;
 
-  public AfterEachBlock() {
+  public TeardownBlock() {
     this.blocks = new LinkedList<>();
   }
 
