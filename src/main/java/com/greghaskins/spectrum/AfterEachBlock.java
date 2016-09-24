@@ -5,25 +5,23 @@ import com.greghaskins.spectrum.Spectrum.Block;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Deque;
+import java.util.LinkedList;
 
 class AfterEachBlock implements NotifyingBlock {
 
-  private final List<NotifyingBlock> blocks;
+  private final Deque<NotifyingBlock> blocks;
 
   public AfterEachBlock() {
-    this.blocks = new ArrayList<>();
+    this.blocks = new LinkedList<>();
   }
 
   @Override
   public void run(final Description description, final RunNotifier notifier) {
-    for (int index = this.blocks.size() - 1; index >= 0; index--) {
-      this.blocks.get(index).run(description, notifier);
-    }
+    this.blocks.descendingIterator().forEachRemaining((block) -> block.run(description, notifier));
   }
 
-  public void addBlock(final Block block) {
+  void addBlock(final Block block) {
     addBlock(NotifyingBlock.wrap(block));
   }
 

@@ -2,19 +2,15 @@ package com.greghaskins.spectrum;
 
 import com.greghaskins.spectrum.Spectrum.Block;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Deque;
+import java.util.LinkedList;
 
 class CompositeBlock implements Block {
 
-  private final List<Block> blocks;
+  private final Deque<Block> blocks;
 
-  public CompositeBlock(final List<Block> blocks) {
-    this.blocks = blocks;
-  }
-
-  public CompositeBlock() {
-    this(new ArrayList<>());
+  CompositeBlock() {
+    this.blocks = new LinkedList<>();
   }
 
   @Override
@@ -24,7 +20,7 @@ class CompositeBlock implements Block {
     }
   }
 
-  public void addBlock(final Block block) {
+  void addBlock(final Block block) {
     this.blocks.add(block);
   }
 

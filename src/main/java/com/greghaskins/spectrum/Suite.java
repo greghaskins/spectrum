@@ -65,12 +65,11 @@ class Suite implements Parent, Child {
         return;
       }
 
-      try {
+      NotifyingBlock.wrap(() -> {
         this.beforeEach.run();
         block.run();
-      } catch (final Throwable exception) {
-        notifier.fireTestFailure(new Failure(description, exception));
-      }
+      }).run(description, notifier);
+
       this.afterEach.run(description, notifier);
     };
 
