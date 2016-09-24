@@ -17,7 +17,8 @@ public class WhenDescribingTheSpec {
   @Before
   public void before() throws Exception {
     this.description =
-        new Spectrum(Fixture.getSpecThatThrowsAnExceptionInBeforeEachBlock()).getDescription();
+        new Spectrum(Fixture.getSpecThatThrowsAnExceptionInBeforeEachAndAfterEachBlocks())
+            .getDescription();
   }
 
   @Test

@@ -14,7 +14,7 @@ import java.util.Set;
 class Suite implements Parent, Child {
 
   private final CompositeBlock beforeAll = new CompositeBlock();
-  private final CompositeBlock afterAll = new CompositeBlock();
+  private final AfterEachBlock afterAll = new AfterEachBlock();
 
   private final CompositeBlock beforeEach = new CompositeBlock();
   private final AfterEachBlock afterEach = new AfterEachBlock();
@@ -38,9 +38,9 @@ class Suite implements Parent, Child {
 
   public Suite addSuite(final String name) {
     final Suite suite = new Suite(Description.createSuiteDescription(name), this);
-    suite.beforeAll(this.beforeAll);
-    suite.beforeEach(this.beforeEach);
-    suite.afterEach(this.afterEach);
+    suite.beforeAll.addBlock(this.beforeAll);
+    suite.beforeEach.addBlock(this.beforeEach);
+    suite.afterEach.addBlock(this.afterEach);
     addChild(suite);
 
     return suite;
@@ -57,20 +57,21 @@ class Suite implements Parent, Child {
     final Description specDescription =
         Description.createTestDescription(this.description.getClassName(), name);
 
-    final Block specBlockInContext = () -> {
-      this.beforeAll.run();
+    final NotifyingBlock specBlockInContext = (description, notifier) -> {
+      try {
+        this.beforeAll.run();
+      } catch (final Throwable exception) {
+        notifier.fireTestFailure(new Failure(description, exception));
+        return;
+      }
+
       try {
         this.beforeEach.run();
         block.run();
-      } catch (Throwable throwable) {
-        try {
-          this.afterEach.run();
-        } catch (Throwable ignored) {
-          ignored.printStackTrace();
-        }
-        throw throwable;
+      } catch (final Throwable exception) {
+        notifier.fireTestFailure(new Failure(description, exception));
       }
-      this.afterEach.run();
+      this.afterEach.run(description, notifier);
     };
 
     return new Spec(specDescription, specBlockInContext, this);
@@ -145,11 +146,7 @@ class Suite implements Parent, Child {
   }
 
   private void runAfterAll(final RunNotifier notifier) {
-    try {
-      this.afterAll.run();
-    } catch (final Throwable error) {
-      notifier.fireTestFailure(new Failure(this.description, error));
-    }
+    this.afterAll.run(this.description, notifier);
   }
 
   @Override

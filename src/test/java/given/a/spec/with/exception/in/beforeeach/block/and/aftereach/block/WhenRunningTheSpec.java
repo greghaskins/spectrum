@@ -16,18 +16,21 @@ public class WhenRunningTheSpec {
 
   @Before
   public void before() throws Exception {
-    this.result = SpectrumHelper.run(Fixture.getSpecThatThrowsAnExceptionInBeforeEachBlock());
+    this.result =
+        SpectrumHelper.run(Fixture.getSpecThatThrowsAnExceptionInBeforeEachAndAfterEachBlocks());
   }
 
   @Test
-  public void thereIsOneFailureForEachAffectedTest() throws Exception {
-    assertThat(this.result.getFailureCount(), is(2));
+  public void thereAreTwoFailuresForEachAffectedTest() throws Exception {
+    assertThat(this.result.getFailureCount(), is(4));
   }
 
   @Test
-  public void theFailureExplainsWhatHappened() throws Exception {
+  public void theFailuresExplainWhatHappened() throws Exception {
     assertThat(this.result.getFailures().get(0),
         is(failure("a failing test", Fixture.SomeException.class, "kaboom")));
+    assertThat(this.result.getFailures().get(1),
+        is(failure("a failing test", Fixture.SomeException.class, "poof")));
   }
 
 }

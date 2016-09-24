@@ -7,7 +7,6 @@ import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.Spectrum.xdescribe;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -243,28 +242,6 @@ public class FixturesSpec {
 
     });
 
-    describe("afterAll blocks that explode", () -> {
-
-      it("cause the context to fail once", () -> {
-        final Result result = SpectrumHelper.run(getSpecWithExplodingAfterAll());
-        assertThat(result.getFailureCount(), is(1));
-      });
-
-      it("have a failure associated with the context", () -> {
-        final Result result = SpectrumHelper.run(getSpecWithExplodingAfterAll());
-        final Failure failure = result.getFailures().get(0);
-        assertThat(failure.getDescription().getClassName(), is("Exploding afterAll"));
-        assertThat(failure.getDescription().getMethodName(), is(nullValue()));
-      });
-
-      it("have a failure on the first exception", () -> {
-        final Result result = SpectrumHelper.run(getSpecWithExplodingAfterAll());
-        final Failure failure = result.getFailures().get(0);
-        assertThat(failure.getMessage(), is("boom one"));
-      });
-
-    });
-
     describe("A suite with no specs", () -> {
 
       final List<String> items = new ArrayList<>();
@@ -340,14 +317,44 @@ public class FixturesSpec {
 
     });
 
-    xdescribe("afterAll blocks", () -> {
+    describe("afterAll blocks", () -> {
 
       final Supplier<List<String>> calls = let(() -> new ArrayList<>());
+
+      describe("that explode", () -> {
+
+        final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+
+          describe("context description", () -> {
+
+            afterAll(() -> {
+              throw new Exception();
+            });
+
+            it("spec that passes", () -> {
+              assertThat(true, is(true));
+            });
+
+          });
+
+        }));
+
+        it("cause a failure", () -> {
+          assertThat(result.get().getFailureCount(), is(1));
+        });
+
+        it("associate the failure with the declaring suite", () -> {
+          final Failure failure = result.get().getFailures().get(0);
+          assertThat(failure.getDescription().getClassName(), is("context description"));
+          assertThat(failure.getDescription().getMethodName(), is(nullValue()));
+        });
+
+      });
 
       describe("when a spec explodes", () -> {
 
         beforeEach(() -> SpectrumHelper.run(() -> {
-          describe("context", () -> {
+          describe("context desecription", () -> {
 
             afterAll(() -> {
               calls.get().add("afterAll");
@@ -440,7 +447,7 @@ public class FixturesSpec {
             });
 
             it("passing spec", () -> {
-              calls.get().add("spec");
+              assertThat(true, is(true));
             });
 
           });
@@ -450,11 +457,46 @@ public class FixturesSpec {
           assertThat(calls.get(), contains("afterAll 3", "afterAll 2", "afterAll 1"));
         });
 
+        describe("that explode", () -> {
+
+          final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+            describe("context description", () -> {
+
+              afterAll(() -> {
+                throw new Exception("boom 1");
+              });
+
+              afterAll(() -> {
+                throw new Exception("boom 2");
+              });
+
+              it("no boom", () -> {
+                assertThat(true, is(true));
+              });
+
+            });
+          }));
+
+          final Supplier<List<String>> failureMessages = let(() -> result.get()
+              .getFailures()
+              .stream()
+              .map((failure) -> failure.getMessage())
+              .collect(Collectors.toList()));
+
+          it("report each error", () -> {
+            assertThat(result.get().getFailureCount(), is(2));
+
+            assertThat(failureMessages.get(), hasItem("boom 1"));
+            assertThat(failureMessages.get(), hasItem("boom 2"));
+          });
+
+        });
+
       });
 
     });
 
-    xdescribe("Fixtures with multiple errors", () -> {
+    describe("Fixtures with multiple errors", () -> {
 
       final Function<Supplier<Result>, ThrowingSupplier<List<String>>> getFailureMessages =
           (result) -> () -> result.get()
@@ -678,39 +720,6 @@ public class FixturesSpec {
 
         it("should not execute any specs", () -> {
           assertThat(executedSpecs, is(empty()));
-        });
-
-      }
-    }
-
-    return Spec.class;
-  }
-
-  private static Class<?> getSpecWithExplodingAfterAll() {
-    class Spec {
-      {
-
-        describe("Exploding afterAll", () -> {
-
-          afterAll(() -> {
-            throw new Exception("boom one");
-          });
-
-          afterAll(() -> {
-            throw new Exception("boom two");
-          });
-
-          it("should fail at the context level", () -> {
-
-          });
-
-          describe("passing child", () -> {
-
-            it("passes", () -> {
-
-            });
-
-          });
         });
 
       }
