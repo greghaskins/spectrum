@@ -3,14 +3,14 @@ package com.greghaskins.spectrum;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
-class Spec implements Child {
+final class Spec implements Child {
 
   private final NotifyingBlock block;
   private final Description description;
   private final Parent parent;
   private boolean ignored = false;
 
-  public Spec(final Description description, final NotifyingBlock block, final Parent parent) {
+  Spec(final Description description, final NotifyingBlock block, final Parent parent) {
     this.description = description;
     this.block = block;
     this.parent = parent;

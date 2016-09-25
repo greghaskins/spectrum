@@ -34,7 +34,7 @@ public class IsFailure extends TypeSafeDiagnosingMatcher<Failure> {
     describeTo(mismatchDescription, actualMethodName, actualExceptionType, actualMessage);
 
     return this.methodName.equals(actualMethodName)
-        && this.exceptionType.equals(actualExceptionType)
+        && this.exceptionType.isAssignableFrom(actualExceptionType)
         && this.failureMessage.equals(actualMessage);
   }
 

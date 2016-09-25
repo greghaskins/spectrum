@@ -9,7 +9,7 @@ import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-public class Spectrum extends Runner {
+public final class Spectrum extends Runner {
 
   /**
    * A generic code block with a {@link #run()} method.

@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.SpectrumHelper;
-import com.greghaskins.spectrum.UnableToConstructSpecException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,7 @@ public class WhenRunningTheSpec {
   @Test
   public void theFailureExplainsWhatHappened() throws Exception {
     assertThat(this.result.getFailures().get(0),
-        is(failure("encountered an error", UnableToConstructSpecException.class,
+        is(failure("encountered an error", RuntimeException.class,
             Fixture.getSpecThatRequiresAConstructorParameter().getName())));
   }
 

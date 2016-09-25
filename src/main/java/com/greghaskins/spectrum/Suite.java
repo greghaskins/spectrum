@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class Suite implements Parent, Child {
+final class Suite implements Parent, Child {
 
   private final SetupBlock beforeAll = new SetupBlock();
   private final TeardownBlock afterAll = new TeardownBlock();
@@ -26,7 +26,7 @@ class Suite implements Parent, Child {
   private final Parent parent;
   private boolean ignored;
 
-  public static Suite rootSuite(final Description description) {
+  static Suite rootSuite(final Description description) {
     return new Suite(description, Parent.NONE);
   }
 
@@ -36,7 +36,7 @@ class Suite implements Parent, Child {
     this.ignored = parent.isIgnored();
   }
 
-  public Suite addSuite(final String name) {
+  Suite addSuite(final String name) {
     final Suite suite = new Suite(Description.createSuiteDescription(name), this);
     suite.beforeAll.addBlock(this.beforeAll);
     suite.beforeEach.addBlock(this.beforeEach);
@@ -46,7 +46,7 @@ class Suite implements Parent, Child {
     return suite;
   }
 
-  public Spec addSpec(final String name, final Block block) {
+  Spec addSpec(final String name, final Block block) {
     final Spec spec = createSpec(name, block);
     addChild(spec);
 
@@ -80,19 +80,19 @@ class Suite implements Parent, Child {
     this.children.add(child);
   }
 
-  public void beforeAll(final Block block) {
+  void beforeAll(final Block block) {
     this.beforeAll.addBlock(new IdempotentBlock(block));
   }
 
-  public void afterAll(final Block block) {
+  void afterAll(final Block block) {
     this.afterAll.addBlock(block);
   }
 
-  public void beforeEach(final Block block) {
+  void beforeEach(final Block block) {
     this.beforeEach.addBlock(block);
   }
 
-  public void afterEach(final Block block) {
+  void afterEach(final Block block) {
     this.afterEach.addBlock(block);
   }
 
@@ -161,7 +161,7 @@ class Suite implements Parent, Child {
     return this.children.stream().mapToInt((child) -> child.testCount()).sum();
   }
 
-  public void removeAllChildren() {
+  void removeAllChildren() {
     this.children.clear();
   }
 
