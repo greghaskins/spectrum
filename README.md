@@ -129,6 +129,10 @@ public class ExampleSpecs {
 }
 ```
 
+### Screenshot
+
+![Spectrum with Eclipse via JUnit](junit-screenshot.png)
+
 ### Focused Specs
 
 You can focus the runner on particular spec with `fit` or a suite with `fdescribe` so that only those specs get executed.
