@@ -185,7 +185,8 @@ public final class Spectrum extends Runner {
    *
    * @param <T> The type of value
    *
-   * @param supplier Function that generates the value
+   * @param supplier {@link ThrowingSupplier} function that either generates the value, or throws a
+   *        `Throwable`
    * @return memoized supplier
    */
   public static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
@@ -201,9 +202,24 @@ public final class Spectrum extends Runner {
     };
   }
 
+  /**
+   * Supplier of results similar to {@link Supplier}, but may optionally throw checked exceptions.
+   * Using {@link ThrowingSupplier} is more convenient for lambda functions since it requires less
+   * exception handling.
+   *
+   * @see Supplier
+   *
+   * @param <T> The type of result that will be supplied
+   */
   @FunctionalInterface
   public interface ThrowingSupplier<T> extends Supplier<T> {
 
+    /**
+     * Get a result.
+     *
+     * @return a result
+     * @throws Throwable any uncaught Error or Exception
+     */
     T getOrThrow() throws Throwable;
 
     @Override
