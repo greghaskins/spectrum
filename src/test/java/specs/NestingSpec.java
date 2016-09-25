@@ -9,8 +9,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 
-import helpers.SpectrumRunner;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
@@ -22,7 +22,7 @@ public class NestingSpec {
     describe("A spec with tests and nested contexts", () -> {
 
       it("runs them in declaration order", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithTestsAndNestedContextsThatAllFail());
+        final Result result = SpectrumHelper.run(getSpecWithTestsAndNestedContextsThatAllFail());
 
         assertThat(result.getFailureCount(), is(3));
         assertThat(result.getFailures(),

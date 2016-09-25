@@ -3,6 +3,10 @@ language: java
 
 jdk:
   - oraclejdk8
+script:
+  - ./gradlew check
+  - echo "Checking to make sure all changes are checked in..."
+  - test -z "$(git status --porcelain)"
 after_success:
   - " ./gradlew coveralls"
 deploy:

@@ -3,7 +3,8 @@ package given.a.spec.with.one.passing.test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import helpers.SpectrumRunner;
+import com.greghaskins.spectrum.SpectrumHelper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Result;
@@ -14,7 +15,7 @@ public class WhenRunningTheSpec {
 
   @Before
   public void before() throws Exception {
-    this.result = SpectrumRunner.run(Fixture.getSpecWithOnePassingTest());
+    this.result = SpectrumHelper.run(Fixture.getSpecWithOnePassingTest());
   }
 
   @Test

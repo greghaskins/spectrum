@@ -4,7 +4,8 @@ import static matchers.IsFailure.failure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import helpers.SpectrumRunner;
+import com.greghaskins.spectrum.SpectrumHelper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Result;
@@ -15,18 +16,21 @@ public class WhenRunningTheSpec {
 
   @Before
   public void before() throws Exception {
-    this.result = SpectrumRunner.run(Fixture.getSpecThatThrowsAnExceptionInBeforeEachBlock());
+    this.result =
+        SpectrumHelper.run(Fixture.getSpecThatThrowsAnExceptionInBeforeEachAndAfterEachBlocks());
   }
 
   @Test
-  public void thereIsOneFailureForEachAffectedTest() throws Exception {
-    assertThat(this.result.getFailureCount(), is(2));
+  public void thereAreTwoFailuresForEachAffectedTest() throws Exception {
+    assertThat(this.result.getFailureCount(), is(4));
   }
 
   @Test
-  public void theFailureExplainsWhatHappened() throws Exception {
+  public void theFailuresExplainWhatHappened() throws Exception {
     assertThat(this.result.getFailures().get(0),
         is(failure("a failing test", Fixture.SomeException.class, "kaboom")));
+    assertThat(this.result.getFailures().get(1),
+        is(failure("a failing test", Fixture.SomeException.class, "poof")));
   }
 
 }

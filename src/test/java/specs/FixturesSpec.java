@@ -6,25 +6,31 @@ import static com.greghaskins.spectrum.Spectrum.beforeAll;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.let;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Spectrum.Block;
+import com.greghaskins.spectrum.Spectrum.ThrowingSupplier;
+import com.greghaskins.spectrum.SpectrumHelper;
 
-import helpers.SpectrumRunner;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @RunWith(Spectrum.class)
 public class FixturesSpec {
@@ -212,7 +218,7 @@ public class FixturesSpec {
     describe("A beforeEach block that explodes", () -> {
 
       it("causes all tests in that context to fail", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeEach());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingBeforeEach());
         assertThat(result.getFailureCount(), is(2));
       });
 
@@ -221,7 +227,7 @@ public class FixturesSpec {
     describe("An afterEach block that explodes", () -> {
 
       it("causes all tests in that context to fail", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingAfterEach());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingAfterEach());
         assertThat(result.getFailureCount(), is(2));
       });
 
@@ -230,46 +236,31 @@ public class FixturesSpec {
     describe("beforeAll blocks that explode", () -> {
 
       it("cause all tests in that context and its children to fail", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingBeforeAll());
+        final Result result = SpectrumHelper.run(getSpecWithExplodingBeforeAll());
         assertThat(result.getFailureCount(), is(3));
       });
 
     });
 
-    describe("afterAll blocks that explode", () -> {
-
-      it("cause the context to fail once", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingAfterAll());
-        assertThat(result.getFailureCount(), is(1));
-      });
-
-      it("have a failure associated with the context", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingAfterAll());
-        final Failure failure = result.getFailures().get(0);
-        assertThat(failure.getDescription().getClassName(), is("Exploding afterAll"));
-        assertThat(failure.getDescription().getMethodName(), is(nullValue()));
-      });
-
-      it("have a failure on the first exception", () -> {
-        final Result result = SpectrumRunner.run(getSpecWithExplodingAfterAll());
-        final Failure failure = result.getFailures().get(0);
-        assertThat(failure.getMessage(), is("boom one"));
-      });
-
-    });
-
-    describe("A spec with no tests", () -> {
+    describe("A suite with no specs", () -> {
 
       final List<String> items = new ArrayList<>();
-      final Block addItem = () -> {
-        items.add("foo");
-      };
 
-      describe("spec", () -> {
-        beforeAll(addItem);
-        beforeEach(addItem);
-        afterEach(addItem);
-        afterAll(addItem);
+      beforeEach(() -> {
+        SpectrumHelper.run(() -> {
+
+          final Block addItem = () -> {
+            items.add("foo");
+          };
+
+          describe("suite without specs", () -> {
+            beforeAll(addItem);
+            beforeEach(addItem);
+            afterEach(addItem);
+            afterAll(addItem);
+          });
+
+        });
       });
 
       it("does not run fixture methods", () -> {
@@ -283,7 +274,7 @@ public class FixturesSpec {
       describe("when a spec explodes", () -> {
 
         it("still run", () -> {
-          final Result result = SpectrumRunner.run(getSuiteWithExplodingSpec());
+          final Result result = SpectrumHelper.run(getSuiteWithExplodingSpec());
           assertThat(result.getFailureCount(), is(1));
           assertThat(result.getFailures().get(0).getMessage(), containsString("boom"));
         });
@@ -293,7 +284,7 @@ public class FixturesSpec {
       describe("when another afterEach explodes", () -> {
 
         it("still run, too", () -> {
-          final Result result = SpectrumRunner.run(getSuiteWithExplodingAndNonExplodingAfterEach());
+          final Result result = SpectrumHelper.run(getSuiteWithExplodingAndNonExplodingAfterEach());
           assertThat(result.getFailureCount(), is(1));
           assertThat(result.getFailures().get(0).getMessage(), containsString("boom"));
         });
@@ -324,6 +315,330 @@ public class FixturesSpec {
         assertThat(items, contains("after3", "after2", "after1"));
       });
 
+    });
+
+    describe("afterAll blocks", () -> {
+
+      final Supplier<List<String>> calls = let(() -> new ArrayList<>());
+
+      describe("that explode", () -> {
+
+        final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+
+          describe("context description", () -> {
+
+            afterAll(() -> {
+              throw new Exception();
+            });
+
+            it("spec that passes", () -> {
+              assertThat(true, is(true));
+            });
+
+          });
+
+        }));
+
+        it("cause a failure", () -> {
+          assertThat(result.get().getFailureCount(), is(1));
+        });
+
+        it("associate the failure with the declaring suite", () -> {
+          final Failure failure = result.get().getFailures().get(0);
+          assertThat(failure.getDescription().getClassName(), is("context description"));
+          assertThat(failure.getDescription().getMethodName(), is(nullValue()));
+        });
+
+      });
+
+      describe("when a spec explodes", () -> {
+
+        beforeEach(() -> SpectrumHelper.run(() -> {
+          describe("context desecription", () -> {
+
+            afterAll(() -> {
+              calls.get().add("afterAll");
+            });
+
+            it("failing spec", () -> {
+              throw new Exception();
+            });
+
+          });
+        }));
+
+        it("still run", () -> {
+          assertThat(calls.get(), hasItem("afterAll"));
+        });
+
+      });
+
+      describe("when an afterEach explodes", () -> {
+
+        beforeEach(() -> SpectrumHelper.run(() -> {
+          describe("context", () -> {
+
+            afterEach(() -> {
+              calls.get().add("afterEach");
+              throw new Exception();
+            });
+
+            afterAll(() -> {
+              calls.get().add("afterAll");
+            });
+
+            it("passing spec", () -> {
+              calls.get().add("spec");
+            });
+
+          });
+        }));
+
+        it("still run", () -> {
+          assertThat(calls.get(), hasItem("afterAll"));
+        });
+
+      });
+
+      describe("when another afterAll explodes", () -> {
+
+        beforeEach(() -> SpectrumHelper.run(() -> {
+          describe("context", () -> {
+
+            afterAll(() -> {
+              calls.get().add("afterAll 1");
+              throw new Exception();
+            });
+
+            afterAll(() -> {
+              calls.get().add("afterAll 2");
+              throw new Exception();
+            });
+
+            it("passing spec", () -> {
+              calls.get().add("spec");
+            });
+
+          });
+        }));
+
+        it("still run", () -> {
+          assertThat(calls.get(), hasItem("afterAll 1"));
+          assertThat(calls.get(), hasItem("afterAll 2"));
+        });
+
+      });
+
+      describe("in multiples", () -> {
+
+        beforeEach(() -> SpectrumHelper.run(() -> {
+          describe("context", () -> {
+
+            afterAll(() -> {
+              calls.get().add("afterAll 1");
+            });
+
+            afterAll(() -> {
+              calls.get().add("afterAll 2");
+            });
+
+            afterAll(() -> {
+              calls.get().add("afterAll 3");
+            });
+
+            it("passing spec", () -> {
+              assertThat(true, is(true));
+            });
+
+          });
+        }));
+
+        it("run in reverse declaration order", () -> {
+          assertThat(calls.get(), contains("afterAll 3", "afterAll 2", "afterAll 1"));
+        });
+
+        describe("that explode", () -> {
+
+          final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+            describe("context description", () -> {
+
+              afterAll(() -> {
+                throw new Exception("boom 1");
+              });
+
+              afterAll(() -> {
+                throw new Exception("boom 2");
+              });
+
+              it("no boom", () -> {
+                assertThat(true, is(true));
+              });
+
+            });
+          }));
+
+          final Supplier<List<String>> failureMessages = let(() -> result.get()
+              .getFailures()
+              .stream()
+              .map((failure) -> failure.getMessage())
+              .collect(Collectors.toList()));
+
+          it("report each error", () -> {
+            assertThat(result.get().getFailureCount(), is(2));
+
+            assertThat(failureMessages.get(), hasItem("boom 1"));
+            assertThat(failureMessages.get(), hasItem("boom 2"));
+          });
+
+        });
+
+      });
+
+    });
+
+    describe("Fixtures with multiple errors", () -> {
+
+      final Function<Supplier<Result>, ThrowingSupplier<List<String>>> getFailureMessages =
+          (result) -> () -> result.get()
+              .getFailures()
+              .stream()
+              .map((failure) -> failure.getMessage())
+              .collect(Collectors.toList());
+
+      describe("in beforeEach and afterEach", () -> {
+
+        final Supplier<List<String>> exceptionsThrown = let(() -> new ArrayList<>());
+
+        final Function<Throwable, Throwable> recordException = (throwable) -> {
+          exceptionsThrown.get().add(throwable.getMessage());
+
+          return throwable;
+        };
+
+        final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+          describe("an explosive suite", () -> {
+
+            beforeEach(() -> {
+              throw recordException.apply(new Exception("boom beforeEach 1"));
+            });
+            beforeEach(() -> {
+              throw recordException.apply(new Exception("boom beforeEach 2"));
+            });
+
+            afterEach(() -> {
+              throw recordException.apply(new Exception("boom afterEach 1"));
+            });
+            afterEach(() -> {
+              throw recordException.apply(new Exception("boom afterEach 2"));
+            });
+
+            it("explodes", () -> {
+              throw recordException.apply(new Exception("boom in spec"));
+            });
+          });
+        }));
+
+        final Supplier<List<String>> failureMessages = let(getFailureMessages.apply(result));
+
+        it("should stop running beforeEach blocks after the first error", () -> {
+          assertThat(failureMessages.get(), hasItem("boom beforeEach 1"));
+          assertThat(failureMessages.get(), not(hasItem("boom beforeEach 2")));
+        });
+
+        it("should not run any specs", () -> {
+          assertThat(exceptionsThrown.get(), not(hasItem("spec")));
+        });
+
+        it("should report all errors individually", () -> {
+          assertThat(failureMessages.get(),
+              contains(
+                  "boom beforeEach 1",
+                  "boom afterEach 2",
+                  "boom afterEach 1"));
+        });
+
+        it("should report all exceptions as failures", () -> {
+          assertThat(failureMessages.get(), contains(exceptionsThrown.get().toArray()));
+        });
+
+      });
+
+      describe("in beforeAll and afterAll", () -> {
+
+        final Supplier<List<String>> exceptionsThrown = let(() -> new ArrayList<>());
+
+        final Function<Throwable, Throwable> recordException = (throwable) -> {
+          exceptionsThrown.get().add(throwable.getMessage());
+
+          return throwable;
+        };
+
+        final Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+          describe("an explosive suite", () -> {
+
+            beforeAll(() -> {
+              throw recordException.apply(new Exception("boom beforeAll 1"));
+            });
+            beforeAll(() -> {
+              throw recordException.apply(new Exception("boom beforeAll 2"));
+            });
+
+
+            beforeEach(() -> {
+              throw recordException.apply(new Exception("boom beforeEach"));
+            });
+
+            afterEach(() -> {
+              throw recordException.apply(new Exception("boom afterEach"));
+            });
+
+
+            afterAll(() -> {
+              throw recordException.apply(new Exception("boom afterAll 1"));
+            });
+            afterAll(() -> {
+              throw recordException.apply(new Exception("boom afterAll 2"));
+            });
+
+
+            it("explodes", () -> {
+              throw recordException.apply(new Exception("boom in spec"));
+            });
+          });
+        }));
+
+        final Supplier<List<String>> failureMessages = let(getFailureMessages.apply(result));
+
+        it("stop running beforeAll blocks after the first error", () -> {
+          assertThat(failureMessages.get(), hasItem("boom beforeAll 1"));
+          assertThat(failureMessages.get(), not(hasItem("boom beforeAll 2")));
+        });
+
+        it("does not run beforeEach", () -> {
+          assertThat(failureMessages.get(), not(hasItem("boom beforeEach")));
+        });
+
+        it("does not run afterEach", () -> {
+          assertThat(failureMessages.get(), not(hasItem("boom afterEach")));
+        });
+
+        it("does not run any specs", () -> {
+          assertThat(exceptionsThrown.get(), not(hasItem("boom in spec")));
+        });
+
+        it("should report all errors individually", () -> {
+          assertThat(failureMessages.get(),
+              contains(
+                  "boom beforeAll 1",
+                  "boom afterAll 2",
+                  "boom afterAll 1"));
+        });
+
+        it("should report all exceptions as failures", () -> {
+          assertThat(failureMessages.get(), contains(exceptionsThrown.get().toArray()));
+        });
+
+      });
     });
 
   }
@@ -405,39 +720,6 @@ public class FixturesSpec {
 
         it("should not execute any specs", () -> {
           assertThat(executedSpecs, is(empty()));
-        });
-
-      }
-    }
-
-    return Spec.class;
-  }
-
-  private static Class<?> getSpecWithExplodingAfterAll() {
-    class Spec {
-      {
-
-        describe("Exploding afterAll", () -> {
-
-          afterAll(() -> {
-            throw new Exception("boom one");
-          });
-
-          afterAll(() -> {
-            throw new Exception("boom two");
-          });
-
-          it("should fail at the context level", () -> {
-
-          });
-
-          describe("passing child", () -> {
-
-            it("passes", () -> {
-
-            });
-
-          });
         });
 
       }

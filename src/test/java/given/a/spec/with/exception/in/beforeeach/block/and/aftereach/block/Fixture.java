@@ -7,7 +7,7 @@ import static com.greghaskins.spectrum.Spectrum.it;
 
 class Fixture {
 
-  public static Class<?> getSpecThatThrowsAnExceptionInBeforeEachBlock() {
+  public static Class<?> getSpecThatThrowsAnExceptionInBeforeEachAndAfterEachBlocks() {
     class Spec {
       {
         describe("an exploding beforeEach", () -> {
@@ -17,7 +17,7 @@ class Fixture {
           });
 
           afterEach(() -> {
-            throw new Exception();
+            throw new SomeException("poof");
           });
 
           it("a failing test", () -> {

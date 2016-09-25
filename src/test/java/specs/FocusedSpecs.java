@@ -9,8 +9,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 
-import helpers.SpectrumRunner;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
@@ -23,19 +23,19 @@ public class FocusedSpecs {
     describe("Focused specs", () -> {
 
       it("are declared with `fit`", () -> {
-        final Result result = SpectrumRunner.run(getSuiteWithFocusedSpecs());
+        final Result result = SpectrumHelper.run(getSuiteWithFocusedSpecs());
         assertThat(result.getFailureCount(), is(0));
       });
 
       it("mark siblings as ignored so they don't get forgotten", () -> {
-        final Result result = SpectrumRunner.run(getSuiteWithFocusedSpecs());
+        final Result result = SpectrumHelper.run(getSuiteWithFocusedSpecs());
         assertThat(result.getIgnoreCount(), is(1));
       });
 
       describe("when nested in a separate suite", () -> {
 
         it("cause specs in other suites to be ignored", () -> {
-          final Result result = SpectrumRunner.run(getSuiteWithNestedFocusedSpecs());
+          final Result result = SpectrumHelper.run(getSuiteWithNestedFocusedSpecs());
           assertThat(result.getFailureCount(), is(0));
           assertThat(result.getIgnoreCount(), is(1));
         });
@@ -46,18 +46,18 @@ public class FocusedSpecs {
     describe("Focused suites", () -> {
 
       it("are declared with `fdescribe`", () -> {
-        final Result result = SpectrumRunner.run(getSuiteWithFocusedSubSuites());
+        final Result result = SpectrumHelper.run(getSuiteWithFocusedSubSuites());
         assertThat(result.getFailureCount(), is(0));
       });
 
       it("ignores tests that aren't focused", () -> {
-        final Result result = SpectrumRunner.run(getSuiteWithFocusedSubSuites());
+        final Result result = SpectrumHelper.run(getSuiteWithFocusedSubSuites());
         assertThat(result.getIgnoreCount(), is(2));
       });
 
       describe("when nested", () -> {
         it("cause specs in other suites to be ignored", () -> {
-          final Result result = SpectrumRunner.run(getSuiteWithNestedFocusedSuites());
+          final Result result = SpectrumHelper.run(getSuiteWithNestedFocusedSuites());
           assertThat(result.getFailureCount(), is(0));
           assertThat(result.getIgnoreCount(), is(1));
         });
@@ -67,7 +67,7 @@ public class FocusedSpecs {
 
     describe("Focused specs example", () -> {
 
-      final Supplier<Result> result = let(() -> SpectrumRunner.run(getFocusedSpecsExample()));
+      final Supplier<Result> result = let(() -> SpectrumHelper.run(getFocusedSpecsExample()));
 
       it("has two ignored specs", () -> {
         assertThat(result.get().getIgnoreCount(), is(2));

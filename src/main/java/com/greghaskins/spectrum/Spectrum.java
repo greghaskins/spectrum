@@ -231,9 +231,12 @@ public class Spectrum extends Runner {
    * @see org.junit.runner.Runner
    */
   public Spectrum(final Class<?> testClass) {
-    final Description description = Description.createSuiteDescription(testClass);
+    this(Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
+  }
+
+  Spectrum(final Description description, final Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
-    beginDefintion(this.rootSuite, new ConstructorBlock(testClass));
+    beginDefintion(this.rootSuite, definitionBlock);
   }
 
   @Override

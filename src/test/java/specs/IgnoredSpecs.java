@@ -11,8 +11,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 
-import helpers.SpectrumRunner;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
@@ -23,19 +23,19 @@ public class IgnoredSpecs {
   {
     describe("Ignored specs", () -> {
       it("are declared with `xit`", () -> {
-        final Result result = SpectrumRunner.run(getSuiteWithIgnoredSpecs());
+        final Result result = SpectrumHelper.run(getSuiteWithIgnoredSpecs());
         assertThat(result.getFailureCount(), is(0));
       });
 
       it("ignores tests that are xit", () -> {
-        final Result result = SpectrumRunner.run(getSuiteWithIgnoredSpecs());
+        final Result result = SpectrumHelper.run(getSuiteWithIgnoredSpecs());
         assertThat(result.getRunCount(), is(1));
         assertThat(result.getIgnoreCount(), is(2));
       });
 
       describe("with nesting", () -> {
         it("ignores only the nested spec", () -> {
-          final Result result = SpectrumRunner.run(getSuiteWithNestedIgnoredSpecs());
+          final Result result = SpectrumHelper.run(getSuiteWithNestedIgnoredSpecs());
           assertThat(result.getFailureCount(), is(0));
           assertThat(result.getRunCount(), is(1));
           assertThat(result.getIgnoreCount(), is(1));
@@ -45,19 +45,19 @@ public class IgnoredSpecs {
 
     describe("Ignored suites", () -> {
       it("are declared with `xdescribe`", () -> {
-        final Result result = SpectrumRunner.run(getSuiteWithIgnoredSubSuites());
+        final Result result = SpectrumHelper.run(getSuiteWithIgnoredSubSuites());
         assertThat(result.getFailureCount(), is(0));
       });
 
       it("ignores tests that are xdescribe", () -> {
-        final Result result = SpectrumRunner.run(getSuiteWithIgnoredSubSuites());
+        final Result result = SpectrumHelper.run(getSuiteWithIgnoredSubSuites());
         assertThat(result.getRunCount(), is(1));
         assertThat(result.getIgnoreCount(), is(3));
       });
 
       describe("with nesting", () -> {
         it("cause specs in nested suites to also be ignored", () -> {
-          final Result result = SpectrumRunner.run(getSuiteWithNestedIgnoredSuites());
+          final Result result = SpectrumHelper.run(getSuiteWithNestedIgnoredSuites());
           assertThat(result.getFailureCount(), is(0));
           assertThat(result.getRunCount(), is(1));
           assertThat(result.getIgnoreCount(), is(1));
@@ -66,7 +66,7 @@ public class IgnoredSpecs {
         describe("and the nested suite and spec have a focus", () -> {
           it("ignores the focus", () -> {
             final Result result =
-                SpectrumRunner.run(getSuiteWithNestedIgnoredSuitesAndFocusedSpecs());
+                SpectrumHelper.run(getSuiteWithNestedIgnoredSuitesAndFocusedSpecs());
             assertThat(result.getFailureCount(), is(0));
             assertThat(result.getRunCount(), is(1));
             assertThat(result.getIgnoreCount(), is(2));
@@ -76,7 +76,7 @@ public class IgnoredSpecs {
     });
 
     describe("Ignored specs example", () -> {
-      final Supplier<Result> result = let(() -> SpectrumRunner.run(getIgnoredSpecsExample()));
+      final Supplier<Result> result = let(() -> SpectrumHelper.run(getIgnoredSpecsExample()));
 
       it("does not run ignored specs", () -> {
         assertThat(result.get().getFailureCount(), is(0));

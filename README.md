@@ -5,7 +5,7 @@ Spectrum
 
 *A colorful BDD-style test runner for Java*
 
-[Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/), [Kiwi](https://github.com/kiwi-bdd/Kiwi), and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
+[Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/) and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
 
 
 ## Example
@@ -237,18 +237,28 @@ describe("The `let` helper function", () -> {
 
 ## Supported Features
 
-Spectrum moving toward a `1.0` release with close alignment to Jasmine's test declaration API. The library already supports a nice subset of those features:
+The Spectrum API is designed to be familiar to Jasmine and RSpec users, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Specturm should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)
 
-- [x] `describe`
-- [x] `it`
-- [x] `beforeEach` / `afterEach`
-- [x] `beforeAll` / `afterAll`
-- [x] `fit` / `fdescribe`
-- [x] `xit` / `xdescribe`
+The main functions for defining a test are:
+
+- `describe`
+- `it`
+- `beforeEach` / `afterEach`
+- `beforeAll` / `afterAll`
+- `fit` / `fdescribe`
+- `xit` / `xdescribe`
+- `let`
+
+Spectrum also supports:
+
+- Unlimited nesting of suites within suites
+- Rigorous error handling and reporting when something unexpected goes wrong
+- Compatibility with existing JUnit tools; no configuration required
+- Mixing Spectrum tests and normal JUnit tests in the same project suite
 
 ### Non-Features
 
-Unlike some BDD-style frameworks, Spectrum is _only_ a test runner. Assertions, expectations, mocks, and matchers are the purview of other libraries.
+Unlike some BDD-style frameworks, Spectrum is _only_ a test runner. Assertions, expectations, mocks, and matchers are the purview of other libraries such as [Hamcrest](http://hamcrest.org/JavaHamcrest/), [AssertJ](http://joel-costigliola.github.io/assertj/), [Mockito](http://mockito.org/), or [plain JUnit](https://github.com/junit-team/junit4/wiki/Assertions).
 
 ## Getting Started
 

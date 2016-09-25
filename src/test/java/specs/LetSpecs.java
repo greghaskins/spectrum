@@ -13,8 +13,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 
-import helpers.SpectrumRunner;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
@@ -49,7 +49,7 @@ public class LetSpecs {
       describe("when trying to use a value outside a spec", () -> {
 
         final Supplier<Result> result =
-            let(() -> SpectrumRunner.run(getSuiteThatUsesLetValueOutsideSpec()));
+            let(() -> SpectrumHelper.run(getSuiteThatUsesLetValueOutsideSpec()));
 
         it("causes a failure", () -> {
           assertThat(result.get().getFailureCount(), is(1));
@@ -70,7 +70,7 @@ public class LetSpecs {
         describe("checked exceptions", () -> {
 
           it("should be wrapped in RuntimeException", () -> {
-            final Result result = SpectrumRunner.run(getSuiteWithLetThatThrowsCheckedException());
+            final Result result = SpectrumHelper.run(getSuiteWithLetThatThrowsCheckedException());
 
             assertThat(result.getFailures(), hasSize(1));
             final Failure failure = result.getFailures().get(0);
@@ -83,7 +83,7 @@ public class LetSpecs {
         describe("runtime exceptions", () -> {
 
           it("should be re-thrown as-is", () -> {
-            final Result result = SpectrumRunner.run(getSuiteWithLetThatThrowsRuntimeException());
+            final Result result = SpectrumHelper.run(getSuiteWithLetThatThrowsRuntimeException());
 
             assertThat(result.getFailures(), hasSize(1));
             final Failure failure = result.getFailures().get(0);
@@ -96,7 +96,7 @@ public class LetSpecs {
         describe("errors", () -> {
 
           it("should be re-thrown as-is", () -> {
-            final Result result = SpectrumRunner.run(getSuiteWithLetThatThrowsError());
+            final Result result = SpectrumHelper.run(getSuiteWithLetThatThrowsError());
 
             assertThat(result.getFailures(), hasSize(1));
             final Failure failure = result.getFailures().get(0);
@@ -109,7 +109,7 @@ public class LetSpecs {
         describe("custom throwables", () -> {
 
           it("should be wrapped in RuntimeException", () -> {
-            final Result result = SpectrumRunner.run(getSuiteWithLetThatThrowsCustomThrowable());
+            final Result result = SpectrumHelper.run(getSuiteWithLetThatThrowsCustomThrowable());
 
             assertThat(result.getFailures(), hasSize(1));
             final Failure failure = result.getFailures().get(0);
