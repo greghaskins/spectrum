@@ -1,7 +1,5 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.Spectrum.Block;
-
 import java.util.Deque;
 import java.util.LinkedList;
 

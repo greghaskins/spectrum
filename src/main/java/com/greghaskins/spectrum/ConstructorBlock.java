@@ -1,7 +1,5 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.Spectrum.Block;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 

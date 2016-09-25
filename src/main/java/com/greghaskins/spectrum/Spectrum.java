@@ -12,17 +12,17 @@ import java.util.function.Supplier;
 public final class Spectrum extends Runner {
 
   /**
-   * A generic code block with a {@link #run()} method.
-   *
+   * A generic code block with a {@link #run()} method to perform any action. Usually defined by a
+   * lambda function.
    */
   @FunctionalInterface
-  public interface Block {
-
+  public interface Block extends com.greghaskins.spectrum.Block {
     /**
      * Execute the code block, raising any {@code Throwable} that may occur.
      *
-     * @throws Throwable if anything goes awry.
+     * @throws Throwable any uncaught Error or Exception
      */
+    @Override
     void run() throws Throwable;
   }
 
@@ -234,7 +234,7 @@ public final class Spectrum extends Runner {
     this(Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
   }
 
-  Spectrum(final Description description, final Block definitionBlock) {
+  Spectrum(final Description description, final com.greghaskins.spectrum.Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
     beginDefintion(this.rootSuite, definitionBlock);
   }
@@ -249,7 +249,8 @@ public final class Spectrum extends Runner {
     this.rootSuite.run(notifier);
   }
 
-  private static synchronized void beginDefintion(final Suite suite, final Block definitionBlock) {
+  private static synchronized void beginDefintion(final Suite suite,
+      final com.greghaskins.spectrum.Block definitionBlock) {
     suiteStack.push(suite);
     try {
       definitionBlock.run();

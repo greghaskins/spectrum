@@ -1,7 +1,5 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.Spectrum.Block;
-
 final class IdempotentBlock implements Block {
 
   private final Block block;
