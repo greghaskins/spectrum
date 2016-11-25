@@ -1,11 +1,9 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.Spectrum.Block;
-
 import java.util.Deque;
 import java.util.LinkedList;
 
-class SetupBlock implements Block {
+final class SetupBlock implements Block {
 
   private final Deque<Block> blocks;
 

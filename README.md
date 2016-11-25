@@ -129,6 +129,10 @@ public class ExampleSpecs {
 }
 ```
 
+### Screenshot
+
+![Spectrum with Eclipse via JUnit](junit-screenshot.png)
+
 ### Focused Specs
 
 You can focus the runner on particular spec with `fit` or a suite with `fdescribe` so that only those specs get executed.
@@ -283,7 +287,7 @@ Then add the Spectrum dependency for your tests:
 
 ```groovy
 dependencies {
-  testCompile 'com.greghaskins:spectrum:0.7.1'
+  testCompile 'com.greghaskins:spectrum:1.0.0'
 }
 
 ```
@@ -309,7 +313,7 @@ Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
     <dependency>
       <groupId>com.greghaskins</groupId>
       <artifactId>spectrum</artifactId>
-      <version>0.7.1</version>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

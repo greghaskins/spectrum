@@ -9,20 +9,33 @@ import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-public class Spectrum extends Runner {
+/**
+ * Implements a BDD-style test runner, similar to RSpec and Jasmine. It uses JUnit's standard
+ * reporting mechanisms ({@link org.junit.runner.Description}), but provides a completely different
+ * way of writing tests. Annotate you class with {@code @RunWith(Spectrum.class)}, and use the
+ * static methods to declare your specs.
+ *
+ * @see #describe
+ * @see #it
+ * @see #beforeEach
+ * @see #afterEach
+ * @see #let
+ *
+ */
+public final class Spectrum extends Runner {
 
   /**
-   * A generic code block with a {@link #run()} method.
-   *
+   * A generic code block with a {@link #run()} method to perform any action. Usually defined by a
+   * lambda function.
    */
   @FunctionalInterface
-  public interface Block {
-
+  public interface Block extends com.greghaskins.spectrum.Block {
     /**
      * Execute the code block, raising any {@code Throwable} that may occur.
      *
-     * @throws Throwable if anything goes awry.
+     * @throws Throwable any uncaught Error or Exception
      */
+    @Override
     void run() throws Throwable;
   }
 
@@ -185,7 +198,8 @@ public class Spectrum extends Runner {
    *
    * @param <T> The type of value
    *
-   * @param supplier Function that generates the value
+   * @param supplier {@link ThrowingSupplier} function that either generates the value, or throws a
+   *        `Throwable`
    * @return memoized supplier
    */
   public static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
@@ -201,9 +215,24 @@ public class Spectrum extends Runner {
     };
   }
 
+  /**
+   * Supplier of results similar to {@link Supplier}, but may optionally throw checked exceptions.
+   * Using {@link ThrowingSupplier} is more convenient for lambda functions since it requires less
+   * exception handling.
+   *
+   * @see Supplier
+   *
+   * @param <T> The type of result that will be supplied
+   */
   @FunctionalInterface
   public interface ThrowingSupplier<T> extends Supplier<T> {
 
+    /**
+     * Get a result.
+     *
+     * @return a result
+     * @throws Throwable any uncaught Error or Exception
+     */
     T getOrThrow() throws Throwable;
 
     @Override
@@ -234,7 +263,7 @@ public class Spectrum extends Runner {
     this(Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
   }
 
-  Spectrum(final Description description, final Block definitionBlock) {
+  Spectrum(final Description description, final com.greghaskins.spectrum.Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
     beginDefintion(this.rootSuite, definitionBlock);
   }
@@ -249,7 +278,8 @@ public class Spectrum extends Runner {
     this.rootSuite.run(notifier);
   }
 
-  private static synchronized void beginDefintion(final Suite suite, final Block definitionBlock) {
+  private static synchronized void beginDefintion(final Suite suite,
+      final com.greghaskins.spectrum.Block definitionBlock) {
     suiteStack.push(suite);
     try {
       definitionBlock.run();
