@@ -9,6 +9,19 @@ import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+/**
+ * Implements a BDD-style test runner, similar to RSpec and Jasmine. It uses JUnit's standard
+ * reporting mechanisms ({@link org.junit.runner.Description}), but provides a completely different
+ * way of writing tests. Annotate you class with {@code @RunWith(Spectrum.class)}, and use the
+ * static methods to declare your specs.
+ *
+ * @see #describe
+ * @see #it
+ * @see #beforeEach
+ * @see #afterEach
+ * @see #let
+ *
+ */
 public final class Spectrum extends Runner {
 
   /**
