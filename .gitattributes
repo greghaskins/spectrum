@@ -1,0 +1,3 @@
+*.java text eol=lf
+*.md text eol=lf
+*.gradle text eol=lf
