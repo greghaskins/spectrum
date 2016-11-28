@@ -125,6 +125,35 @@ public class ExampleSpecs {
 
     });
 
+
+    describe("The Variable convenience wrapper", () -> {
+
+      final Variable<Integer> counter = new Variable<>();
+
+      beforeEach(() -> {
+        counter.set(0);
+      });
+
+      beforeEach(() -> {
+        counter.set(counter.get()+1);
+      });
+
+      it("lets you work around Java's requirement that closures only use `final` variables", () -> {
+        counter.set(counter.get()+1);
+        assertThat(counter.get(), is(2));
+      });
+
+      it("can optionally have an initial value set", () -> {
+        final Variable<String> name = new Variable<>("Alice");
+        assertThat(name.get(), is("Alice"));
+      });
+
+      it("has a null value if not specified", () -> {
+        final Variable<String> name = new Variable<>();
+        assertNull(name.get());
+      });
+
+    });
   }
 }
 ```
@@ -209,6 +238,21 @@ describe("Ignored specs", () -> {
     });
 });
 ```
+### Gherkin Syntax
+The following Gherkin-like constructs are available (within the `GherkinSyntax` class):
+
+* Feature - this is a suite, declared using `feature`
+* Scenario - this is also a suite, declared with `scenario` which lives inside a feature
+  * Scenarios can live inside other scenarios, though that's not encouraged
+  * All previous steps in a scenario must have passed for the next to run - the scenario is aborted when a step fails
+* ScenarioOutline - this is a templated scenario, declared with `scenarioOutline` allowing you to parameterise a scenario
+  * You provide a stream of values, each of which is consumed by the definition of your scenario
+  * n-dimensional test sets might be achieved by nested Scenario Outlines
+* Given/When/Then/And - these are all just steps - the same level as `it` specs. They are declared with:
+  * `given`
+  * `when`
+  * `then`
+  * `and`
 
 ### Common Variable Initialization
 
@@ -238,6 +282,12 @@ describe("The `let` helper function", () -> {
   });
 });
 ```
+
+The `Variable` class is a simpler construct than `let`, intended to help you work around Java's requirement that closures only use final variables. The `Variable` object boxes a value, enabling it to be accessed by all nearby specs.
+
+It is generally poor practice to have co-dependent tests, but some suites may have this requirement - example, a final `afterAll` or `it` to check a summary of the other specs.
+
+The Gherkin syntax breaks tests down into independent steps, which MUST share state in order to function as a single scenario, and the use of `Variable` objects is a transparent way to do that - especially since it avoids dropping values into the fields of the parent class.
 
 ## Supported Features
 

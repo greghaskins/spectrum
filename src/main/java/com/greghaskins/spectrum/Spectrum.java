@@ -27,7 +27,9 @@ public final class Spectrum extends Runner {
   /**
    * A generic code block with a {@link #run()} method to perform any action. Usually defined by a
    * lambda function.
+   * @deprecated since 1.0.1 - use {@link com.greghaskins.spectrum.Block} instead
    */
+  @Deprecated
   @FunctionalInterface
   public interface Block extends com.greghaskins.spectrum.Block {
     /**
@@ -40,58 +42,76 @@ public final class Spectrum extends Runner {
   }
 
   /**
+   * Declare a test suite that is made of interdependent children. The whole
+   * suite should pass atomically and if it fails, any remaining children
+   * can stop running.
+   *
+   * @param context Description of the context for this suite
+   * @param block {@link com.greghaskins.spectrum.Block} with one or more calls to
+   *    {@link #it(String, com.greghaskins.spectrum.Block) it} that define each expected behavior
+   *
+   */
+  static void compositeSpec(final String context, final com.greghaskins.spectrum.Block block) {
+    final Suite suite = getCurrentSuiteBeingDeclared().addAbortingSuite(context);
+    beginDefinition(suite, block);
+  }
+
+  /**
    * Declare a test suite that describes the expected behavior of the system in a given context.
    *
    * @param context Description of the context for this suite
-   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
+   * @param block {@link com.greghaskins.spectrum.Block} with one or more calls to
+   *        {@link #it(String, com.greghaskins.spectrum.Block) it} that define
    *        each expected behavior
-   *
    */
-  public static void describe(final String context, final Block block) {
+  public static void describe(final String context, final com.greghaskins.spectrum.Block block) {
     final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
-    beginDefintion(suite, block);
+    beginDefinition(suite, block);
   }
 
   /**
    * Focus on this specific suite, while ignoring others.
    *
    * @param context Description of the context for this suite
-   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
+   * @param block {@link com.greghaskins.spectrum.Block} with one or more calls to
+   *        {@link #it(String, com.greghaskins.spectrum.Block) it} that define
    *        each expected behavior
    *
-   * @see #describe(String, Block)
+   * @see #describe(String, com.greghaskins.spectrum.Block)
    *
    */
-  public static void fdescribe(final String context, final Block block) {
+  public static void fdescribe(final String context, final com.greghaskins.spectrum.Block block) {
     final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
     suite.focus();
-    beginDefintion(suite, block);
+    beginDefinition(suite, block);
   }
 
   /**
    * Ignore the specific suite.
    *
    * @param context Description of the context for this suite
-   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
+   * @param block {@link com.greghaskins.spectrum.Block} with one or more calls to
+   *        {@link #it(String, com.greghaskins.spectrum.Block) it} that define
    *        each expected behavior
    *
-   * @see #describe(String, Block)
+   * @see #describe(String, com.greghaskins.spectrum.Block)
    *
    */
-  public static void xdescribe(final String context, final Block block) {
+  public static void xdescribe(final String context, final com.greghaskins.spectrum.Block block) {
     final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
     suite.ignore();
-    beginDefintion(suite, block);
+    beginDefinition(suite, block);
   }
 
   /**
    * Declare a spec, or test, for an expected behavior of the system in this suite context.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link Block} that verifies the system behaves as expected and throws a
-   *        {@link java.lang.Throwable Throwable} if that expectation is not met.
+   * @param block {@link com.greghaskins.spectrum.Block} that verifies the system behaves as
+   *        expected and throws a {@link java.lang.Throwable Throwable} if that expectation
+   *        is not met.
    */
-  public static void it(final String behavior, final Block block) {
+  public static void it(final String behavior, final com.greghaskins.spectrum.Block block) {
     getCurrentSuiteBeingDeclared().addSpec(behavior, block);
   }
 
@@ -100,7 +120,7 @@ public final class Spectrum extends Runner {
    *
    * @param behavior Description of the expected behavior
    *
-   * @see #xit(String, Block)
+   * @see #xit(String, com.greghaskins.spectrum.Block)
    */
   public static void it(final String behavior) {
     getCurrentSuiteBeingDeclared().addSpec(behavior, null).ignore();
@@ -110,12 +130,13 @@ public final class Spectrum extends Runner {
    * Focus on this specific spec, while ignoring others.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link Block} that verifies the system behaves as expected and throws a
-   *        {@link java.lang.Throwable Throwable} if that expectation is not met.
+   * @param block {@link com.greghaskins.spectrum.Block} that verifies the system behaves as
+   *        expected and throws a {@link java.lang.Throwable Throwable} if that expectation
+   *        is not met.
    *
-   * @see #it(String, Block)
+   * @see #it(String, com.greghaskins.spectrum.Block)
    */
-  public static void fit(final String behavior, final Block block) {
+  public static void fit(final String behavior, final com.greghaskins.spectrum.Block block) {
     getCurrentSuiteBeingDeclared().addSpec(behavior, block).focus();
   }
 
@@ -123,25 +144,26 @@ public final class Spectrum extends Runner {
    * Mark a spec as ignored so that it will be skipped.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link Block} that will not run, since this spec is ignored.
+   * @param block {@link com.greghaskins.spectrum.Block} that will not run, since this spec is
+   *              ignored.
    *
-   * @see #it(String, Block)
+   * @see #it(String, com.greghaskins.spectrum.Block)
    */
-  public static void xit(final String behavior, final Block block) {
+  public static void xit(final String behavior, final com.greghaskins.spectrum.Block block) {
     it(behavior);
   }
 
   /**
-   * Declare a {@link Block} to be run before each spec in the suite.
+   * Declare a {@link com.greghaskins.spectrum.Block} to be run before each spec in the suite.
    *
    * <p>
    * Use this to perform setup actions that are common across tests in the context. If multiple
    * {@code beforeEach} blocks are declared, they will run in declaration order.
    * </p>
    *
-   * @param block {@link Block} to run once before each spec
+   * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
-  public static void beforeEach(final Block block) {
+  public static void beforeEach(final com.greghaskins.spectrum.Block block) {
     getCurrentSuiteBeingDeclared().beforeEach(block);
   }
 
@@ -155,7 +177,7 @@ public final class Spectrum extends Runner {
    *
    * @param block {@link Block} to run once after each spec
    */
-  public static void afterEach(final Block block) {
+  public static void afterEach(final com.greghaskins.spectrum.Block block) {
     getCurrentSuiteBeingDeclared().afterEach(block);
   }
 
@@ -163,27 +185,29 @@ public final class Spectrum extends Runner {
    * Declare a {@link Block} to be run once before all the specs in the current suite begin.
    *
    * <p>
-   * Use {@code beforeAll} and {@link #afterAll(Block) afterAll} blocks with caution: since they
-   * only run once, shared state <strong>will</strong> leak across specs.
+   * Use {@code beforeAll} and {@link #afterAll(com.greghaskins.spectrum.Block) afterAll}
+   * blocks with caution: since they only run once, shared state <strong>will</strong>
+   * leak across specs.
    * </p>
    *
-   * @param block {@link Block} to run once before all specs in this suite
+   * @param block {@link com.greghaskins.spectrum.Block} to run once before all specs in this suite
    */
-  public static void beforeAll(final Block block) {
+  public static void beforeAll(final com.greghaskins.spectrum.Block block) {
     getCurrentSuiteBeingDeclared().beforeAll(block);
   }
 
   /**
-   * Declare a {@link Block} to be run once after all the specs in the current suite have run.
+   * Declare a {@link com.greghaskins.spectrum.Block} to be run once after all the specs in the
+   * current suite have run.
    *
    * <p>
-   * Use {@link #beforeAll(Block) beforeAll} and {@code afterAll} blocks with caution: since they
-   * only run once, shared state <strong>will</strong> leak across tests.
+   * Use {@link #beforeAll(com.greghaskins.spectrum.Block) beforeAll} and {@code afterAll} blocks
+   * with caution: since they only run once, shared state <strong>will</strong> leak across tests.
    * </p>
    *
-   * @param block {@link Block} to run once after all specs in this suite
+   * @param block {@link com.greghaskins.spectrum.Block} to run once after all specs in this suite
    */
-  public static void afterAll(final Block block) {
+  public static void afterAll(final com.greghaskins.spectrum.Block block) {
     getCurrentSuiteBeingDeclared().afterAll(block);
   }
 
@@ -204,11 +228,11 @@ public final class Spectrum extends Runner {
    */
   public static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
     final ConcurrentHashMap<Supplier<T>, T> cache = new ConcurrentHashMap<>(1);
-    afterEach(() -> cache.clear());
+    afterEach(cache::clear);
 
     return () -> {
       if (getCurrentSuiteBeingDeclared() == null) {
-        return cache.computeIfAbsent(supplier, s -> s.get());
+        return cache.computeIfAbsent(supplier, Supplier::get);
       }
       throw new IllegalStateException("Cannot use the value from let() in a suite declaration. "
           + "It may only be used in the context of a running spec.");
@@ -265,7 +289,7 @@ public final class Spectrum extends Runner {
 
   Spectrum(final Description description, final com.greghaskins.spectrum.Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
-    beginDefintion(this.rootSuite, definitionBlock);
+    beginDefinition(this.rootSuite, definitionBlock);
   }
 
   @Override
@@ -278,7 +302,7 @@ public final class Spectrum extends Runner {
     this.rootSuite.run(notifier);
   }
 
-  private static synchronized void beginDefintion(final Suite suite,
+  private static synchronized void beginDefinition(final Suite suite,
       final com.greghaskins.spectrum.Block definitionBlock) {
     suiteStack.push(suite);
     try {

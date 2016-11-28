@@ -17,8 +17,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.Spectrum;
-import com.greghaskins.spectrum.Spectrum.Block;
 import com.greghaskins.spectrum.Spectrum.ThrowingSupplier;
 import com.greghaskins.spectrum.SpectrumHelper;
 
