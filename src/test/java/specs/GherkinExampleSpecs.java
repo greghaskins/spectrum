@@ -7,7 +7,6 @@ import static com.greghaskins.spectrum.GherkinSyntax.scenario;
 import static com.greghaskins.spectrum.GherkinSyntax.then;
 import static com.greghaskins.spectrum.GherkinSyntax.when;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import com.greghaskins.spectrum.Spectrum;
@@ -17,14 +16,12 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Demonstrates the BDD syntax of Spectrum.
- */
 @RunWith(Spectrum.class)
 public class GherkinExampleSpecs {
   {
-    feature("BDD", () -> {
-      scenario("allow Gherkin like syntax", () -> {
+    feature("Gherkin-like test DSL", () -> {
+
+      scenario("using given-when-then steps", () -> {
         final AtomicInteger integer = new AtomicInteger();
         given("we start with a given", () -> {
           integer.set(12);
@@ -37,41 +34,26 @@ public class GherkinExampleSpecs {
         });
       });
 
-      scenario("uses boxes within the scenario where data is passed between steps", () -> {
-        Variable<String> theData = new Variable<>();
+      scenario("using variables within the scenario to pass data between steps", () -> {
+        final Variable<String> theData = new Variable<>();
 
         given("the data is set", () -> {
-          theData.set("Hello world");
+          theData.set("Hello");
         });
 
         when("the data is modified", () -> {
-          theData.set(theData.get() + "!");
+          theData.set(theData.get() + " world!");
         });
 
-        then("the data can be seen with the addition", () -> {
+        then("the data can be seen with the new value", () -> {
           assertThat(theData.get(), is("Hello world!"));
         });
 
-        and("the data is still available", () -> {
-          assertNotNull(theData.get());
-        });
-      });
-
-      scenario("uses default value from box", () -> {
-        Variable<String> theData = new Variable<>("Hello world");
-
-        given("the data is set correctly", () -> {
-          assertThat(theData.get(), is("Hello world"));
-        });
-
-        when("the data is modified", () -> {
-          theData.set(theData.get() + "!");
-        });
-
-        then("the data can be seen with the addition", () -> {
+        and("the data is still available in subsequent steps", () -> {
           assertThat(theData.get(), is("Hello world!"));
         });
       });
+
     });
   }
 }

@@ -125,35 +125,6 @@ public class ExampleSpecs {
 
     });
 
-
-    describe("The Variable convenience wrapper", () -> {
-
-      final Variable<Integer> counter = new Variable<>();
-
-      beforeEach(() -> {
-        counter.set(0);
-      });
-
-      beforeEach(() -> {
-        counter.set(counter.get()+1);
-      });
-
-      it("lets you work around Java's requirement that closures only use `final` variables", () -> {
-        counter.set(counter.get()+1);
-        assertThat(counter.get(), is(2));
-      });
-
-      it("can optionally have an initial value set", () -> {
-        final Variable<String> name = new Variable<>("Alice");
-        assertThat(name.get(), is("Alice"));
-      });
-
-      it("has a null value if not specified", () -> {
-        final Variable<String> name = new Variable<>();
-        assertNull(name.get());
-      });
-
-    });
   }
 }
 ```
@@ -238,21 +209,7 @@ describe("Ignored specs", () -> {
     });
 });
 ```
-### Gherkin Syntax
-The following Gherkin-like constructs are available (within the `GherkinSyntax` class):
 
-* Feature - this is a suite, declared using `feature`
-* Scenario - this is also a suite, declared with `scenario` which lives inside a feature
-  * Scenarios can live inside other scenarios, though that's not encouraged
-  * All previous steps in a scenario must have passed for the next to run - the scenario is aborted when a step fails
-* ScenarioOutline - this is a templated scenario, declared with `scenarioOutline` allowing you to parameterise a scenario
-  * You provide a stream of values, each of which is consumed by the definition of your scenario
-  * n-dimensional test sets might be achieved by nested Scenario Outlines
-* Given/When/Then/And - these are all just steps - the same level as `it` specs. They are declared with:
-  * `given`
-  * `when`
-  * `then`
-  * `and`
 
 ### Common Variable Initialization
 
@@ -283,11 +240,91 @@ describe("The `let` helper function", () -> {
 });
 ```
 
-The `Variable` class is a simpler construct than `let`, intended to help you work around Java's requirement that closures only use final variables. The `Variable` object boxes a value, enabling it to be accessed by all nearby specs.
+For cases where you need to access a shared variable across specs or steps, the `Variable` helper class provides a simple `get`/`set` interface. This may be required, for example, to initialize shared state in a `beforeAll` that is used across multiple specs in that suite. Of course, you should exercise caution when sharing state across tests
 
-It is generally poor practice to have co-dependent tests, but some suites may have this requirement - example, a final `afterAll` or `it` to check a summary of the other specs.
+> from [VariableSpecs.java](src/test/java/specs/VariableSpecs.java)
 
-The Gherkin syntax breaks tests down into independent steps, which MUST share state in order to function as a single scenario, and the use of `Variable` objects is a transparent way to do that - especially since it avoids dropping values into the fields of the parent class.
+```java
+describe("The Variable convenience wrapper", () -> {
+
+  final Variable<Integer> counter = new Variable<>();
+
+  beforeAll(() -> {
+    counter.set(0);
+  });
+
+  beforeEach(() -> {
+    final int previousValue = counter.get();
+    counter.set(previousValue + 1);
+  });
+
+  it("lets you work around Java's requirement that closures only use `final` variables", () -> {
+    assertThat(counter.get(), is(1));
+  });
+
+  it("can share values across scopes, so use it carefully", () -> {
+    assertThat(counter.get(), is(2));
+  });
+
+  it("can optionally have an initial value set", () -> {
+    final Variable<String> name = new Variable<>("Alice");
+    assertThat(name.get(), is("Alice"));
+  });
+
+  it("has a null value if not specified", () -> {
+    final Variable<String> name = new Variable<>();
+    assertNull(name.get());
+  });
+
+});
+```
+
+### Gherkin Syntax
+
+Spectrum also provides a Gherkin-style test DSL, accessible from the `GherkinSyntax` interface. In this syntax, tests are declared with `feature`, `scenario`, `given`, `when`, `then`, and ... `and`.
+
+> from [GherkinExampleSpecs.java](src/test/java/specs/GherkinExampleSpecs.java)
+
+```java
+feature("Gherkin-like test DSL", () -> {
+
+  scenario("using given-when-then steps", () -> {
+    final AtomicInteger integer = new AtomicInteger();
+    given("we start with a given", () -> {
+      integer.set(12);
+    });
+    when("we have a when to execute the system", () -> {
+      integer.incrementAndGet();
+    });
+    then("we can assert the outcome", () -> {
+      assertThat(integer.get(), is(13));
+    });
+  });
+
+  scenario("using variables within the scenario to pass data between steps", () -> {
+    final Variable<String> theData = new Variable<>();
+
+    given("the data is set", () -> {
+      theData.set("Hello");
+    });
+
+    when("the data is modified", () -> {
+      theData.set(theData.get() + " world!");
+    });
+
+    then("the data can be seen with the new value", () -> {
+      assertThat(theData.get(), is("Hello world!"));
+    });
+
+    and("the data is still available in subsequent steps", () -> {
+      assertThat(theData.get(), is("Hello world!"));
+    });
+  });
+
+});
+```
+
+When using the Gherkin syntax, each `given`/`when`/`then` step must pass before the next is run. Note that they must be declared inside a `scenario` block to work correctly. Multiple `scenario` blocks can be defined as part of a `feature`.
 
 ## Supported Features
 
