@@ -1,5 +1,6 @@
 package specs;
 
+import static com.greghaskins.spectrum.Spectrum.beforeAll;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
@@ -20,16 +21,20 @@ public class VariableSpecs {
 
       final Variable<Integer> counter = new Variable<>();
 
-      beforeEach(() -> {
+      beforeAll(() -> {
         counter.set(0);
       });
 
       beforeEach(() -> {
-        counter.set(counter.get() + 1);
+        final int previousValue = counter.get();
+        counter.set(previousValue + 1);
       });
 
       it("lets you work around Java's requirement that closures only use `final` variables", () -> {
-        counter.set(counter.get() + 1);
+        assertThat(counter.get(), is(1));
+      });
+
+      it("can share values across scopes, so use it carefully", () -> {
         assertThat(counter.get(), is(2));
       });
 
