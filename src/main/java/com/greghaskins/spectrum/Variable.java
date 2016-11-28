@@ -1,38 +1,44 @@
 package com.greghaskins.spectrum;
 
 /**
- * This box allows data passing between specs or steps.
+ * This is a convenience class to make working with Java closures easier. Variables from outer
+ * scopes must be {@code final} to be referenced inside lambda functions. Wrapping objects in a
+ * {@link #Variable} instance allows you to get/set values from anywhere as long as the Variable
+ * itself is {@code final}.
  */
 public class Variable<T> {
-  // the boxed object
-  private T object;
+
+  private T value;
 
   /**
-   * Default constructor for null object.
+   * Create a Variable with a {@code null} initial value.
    */
   public Variable() {}
 
   /**
-   * Construct with the object to box.
-   * @param object to box
+   * Create a Variable with the given initial value.
+   *
+   * @param value starting value
    */
-  public Variable(T object) {
-    this.object = object;
+  public Variable(final T value) {
+    this.value = value;
   }
 
   /**
-   * Retrieve the object.
-   * @return the object in the box
+   * Get the current value of this Variable.
+   *
+   * @return current value
    */
   public T get() {
-    return object;
+    return this.value;
   }
 
   /**
-   * Change the object in the box.
-   * @param object new value
+   * Change the value of this Variable.
+   *
+   * @param value new value
    */
-  public void set(T object) {
-    this.object = object;
+  public void set(final T value) {
+    this.value = value;
   }
 }
