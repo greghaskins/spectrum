@@ -245,9 +245,6 @@ The following Gherkin-like constructs are available (within the `GherkinSyntax` 
 * Scenario - this is also a suite, declared with `scenario` which lives inside a feature
   * Scenarios can live inside other scenarios, though that's not encouraged
   * All previous steps in a scenario must have passed for the next to run - the scenario is aborted when a step fails
-* ScenarioOutline - this is a templated scenario, declared with `scenarioOutline` allowing you to parameterise a scenario
-  * You provide a stream of values, each of which is consumed by the definition of your scenario
-  * n-dimensional test sets might be achieved by nested Scenario Outlines
 * Given/When/Then/And - these are all just steps - the same level as `it` specs. They are declared with:
   * `given`
   * `when`
