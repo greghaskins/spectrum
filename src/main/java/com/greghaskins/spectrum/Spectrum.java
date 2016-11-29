@@ -1,8 +1,8 @@
 package com.greghaskins.spectrum;
 
 import static com.greghaskins.spectrum.PreConditionBlock.with;
-import static com.greghaskins.spectrum.PreConditions.PreConditionsFactory.focus;
-import static com.greghaskins.spectrum.PreConditions.PreConditionsFactory.ignore;
+import static com.greghaskins.spectrum.PreConditions.Factory.focus;
+import static com.greghaskins.spectrum.PreConditions.Factory.ignore;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
@@ -308,7 +308,6 @@ public final class Spectrum extends Runner {
   private static final Deque<Suite> suiteStack = new ArrayDeque<>();
 
   private final Suite rootSuite;
-  private final Class<?> testClass;
 
   /**
    * Main constructor called via reflection by the JUnit runtime.
@@ -324,7 +323,6 @@ public final class Spectrum extends Runner {
   Spectrum(final Class<?> testClass, final Description description,
       final com.greghaskins.spectrum.Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
-    this.testClass = testClass;
     this.rootSuite.readTagging(testClass);
     beginDefinition(this.rootSuite, definitionBlock);
   }

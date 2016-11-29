@@ -2,7 +2,7 @@ package specs;
 
 import static com.greghaskins.spectrum.PreConditionBlock.ignore;
 import static com.greghaskins.spectrum.PreConditionBlock.with;
-import static com.greghaskins.spectrum.PreConditions.PreConditionsFactory.ignore;
+import static com.greghaskins.spectrum.PreConditions.Factory.ignore;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 

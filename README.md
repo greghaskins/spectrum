@@ -176,7 +176,13 @@ describe("Focused specs", () -> {
 
 ### Ignored Specs
 
-You can ignore a spec with `xit` or ignore all the specs in a suite with `xdescribe`.
+Spectrum supports RSpec style ignoring and focusing of specs and suites. It also has a Spectrum native style which overlaps with its tagging and selecive running capability.
+
+#### Ignored Specs RSpec style
+
+You can ignore a spec with `xit` or ignore all the specs in a suite with `xdescribe`. Prefixing with `f` will focus execution.
+The `pending` function is also available. Unlike declaring a spec as ignored as part of its set up, `pending` will
+abort the execution of a spec as a JUnit assumption failure.
 
 > from [IgnoredSpecs.java](src/test/java/specs/IgnoredSpecs.java)
 
@@ -214,7 +220,97 @@ describe("Ignored specs", () -> {
     });
 });
 ```
+#### Ignoring Specs Spectrum style
 
+Spectrum allows you to specify pre-conditions on a block. These preconditions can include tagging.
+The `with(PreConditions,Block)` function is used to annotate a block with the preconditions. As ignoring is a common case, there is also an `ignore` function you can
+wrap around a block which has the same effect as using `with(ignore(), ...)`.
+For ignoring or focusing specs, the syntax is:
+
+```java
+      describe("Has suite with ignored specs", () -> {
+        it("is not ignored", () -> {
+        });
+
+        it("is ignored", with(ignore(), () -> {
+        }));
+
+        it("is ignored for a reason", with(ignore("not important for this release"), () -> {
+        }));
+
+        it("is a block ignored as a block", ignore(() -> {
+        }));
+
+        it("is a block ignored as a block for a reason", ignore("Not ready yet", () -> {
+        }));
+      });
+
+      // and for focus
+      describe("Has suite with focused spec", () -> {
+              it("is focused", with(focus(), () -> {
+              }));
+      });
+```
+### Tagging and Selective Running
+
+Tagging is another precondition that can be added to the block of a `describe`, `it`, `scenario`, call. The vanilla example of tagging syntax would be:
+
+```java
+it("is tagged", with(tags("tag1"), () -> {
+    // some test
+})));
+```
+
+The tagging metadata is presently used to control which parts of the spec are run. There are two controls over what is run,
+complementary to any focus or ignore that's hard-coded into the spec.
+
+* Require tags - when set, only suites that have a tags in the required list can be run
+* Exclude tags - when set, any suite or spec that has an excluded tag will be ignored
+
+The rules for selective running can be set by:
+
+* System property (See [SpectrumOptions.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java))
+  * This will be the common use case for CI Builds
+  * The system property can be configured
+  * By default set `spectrum.require.tags` and `spectrum.exclude.tags` to be a comma separated list of tags
+  * This is likely done using a -D option on the java invocation
+* Annotation (See [SpectrumOptions.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java))
+* Function call - `requireTags` and `excludeTags` in the `Spectrum` class - these allow the rules to vary
+over the test initialization block.
+
+Tags allow you run different categories of specs in different test runs, either through the
+configuration of your build - usually with system property - or with hard coding in either the
+class annotation of the test class containing your specs or within the specs themselves.
+
+Example: temporarily making only WIP tests run in a test class
+
+```java
+  @RunWith(Spectrum.class)
+  @SpectrumOptions(requireTags="wip")
+  public TestClass {
+     {
+        describe("wip suite", with(tags("wip"), () -> {
+           // tests here are run
+           it("is a spec with no tags", () -> {
+               // this is still run because its parent has the tags
+           });
+           if("is a spec with a tag", with(tags("slow", () -> {
+                // in this case, this is run, but if
+                // excludeTags was set to have "slow"
+                // then it would not be allowed to run
+           })));
+        }));
+
+        describe("some other suite", with(tags("wrongTags", () -> {
+           // these are not run
+        }));
+
+        describe("untagged suite", () -> {
+           // this suite is untagged so does not meet the requirement
+        });
+     }
+  }
+```
 
 ### Common Variable Initialization
 

@@ -25,7 +25,7 @@ public class PreConditionBlock implements Block {
    * @return a PreconditionBlock - preignored
    */
   public static PreConditionBlock ignore(final Block block) {
-    return with(PreConditions.PreConditionsFactory.ignore(), block);
+    return with(PreConditions.Factory.ignore(), block);
   }
 
   /**
@@ -35,7 +35,7 @@ public class PreConditionBlock implements Block {
    * @return a PreconditionBlock - preignored
    */
   public static PreConditionBlock ignore(final String why, final Block block) {
-    return with(PreConditions.PreConditionsFactory.ignore(why), block);
+    return with(PreConditions.Factory.ignore(why), block);
   }
 
   /**

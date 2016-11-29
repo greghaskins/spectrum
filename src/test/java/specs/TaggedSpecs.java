@@ -1,7 +1,7 @@
 package specs;
 
 import static com.greghaskins.spectrum.PreConditionBlock.with;
-import static com.greghaskins.spectrum.PreConditions.PreConditionsFactory.tags;
+import static com.greghaskins.spectrum.PreConditions.Factory.tags;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.excludeTags;
