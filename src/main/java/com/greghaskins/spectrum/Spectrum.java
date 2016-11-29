@@ -171,6 +171,22 @@ public final class Spectrum extends Runner {
   }
 
   /**
+   * Set the test to require certain tags of all tests below.
+   * @param tags required tags - suites must have at least one of these if any are specified
+   */
+  public static void requireTags(final String... tags) {
+    getCurrentSuiteBeingDeclared().requireTags(tags);
+  }
+
+  /**
+   * Set the test to exclude certain tags of all tests below.
+   * @param tags excluded tags - suites and specs must not have any of these if any are specified
+   */
+  public static void excludeTags(final String... tags) {
+    getCurrentSuiteBeingDeclared().excludeTags(tags);
+  }
+
+  /**
    * Declare a {@link com.greghaskins.spectrum.Block} to be run before each spec in the suite.
    *
    * <p>
@@ -292,6 +308,7 @@ public final class Spectrum extends Runner {
   private static final Deque<Suite> suiteStack = new ArrayDeque<>();
 
   private final Suite rootSuite;
+  private final Class<?> testClass;
 
   /**
    * Main constructor called via reflection by the JUnit runtime.
@@ -301,11 +318,14 @@ public final class Spectrum extends Runner {
    * @see org.junit.runner.Runner
    */
   public Spectrum(final Class<?> testClass) {
-    this(Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
+    this(testClass, Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
   }
 
-  Spectrum(final Description description, final com.greghaskins.spectrum.Block definitionBlock) {
+  Spectrum(final Class<?> testClass, final Description description,
+      final com.greghaskins.spectrum.Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
+    this.testClass = testClass;
+    this.rootSuite.readTagging(testClass);
     beginDefinition(this.rootSuite, definitionBlock);
   }
 

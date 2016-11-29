@@ -26,6 +26,7 @@ final class Suite implements Parent, Child {
   private final Parent parent;
   private boolean ignored;
 
+  private final TaggingState tagging;
 
   /**
    * The strategy for running the children within the suite.
@@ -36,7 +37,7 @@ final class Suite implements Parent, Child {
   }
 
   static Suite rootSuite(final Description description) {
-    return new Suite(description, Parent.NONE, Suite::defaultChildRunner);
+    return new Suite(description, Parent.NONE, Suite::defaultChildRunner, new TaggingState());
   }
 
   /**
@@ -47,12 +48,15 @@ final class Suite implements Parent, Child {
    *             {@link #defaultChildRunner(Suite, RunNotifier)} which runs them all
    *             but can be substituted for a strategy that ignores all specs
    *             after a test failure  {@link #abortOnFailureChildRunner(Suite, RunNotifier)}
+   * @param taggingState the state of tagging inherited from the parent
    */
-  private Suite(final Description description, final Parent parent, final ChildRunner childRunner) {
+  private Suite(final Description description, final Parent parent, final ChildRunner childRunner,
+      final TaggingState taggingState) {
     this.description = description;
     this.parent = parent;
     this.ignored = parent.isIgnored();
     this.childRunner = childRunner;
+    this.tagging = taggingState;
   }
 
   Suite addSuite(final String name) {
@@ -60,7 +64,8 @@ final class Suite implements Parent, Child {
   }
 
   Suite addSuite(final String name, final ChildRunner childRunner) {
-    final Suite suite = new Suite(Description.createSuiteDescription(name), this, childRunner);
+    final Suite suite =
+        new Suite(Description.createSuiteDescription(name), this, childRunner, tagging.clone());
     suite.beforeAll.addBlock(this.beforeAll);
     suite.beforeEach.addBlock(this.beforeEach);
     suite.afterEach.addBlock(this.afterEach);
@@ -101,7 +106,7 @@ final class Suite implements Parent, Child {
     };
 
     return new Spec(specDescription, specBlockInContext, this)
-        .applyPreConditions(block);
+        .applyPreConditions(block, tagging);
   }
 
   private void addChild(final Child child) {
@@ -122,6 +127,34 @@ final class Suite implements Parent, Child {
 
   void afterEach(final Block block) {
     this.afterEach.addBlock(block);
+  }
+
+  /**
+   * Set the suite to require certain tags of all tests below.
+   * @param tags required tags - suites must have at least one of these if any are specified
+   */
+  void requireTags(final String... tags) {
+    tagging.require(tags);
+  }
+
+  /**
+   * Set the suite to exclude certain tags of all tests below.
+   * @param tags excluded tags - suites and specs must not have any of these if any are specified
+   */
+  void excludeTags(final String... tags) {
+    tagging.exclude(tags);
+  }
+
+  /**
+   * Read the tagging configuration.
+   * @param testClass the test class within which there's tagging configuration - or defaults
+   */
+  void readTagging(Class<?> testClass) {
+    tagging.read(testClass);
+  }
+
+  void applyPreConditions(Block block) {
+    applyPreConditions(block, tagging);
   }
 
   @Override

@@ -78,8 +78,16 @@ public class PreConditions {
    * Visitor pattern - when necessary, the child gets the preconditions to apply to it.
    * @param child to be pre-processed according to the preconditions.
    */
-  void applyTo(Child child) {
-    if (isFocused) {
+  void applyTo(Child child, TaggingState state) {
+    boolean isAllowed;
+    if (child instanceof Parent) {
+      isAllowed = state.isSuiteAllowedToRun(hasTags);
+    } else {
+      isAllowed = state.isSpecAllowedToRun(hasTags);
+    }
+    if (!isAllowed) {
+      child.ignore();
+    } else if (isFocused) {
       child.focus();
     } else if (isIgnored) {
       child.ignore();

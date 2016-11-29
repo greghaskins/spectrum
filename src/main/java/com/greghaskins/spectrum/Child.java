@@ -15,9 +15,11 @@ interface Child {
 
   void ignore();
 
-  default Child applyPreConditions(Block block) {
+  default Child applyPreConditions(Block block, TaggingState taggingState) {
     if (block instanceof PreConditionBlock) {
-      ((PreConditionBlock) block).getPreconditions().applyTo(this);
+      ((PreConditionBlock) block).getPreconditions().applyTo(this, taggingState);
+    } else {
+      new PreConditions().applyTo(this, taggingState);
     }
 
     return this;
