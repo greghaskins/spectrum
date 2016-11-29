@@ -15,4 +15,11 @@ interface Child {
 
   void ignore();
 
+  default Child applyPreConditions(Block block) {
+    if (block instanceof PreConditionBlock) {
+      ((PreConditionBlock) block).getPreconditions().applyTo(this);
+    }
+
+    return this;
+  }
 }

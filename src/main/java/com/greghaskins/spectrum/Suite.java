@@ -73,14 +73,14 @@ final class Suite implements Parent, Child {
     return addSuite(name, Suite::abortOnFailureChildRunner);
   }
 
-  Spec addSpec(final String name, final Block block) {
-    final Spec spec = createSpec(name, block);
+  Child addSpec(final String name, final Block block) {
+    final Child spec = createSpec(name, block);
     addChild(spec);
 
     return spec;
   }
 
-  private Spec createSpec(final String name, final Block block) {
+  private Child createSpec(final String name, final Block block) {
     final Description specDescription =
         Description.createTestDescription(this.description.getClassName(), name);
 
@@ -100,7 +100,8 @@ final class Suite implements Parent, Child {
       this.afterEach.run(description, notifier);
     };
 
-    return new Spec(specDescription, specBlockInContext, this);
+    return new Spec(specDescription, specBlockInContext, this)
+        .applyPreConditions(block);
   }
 
   private void addChild(final Child child) {

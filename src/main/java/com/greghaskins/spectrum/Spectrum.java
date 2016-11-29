@@ -1,6 +1,8 @@
 package com.greghaskins.spectrum;
 
-import static org.junit.Assume.assumeTrue;
+import static com.greghaskins.spectrum.PreConditionBlock.with;
+import static com.greghaskins.spectrum.PreConditions.PreConditionsFactory.focus;
+import static com.greghaskins.spectrum.PreConditions.PreConditionsFactory.ignore;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
@@ -69,6 +71,7 @@ public final class Spectrum extends Runner {
    */
   public static void describe(final String context, final com.greghaskins.spectrum.Block block) {
     final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
+    suite.applyPreConditions(block);
     beginDefinition(suite, block);
   }
 
@@ -84,9 +87,7 @@ public final class Spectrum extends Runner {
    *
    */
   public static void fdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
-    suite.focus();
-    beginDefinition(suite, block);
+    describe(context, with(focus(), block));
   }
 
   /**
@@ -101,9 +102,7 @@ public final class Spectrum extends Runner {
    *
    */
   public static void xdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
-    suite.ignore();
-    beginDefinition(suite, block);
+    describe(context, with(ignore(), block));
   }
 
   /**
@@ -140,7 +139,7 @@ public final class Spectrum extends Runner {
    * @see #it(String, com.greghaskins.spectrum.Block)
    */
   public static void fit(final String behavior, final com.greghaskins.spectrum.Block block) {
-    getCurrentSuiteBeingDeclared().addSpec(behavior, block).focus();
+    it(behavior, with(focus(), block));
   }
 
   /**
