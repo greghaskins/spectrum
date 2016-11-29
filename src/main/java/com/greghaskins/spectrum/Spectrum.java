@@ -1,5 +1,8 @@
 package com.greghaskins.spectrum;
 
+import static org.junit.Assume.assumeTrue;
+
+import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
@@ -151,6 +154,21 @@ public final class Spectrum extends Runner {
    */
   public static void xit(final String behavior, final com.greghaskins.spectrum.Block block) {
     it(behavior);
+  }
+
+  /**
+   * Call this from within a Spec to make the spec as ignored/pending.
+   */
+  public static void pending() {
+    throw new AssumptionViolatedException("pending");
+  }
+
+  /**
+   * Call this from within a Spec to make the spec as ignored/pending.
+   * @param message the annotation of the pending
+   */
+  public static void pending(final String message) {
+    throw new AssumptionViolatedException(message);
   }
 
   /**

@@ -5,6 +5,7 @@ import static com.greghaskins.spectrum.Spectrum.fdescribe;
 import static com.greghaskins.spectrum.Spectrum.fit;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
+import static com.greghaskins.spectrum.Spectrum.pending;
 import static com.greghaskins.spectrum.Spectrum.xdescribe;
 import static com.greghaskins.spectrum.Spectrum.xit;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,7 +30,7 @@ public class IgnoredSpecs {
 
       it("ignores tests that are xit", () -> {
         final Result result = SpectrumHelper.run(getSuiteWithIgnoredSpecs());
-        assertThat(result.getRunCount(), is(1));
+        assertThat(result.getRunCount(), is(2));
         assertThat(result.getIgnoreCount(), is(2));
       });
 
@@ -96,6 +97,11 @@ public class IgnoredSpecs {
 
           xit("is ignored and will not run", () -> {
             assertThat(true, is(false));
+          });
+
+          it("is marked as pending and will abort but will run a bit", () -> {
+            pending();
+            assertThat(true, is(true));
           });
 
           it("does not have a block and is ignored");

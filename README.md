@@ -191,6 +191,11 @@ describe("Ignored specs", () -> {
         assertThat(true, is(true));
     });
 
+    it("is marked as pending and will abort but will run a bit", () -> {
+      pending();
+      assertThat(true, is(true));
+    });
+
     xdescribe("an ignored suite", () -> {
 
         it("will not run", () -> {
