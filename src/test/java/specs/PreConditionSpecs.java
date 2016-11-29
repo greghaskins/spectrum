@@ -1,5 +1,6 @@
 package specs;
 
+import static com.greghaskins.spectrum.PreConditionBlock.ignore;
 import static com.greghaskins.spectrum.PreConditionBlock.with;
 import static com.greghaskins.spectrum.PreConditions.PreConditionsFactory.ignore;
 import static com.greghaskins.spectrum.Spectrum.describe;
@@ -29,6 +30,12 @@ public class PreConditionSpecs {
         }));
 
         it("is ignored for a reason", with(ignore("not important for this release"), () -> {
+        }));
+
+        it("is a block ignored as a block", ignore(() -> {
+        }));
+
+        it("is a block ignored as a block for a reason", ignore("Not ready yet", () -> {
         }));
       });
     });
