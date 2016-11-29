@@ -26,6 +26,7 @@ final class Suite implements Parent, Child {
   private final Parent parent;
   private boolean ignored;
 
+  private Set<String> namesUsed = new HashSet<>();
 
   /**
    * The strategy for running the children within the suite.
@@ -60,7 +61,8 @@ final class Suite implements Parent, Child {
   }
 
   Suite addSuite(final String name, final ChildRunner childRunner) {
-    final Suite suite = new Suite(Description.createSuiteDescription(name), this, childRunner);
+    final Suite suite =
+        new Suite(Description.createSuiteDescription(sanitise(name)), this, childRunner);
     suite.beforeAll.addBlock(this.beforeAll);
     suite.beforeEach.addBlock(this.beforeEach);
     suite.afterEach.addBlock(this.afterEach);
@@ -82,7 +84,7 @@ final class Suite implements Parent, Child {
 
   private Spec createSpec(final String name, final Block block) {
     final Description specDescription =
-        Description.createTestDescription(this.description.getClassName(), name);
+        Description.createTestDescription(this.description.getClassName(), sanitise(name));
 
     final NotifyingBlock specBlockInContext = (description, notifier) -> {
       try {
@@ -209,5 +211,19 @@ final class Suite implements Parent, Child {
     } finally {
       runNotifier.removeListener(listener);
     }
+  }
+
+  private String sanitise(final String name) {
+    String sanitised = name.replaceAll("\\(", "[")
+        .replaceAll("\\)", "]");
+
+    int suffix = 1;
+    String deDuplicated = sanitised;
+    while (namesUsed.contains(deDuplicated)) {
+      deDuplicated = sanitised + "_" + suffix++;
+    }
+    namesUsed.add(deDuplicated);
+
+    return deDuplicated;
   }
 }
