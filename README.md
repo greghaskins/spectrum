@@ -271,11 +271,11 @@ The rules for selective running can be set by:
 
 * System property (See [SpectrumOptions.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java))
   * This will be the common use case for CI Builds
-  * Set `spectrum.require.tags` and `spectrum.exclude.tags` to be a comma separated list of tags
+  * Set `spectrum.tags.include` and `spectrum.tags.exclude` to be a comma separated list of tags
   * This is likely done using a -D option on the java invocation
 * Annotation (See [SpectrumOptions.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java))
 * Function call (See [Configuration.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java)) and `Spectrum.configure()`
-  * `configure().requireTags("foo")` and `configure().excludeTags("bar")` allow the rules to vary based on where they are called in the declaration block.
+  * `configure().includeTags("foo")` and `configure().excludeTags("bar")` allow the rules to vary based on where they are called in the declaration block.
 
 Tags allow you run different categories of specs in different test runs, either through the
 configuration of your build - usually with system property - or with hard coding in either the
@@ -285,7 +285,7 @@ Example: temporarily making only WIP tests run in a test class
 
 ```java
   @RunWith(Spectrum.class)
-  @SpectrumOptions(requireTags="wip")
+  @SpectrumOptions(includeTags="wip")
   public TestClass {
      {
         describe("wip suite", with(tags("wip"), () -> {

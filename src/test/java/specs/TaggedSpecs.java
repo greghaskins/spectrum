@@ -63,11 +63,11 @@ public class TaggedSpecs {
           assertThat(result.getIgnoreCount(), is(1));
         });
 
-        it("only runs specs that match the requireTags filter", () -> {
+        it("only runs specs that match the includeTags filter", () -> {
           final ArrayList<String> specsRun = new ArrayList<>();
 
           SpectrumHelper.run(() -> {
-            configure().requireTags("foo");
+            configure().includeTags("foo");
 
             it("should run spec 1", with(tags("foo"), () -> {
               specsRun.add("spec 1");
@@ -92,7 +92,7 @@ public class TaggedSpecs {
         Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
 
           configure()
-              .requireTags("foo", "bar")
+              .includeTags("foo", "bar")
               .excludeTags("baz", "qux");
 
           it("should not run untagged specs", () -> {
@@ -202,7 +202,7 @@ public class TaggedSpecs {
   private static Class<?> getSuiteWithTagsIncluded() {
     class Tagged {
       {
-        configure().requireTags("someTag");
+        configure().includeTags("someTag");
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that runs", () -> {
@@ -219,7 +219,7 @@ public class TaggedSpecs {
     class Tagged {
       {
         // this stops "someTag" from being included by default
-        configure().requireTags("someOtherTag");
+        configure().includeTags("someOtherTag");
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that won't run", () -> {
@@ -249,7 +249,7 @@ public class TaggedSpecs {
   }
 
   private static Class<?> getSuiteWithTagsIncludedByAnnotation() {
-    @SpectrumOptions(requireTags = "someTag")
+    @SpectrumOptions(includeTags = "someTag")
     class Tagged {
       {
         describe("A suite", with(tags("someTag"), () -> {
@@ -264,7 +264,7 @@ public class TaggedSpecs {
   }
 
   private static Class<?> getSuiteWithTagsNotIncludedByAnnotation() {
-    @SpectrumOptions(requireTags = "someOtherTag")
+    @SpectrumOptions(includeTags = "someOtherTag")
     class Tagged {
       {
         describe("A suite", with(tags("someTag"), () -> {
@@ -281,9 +281,9 @@ public class TaggedSpecs {
   private static Class<?> getSuiteWithNoTagsThatShouldNotRunBecauseOfIncludeTags() {
     class Tagged {
       {
-        configure().requireTags("someTag");
+        configure().includeTags("someTag");
 
-        describe("An untagged suite in an 'requireTags' situation", () -> {
+        describe("An untagged suite in an 'includeTags' situation", () -> {
           it("has a spec that won't run", () -> {
             assertTrue(true);
           });
@@ -330,13 +330,13 @@ public class TaggedSpecs {
   }
 
   private static Class<?> getSuiteWithTagsIncludedBySystemProperty() {
-    System.setProperty(SpectrumOptions.REQUIRE_TAGS_PROPERTY, "someTag");
+    System.setProperty(SpectrumOptions.INCLUDE_TAGS_PROPERTY, "someTag");
 
     return getSuiteWithTagsOnly();
   }
 
   private static Class<?> getSuiteWithTagsNotIncludedBySystemProperty() {
-    System.setProperty(SpectrumOptions.REQUIRE_TAGS_PROPERTY, "someOtherTag");
+    System.setProperty(SpectrumOptions.INCLUDE_TAGS_PROPERTY, "someOtherTag");
 
     return getSuiteWithTagsOnly();
   }
@@ -348,7 +348,7 @@ public class TaggedSpecs {
   }
 
   private static void clearSystemProperties() {
-    System.setProperty(SpectrumOptions.REQUIRE_TAGS_PROPERTY, "");
+    System.setProperty(SpectrumOptions.INCLUDE_TAGS_PROPERTY, "");
     System.setProperty(SpectrumOptions.EXCLUDE_TAGS_PROPERTY, "");
   }
 

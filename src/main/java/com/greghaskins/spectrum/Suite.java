@@ -137,8 +137,8 @@ final class Suite implements Parent, Child {
    * Set the suite to require certain tags of all tests below.
    * @param tags required tags - suites must have at least one of these if any are specified
    */
-  void requireTags(final String... tags) {
-    tagging.require(tags);
+  void includeTags(final String... tags) {
+    tagging.include(tags);
   }
 
   /**

@@ -1,7 +1,7 @@
 package com.greghaskins.spectrum;
 
 import static com.greghaskins.spectrum.SpectrumOptions.EXCLUDE_TAGS_PROPERTY;
-import static com.greghaskins.spectrum.SpectrumOptions.REQUIRE_TAGS_PROPERTY;
+import static com.greghaskins.spectrum.SpectrumOptions.INCLUDE_TAGS_PROPERTY;
 import static com.greghaskins.spectrum.SpectrumOptions.TAGS_SEPARATOR;
 
 import org.junit.runners.model.TestClass;
@@ -17,16 +17,16 @@ import java.util.stream.Stream;
  * Represents the state of tagging for Spectrum - what it presently means.
  */
 class TaggingState {
-  private Set<String> required = new HashSet<>();
+  private Set<String> included = new HashSet<>();
   private Set<String> excluded = new HashSet<>();
 
-  void require(String... tags) {
-    require(Arrays.stream(tags));
+  void include(String... tags) {
+    include(Arrays.stream(tags));
   }
 
-  private void require(Stream<String> tags) {
-    this.required.clear();
-    tags.forEach(this.required::add);
+  private void include(Stream<String> tags) {
+    this.included.clear();
+    tags.forEach(this.included::add);
   }
 
   void exclude(String... tags) {
@@ -41,7 +41,7 @@ class TaggingState {
   @Override
   public TaggingState clone() {
     TaggingState copy = new TaggingState();
-    copy.require(this.required.stream());
+    copy.include(this.included.stream());
     copy.exclude(this.excluded.stream());
 
     return copy;
@@ -59,9 +59,9 @@ class TaggingState {
   }
 
   private boolean compliesWithRequired(Collection<String> tags) {
-    return this.required.isEmpty()
+    return this.included.isEmpty()
         || tags.stream()
-            .filter(this.required::contains)
+            .filter(this.included::contains)
             .findFirst()
             .isPresent();
   }
@@ -69,7 +69,7 @@ class TaggingState {
   void read(final Class<?> klazz) {
     SpectrumOptions options = new TestClass(klazz).getAnnotation(SpectrumOptions.class);
 
-    final String[] systemIncludes = fromSystemProperty(REQUIRE_TAGS_PROPERTY);
+    final String[] systemIncludes = fromSystemProperty(INCLUDE_TAGS_PROPERTY);
     final String[] systemExcludes = fromSystemProperty(EXCLUDE_TAGS_PROPERTY);
 
     final String[] annotationIncludes = readAnnotationIncludes(options);
@@ -78,7 +78,7 @@ class TaggingState {
     // the annotation can provide nothing and so we drop back to
     // the system properties - this is done separately
     // for includes and excludes
-    require(firstNonBlank(annotationIncludes, systemIncludes));
+    include(firstNonBlank(annotationIncludes, systemIncludes));
     exclude(firstNonBlank(annotationExcludes, systemExcludes));
   }
 
@@ -103,7 +103,7 @@ class TaggingState {
 
   private String[] readAnnotationIncludes(SpectrumOptions options) {
     return Optional.ofNullable(options)
-        .map(SpectrumOptions::requireTags)
+        .map(SpectrumOptions::includeTags)
         .orElse(null);
   }
 
