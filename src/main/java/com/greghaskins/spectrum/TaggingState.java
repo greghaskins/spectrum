@@ -47,12 +47,8 @@ class TaggingState {
     return copy;
   }
 
-  boolean isSuiteAllowedToRun(Collection<String> tags) {
+  boolean isAllowedToRun(Collection<String> tags) {
     return !isExcluded(tags) && compliesWithRequired(tags);
-  }
-
-  boolean isSpecAllowedToRun(Collection<String> tags) {
-    return isSuiteAllowedToRun(tags);
   }
 
   private boolean isExcluded(Collection<String> tags) {
