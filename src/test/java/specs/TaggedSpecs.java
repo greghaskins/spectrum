@@ -6,6 +6,7 @@ import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.configure;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.let;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -16,10 +17,12 @@ import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.SpectrumHelper;
 import com.greghaskins.spectrum.SpectrumOptions;
 
+import org.junit.Assert;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class TaggedSpecs {
@@ -80,6 +83,52 @@ public class TaggedSpecs {
 
           assertThat(specsRun, hasSize(1));
           assertThat(specsRun, contains("spec 1"));
+        });
+
+      });
+
+      describe("with both includes and excludes", () -> {
+
+        Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+
+          configure()
+              .requireTags("foo", "bar")
+              .excludeTags("baz", "qux");
+
+          it("should not run untagged specs", () -> {
+            Assert.fail();
+          });
+          it("should not run unrelated tags", with(tags("blah"), () -> {
+            Assert.fail();
+          }));
+
+          it("should run spec with at least one tag, foo", with(tags("foo"), () -> {
+          }));
+          it("should run spec with at least one tag, bar", with(tags("bar"), () -> {
+          }));
+
+          it("excludes take precedence over includes, baz", with(tags("foo", "baz"), () -> {
+            Assert.fail();
+          }));
+          it("excludes take precedence over includes, qux", with(tags("bar", "qux"), () -> {
+            Assert.fail();
+          }));
+
+          it("should run spec with included and unrelated tags", with(tags("foo", "blah"), () -> {
+          }));
+          it("should not run spec with excluded and unrelated tags",
+              with(tags("blah", "qux"), () -> {
+                Assert.fail();
+              }));
+
+        }));
+
+        it("should not run any specs that match an excluded tag", () -> {
+          assertThat(result.get().getFailureCount(), is(0));
+        });
+
+        it("should run all specs that match at least one included tag", () -> {
+          assertThat(result.get().getRunCount(), is(3));
         });
 
       });

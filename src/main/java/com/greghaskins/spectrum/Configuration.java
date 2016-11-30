@@ -12,18 +12,24 @@ public class Configuration {
    * Set the test filter to require certain tags for all following specs.
    *
    * @param tagsToRequire specs (or their parent suite) must have at least one of these
+   * @return Configuration instance for chaining further calls
    */
-  public void requireTags(String... tagsToRequire) {
+  public Configuration requireTags(String... tagsToRequire) {
     this.suite.requireTags(tagsToRequire);
+
+    return this;
   }
 
   /**
    * Set the test filter to exclude certain tags for all following specs.
    *
    * @param tagsToExclude specs and their parent suite must not have any of these
+   * @return Configuration instance for chaining further calls
    */
-  public void excludeTags(String... tagsToExclude) {
+  public Configuration excludeTags(String... tagsToExclude) {
     this.suite.excludeTags(tagsToExclude);
+
+    return this;
   }
 
 }
