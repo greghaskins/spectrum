@@ -1,12 +1,14 @@
 package com.greghaskins.spectrum;
 
+import java.util.function.Supplier;
+
 /**
  * This is a convenience class to make working with Java closures easier. Variables from outer
  * scopes must be {@code final} to be referenced inside lambda functions. Wrapping objects in a
  * {@link #Variable} instance allows you to get/set values from anywhere as long as the Variable
  * itself is {@code final}.
  */
-public class Variable<T> {
+public class Variable<T> implements Supplier<T> {
 
   private T value;
 
@@ -29,6 +31,7 @@ public class Variable<T> {
    *
    * @return current value
    */
+  @Override
   public T get() {
     return this.value;
   }

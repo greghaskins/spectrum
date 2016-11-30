@@ -6,8 +6,8 @@ import static com.greghaskins.spectrum.Spectrum.it;
 
 /**
  * A translation from Spectrum describe/it to Gherkin-like Feature/Scenario/Given/When/Then syntax
- * Note - the beforeEach and afterEach will still be executed between given/when/then steps which
- * may not make sense in many situations.
+ * Note - any beforeEach and afterEach within a Scenario will still be executed between
+ * given/when/then steps which may not make sense in many situations.
  */
 public interface GherkinSyntax {
   /**
@@ -18,7 +18,7 @@ public interface GherkinSyntax {
    *
    * @see #scenario
    */
-  public static void feature(final String featureName, final Block block) {
+  static void feature(final String featureName, final Block block) {
     describe("Feature: " + featureName, block);
   }
 
@@ -34,7 +34,7 @@ public interface GherkinSyntax {
    * @see #when
    * @see #then
    */
-  public static void scenario(final String scenarioName, final Block block) {
+  static void scenario(final String scenarioName, final Block block) {
     compositeSpec("Scenario: " + scenarioName, block);
   }
 
@@ -48,7 +48,7 @@ public interface GherkinSyntax {
    * @see #when
    * @see #then
    */
-  public static void given(final String behavior, final Block block) {
+  static void given(final String behavior, final Block block) {
     it("Given " + behavior, block);
   }
 
@@ -62,7 +62,7 @@ public interface GherkinSyntax {
    * @see #given
    * @see #then
    */
-  public static void when(final String behavior, final Block block) {
+  static void when(final String behavior, final Block block) {
     it("When " + behavior, block);
   }
 
@@ -76,7 +76,7 @@ public interface GherkinSyntax {
    * @see #given
    * @see #when
    */
-  public static void then(final String behavior, final Block block) {
+  static void then(final String behavior, final Block block) {
     it("Then " + behavior, block);
   }
 
@@ -91,8 +91,7 @@ public interface GherkinSyntax {
    * @see #when
    * @see #then
    */
-  public static void and(final String behavior, final Block block) {
+  static void and(final String behavior, final Block block) {
     it("And " + behavior, block);
   }
-
 }
