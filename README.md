@@ -271,8 +271,7 @@ The rules for selective running can be set by:
 
 * System property (See [SpectrumOptions.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java))
   * This will be the common use case for CI Builds
-  * The system property can be configured
-  * By default set `spectrum.require.tags` and `spectrum.exclude.tags` to be a comma separated list of tags
+  * Set `spectrum.require.tags` and `spectrum.exclude.tags` to be a comma separated list of tags
   * This is likely done using a -D option on the java invocation
 * Annotation (See [SpectrumOptions.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java))
 * Function call - `requireTags` and `excludeTags` in the `Spectrum` class - these allow the rules to vary

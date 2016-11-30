@@ -25,8 +25,8 @@ class TaggingState {
   }
 
   private void require(Stream<String> tags) {
-    required.clear();
-    tags.forEach(required::add);
+    this.required.clear();
+    tags.forEach(this.required::add);
   }
 
   void exclude(String... tags) {
@@ -34,14 +34,15 @@ class TaggingState {
   }
 
   private void exclude(Stream<String> tags) {
-    excluded.clear();
-    tags.forEach(excluded::add);
+    this.excluded.clear();
+    tags.forEach(this.excluded::add);
   }
 
+  @Override
   public TaggingState clone() {
     TaggingState copy = new TaggingState();
-    copy.require(required.stream());
-    copy.exclude(excluded.stream());
+    copy.require(this.required.stream());
+    copy.exclude(this.excluded.stream());
 
     return copy;
   }
@@ -56,15 +57,15 @@ class TaggingState {
 
   private boolean isExcluded(Collection<String> tags) {
     return tags.stream()
-        .filter(excluded::contains)
+        .filter(this.excluded::contains)
         .findFirst()
         .isPresent();
   }
 
   private boolean compliesWithRequired(Collection<String> tags) {
-    return required.isEmpty()
+    return this.required.isEmpty()
         || tags.stream()
-            .filter(required::contains)
+            .filter(this.required::contains)
             .findFirst()
             .isPresent();
   }
@@ -72,8 +73,8 @@ class TaggingState {
   void read(final Class<?> klazz) {
     SpectrumOptions options = new TestClass(klazz).getAnnotation(SpectrumOptions.class);
 
-    final String[] systemIncludes = readSystemPropertyIncludes(options);
-    final String[] systemExcludes = readSystemPropertyExcludes(options);
+    final String[] systemIncludes = fromSystemProperty(REQUIRE_TAGS_PROPERTY);
+    final String[] systemExcludes = fromSystemProperty(EXCLUDE_TAGS_PROPERTY);
 
     final String[] annotationIncludes = readAnnotationIncludes(options);
     final String[] annotationExcludes = readAnnotationExcludes(options);
@@ -102,18 +103,6 @@ class TaggingState {
 
   private static boolean notArrayWithEmptyValue(final String[] array) {
     return !(array.length == 1 && array[0].isEmpty());
-  }
-
-  private String[] readSystemPropertyIncludes(SpectrumOptions options) {
-    return fromSystemProperty(Optional.ofNullable(options)
-        .map(SpectrumOptions::requireTagsSystemProperty)
-        .orElse(REQUIRE_TAGS_PROPERTY));
-  }
-
-  private String[] readSystemPropertyExcludes(SpectrumOptions options) {
-    return fromSystemProperty(Optional.ofNullable(options)
-        .map(SpectrumOptions::excludeTagsSystemProperty)
-        .orElse(EXCLUDE_TAGS_PROPERTY));
   }
 
   private String[] readAnnotationIncludes(SpectrumOptions options) {

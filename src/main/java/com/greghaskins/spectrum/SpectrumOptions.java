@@ -36,19 +36,4 @@ public @interface SpectrumOptions {
    */
   String[] excludeTags() default {};
 
-  /**
-   * Which system property can be used to retrieve tags passed in by
-   * property. These tags are to be comma separated in the property.
-   * See {@link PreConditions#tags(String...)}
-   * @return the system property to use if not default.
-   */
-  String requireTagsSystemProperty() default REQUIRE_TAGS_PROPERTY;
-
-  /**
-   * Which system property can be used to retrieve tags passed in by
-   * property. These tags are to be comma separated in the property.
-   * See {@link PreConditions#tags(String...)}
-   * @return the system property to use if not default.
-   */
-  String excludeTagsSystemProperty() default EXCLUDE_TAGS_PROPERTY;
 }
