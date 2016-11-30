@@ -28,6 +28,7 @@ final class Suite implements Parent, Child {
 
   private final TaggingState tagging;
   private PreConditions preconditions = PreConditions.Factory.defaultPreConditions();
+  private Set<String> namesUsed = new HashSet<>();
 
   /**
    * The strategy for running the children within the suite.
@@ -67,7 +68,7 @@ final class Suite implements Parent, Child {
 
   Suite addSuite(final String name, final ChildRunner childRunner) {
     final Suite suite =
-        new Suite(Description.createSuiteDescription(name), this, childRunner,
+        new Suite(Description.createSuiteDescription(sanitise(name)), this, childRunner,
             this.tagging.clone());
     suite.beforeAll.addBlock(this.beforeAll);
     suite.beforeEach.addBlock(this.beforeEach);
@@ -90,7 +91,7 @@ final class Suite implements Parent, Child {
 
   private Child createSpec(final String name, final Block block) {
     final Description specDescription =
-        Description.createTestDescription(this.description.getClassName(), name);
+        Description.createTestDescription(this.description.getClassName(), sanitise(name));
 
     final NotifyingBlock specBlockInContext = (description, notifier) -> {
       try {
@@ -244,5 +245,19 @@ final class Suite implements Parent, Child {
     } finally {
       runNotifier.removeListener(listener);
     }
+  }
+
+  private String sanitise(final String name) {
+    String sanitised = name.replaceAll("\\(", "[")
+        .replaceAll("\\)", "]");
+
+    int suffix = 1;
+    String deDuplicated = sanitised;
+    while (namesUsed.contains(deDuplicated)) {
+      deDuplicated = sanitised + "_" + suffix++;
+    }
+    namesUsed.add(deDuplicated);
+
+    return deDuplicated;
   }
 }
