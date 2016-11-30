@@ -9,6 +9,8 @@ import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.requireTags;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
@@ -17,6 +19,8 @@ import com.greghaskins.spectrum.SpectrumOptions;
 
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
 
 @RunWith(Spectrum.class)
 public class TaggedSpecs {
@@ -94,6 +98,28 @@ public class TaggedSpecs {
       it("is possible to exclude individual specs with tags", () -> {
         final Result result = SpectrumHelper.run(getSuiteWithOneExcludedTaggedSpec());
         assertThat(result.getIgnoreCount(), is(1));
+      });
+
+      it("only runs specs that match the requireTags filter", () -> {
+        final ArrayList<String> specsRun = new ArrayList<>();
+
+        SpectrumHelper.run(() -> {
+          requireTags("foo");
+
+          it("should run spec 1", with(tags("foo"), () -> {
+            specsRun.add("spec 1");
+          }));
+          it("should not run spec 2", with(tags("bar"), () -> {
+            specsRun.add("spec 2");
+          }));
+          it("should not run spec 3", () -> {
+            specsRun.add("spec 3");
+          });
+
+        });
+
+        assertThat(specsRun, hasSize(1));
+        assertThat(specsRun, contains("spec 1"));
       });
 
     });

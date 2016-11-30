@@ -3,6 +3,7 @@ package com.greghaskins.spectrum;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Pre conditions that apply to a {@link PreConditionBlock}.
@@ -63,13 +64,37 @@ public class PreConditions {
 
   private boolean isIgnored = false;
   private boolean isFocused = false;
-  private Set<String> hasTags = new HashSet<>();
+  private final Set<String> hasTags = new HashSet<>();
+
+  static PreConditions merge(PreConditions... conditions) {
+    PreConditions merged = new PreConditions();
+    Stream.of(conditions).forEach((condition) -> {
+      merged.hasTags.addAll(condition.hasTags);
+      merged.isIgnored |= condition.isIgnored;
+      merged.isFocused |= condition.isFocused;
+    });
+
+    return merged;
+  }
 
   /**
    * Hidden default constructor. Build using {@link Factory}
    */
   private PreConditions() {
 
+  }
+
+  /**
+   * Children should inherit tags and ignore status, but not focus.
+   *
+   * @return a new PreConditions that would apply for a Child
+   */
+  PreConditions forChild() {
+    PreConditions conditions = new PreConditions();
+    conditions.hasTags.addAll(this.hasTags);
+    conditions.isIgnored = this.isIgnored;
+
+    return conditions;
   }
 
   /**

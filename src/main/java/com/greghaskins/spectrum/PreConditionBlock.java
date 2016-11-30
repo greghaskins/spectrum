@@ -16,7 +16,11 @@ public class PreConditionBlock implements Block {
    * @return a PreconditionBlock to use
    */
   public static PreConditionBlock with(final PreConditions preConditions, final Block block) {
-    return new PreConditionBlock(preConditions, block);
+
+    PreConditions existingPreConditions = Child.findApplicablePreconditions(block);
+    PreConditions mergedPreConditions = PreConditions.merge(existingPreConditions, preConditions);
+
+    return new PreConditionBlock(mergedPreConditions, block);
   }
 
   /**

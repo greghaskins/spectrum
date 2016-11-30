@@ -51,7 +51,7 @@ class TaggingState {
   }
 
   boolean isSpecAllowedToRun(Collection<String> tags) {
-    return !isExcluded(tags);
+    return isSuiteAllowedToRun(tags);
   }
 
   private boolean isExcluded(Collection<String> tags) {

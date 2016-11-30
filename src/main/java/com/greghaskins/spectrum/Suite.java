@@ -27,6 +27,7 @@ final class Suite implements Parent, Child {
   private boolean ignored;
 
   private final TaggingState tagging;
+  private PreConditions preconditions = PreConditions.Factory.defaultPreConditions();
 
   /**
    * The strategy for running the children within the suite.
@@ -105,8 +106,11 @@ final class Suite implements Parent, Child {
       this.afterEach.run(description, notifier);
     };
 
+    PreConditionBlock preConditionBlock =
+        PreConditionBlock.with(this.preconditions.forChild(), block);
+
     return new Spec(specDescription, specBlockInContext, this)
-        .applyPreConditions(block, tagging);
+        .applyPreConditions(preConditionBlock, this.tagging);
   }
 
   private void addChild(final Child child) {
@@ -154,7 +158,8 @@ final class Suite implements Parent, Child {
   }
 
   void applyPreConditions(Block block) {
-    applyPreConditions(block, tagging);
+    this.preconditions = Child.findApplicablePreconditions(block);
+    applyPreConditions(block, this.tagging);
   }
 
   @Override
