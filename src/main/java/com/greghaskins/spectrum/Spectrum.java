@@ -1,6 +1,8 @@
 package com.greghaskins.spectrum;
 
-import static org.junit.Assume.assumeTrue;
+import static com.greghaskins.spectrum.PreConditionBlock.with;
+import static com.greghaskins.spectrum.PreConditions.Factory.focus;
+import static com.greghaskins.spectrum.PreConditions.Factory.ignore;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
@@ -69,6 +71,7 @@ public final class Spectrum extends Runner {
    */
   public static void describe(final String context, final com.greghaskins.spectrum.Block block) {
     final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
+    suite.applyPreConditions(block);
     beginDefinition(suite, block);
   }
 
@@ -84,9 +87,7 @@ public final class Spectrum extends Runner {
    *
    */
   public static void fdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
-    suite.focus();
-    beginDefinition(suite, block);
+    describe(context, with(focus(), block));
   }
 
   /**
@@ -101,9 +102,7 @@ public final class Spectrum extends Runner {
    *
    */
   public static void xdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
-    suite.ignore();
-    beginDefinition(suite, block);
+    describe(context, with(ignore(), block));
   }
 
   /**
@@ -140,7 +139,7 @@ public final class Spectrum extends Runner {
    * @see #it(String, com.greghaskins.spectrum.Block)
    */
   public static void fit(final String behavior, final com.greghaskins.spectrum.Block block) {
-    getCurrentSuiteBeingDeclared().addSpec(behavior, block).focus();
+    it(behavior, with(focus(), block));
   }
 
   /**
@@ -169,6 +168,22 @@ public final class Spectrum extends Runner {
    */
   public static void pending(final String message) {
     throw new AssumptionViolatedException(message);
+  }
+
+  /**
+   * Set the test to require certain tags of all tests below.
+   * @param tags required tags - suites must have at least one of these if any are specified
+   */
+  public static void requireTags(final String... tags) {
+    getCurrentSuiteBeingDeclared().requireTags(tags);
+  }
+
+  /**
+   * Set the test to exclude certain tags of all tests below.
+   * @param tags excluded tags - suites and specs must not have any of these if any are specified
+   */
+  public static void excludeTags(final String... tags) {
+    getCurrentSuiteBeingDeclared().excludeTags(tags);
   }
 
   /**
@@ -302,11 +317,13 @@ public final class Spectrum extends Runner {
    * @see org.junit.runner.Runner
    */
   public Spectrum(final Class<?> testClass) {
-    this(Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
+    this(testClass, Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
   }
 
-  Spectrum(final Description description, final com.greghaskins.spectrum.Block definitionBlock) {
+  Spectrum(final Class<?> testClass, final Description description,
+      final com.greghaskins.spectrum.Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
+    this.rootSuite.readTagging(testClass);
     beginDefinition(this.rootSuite, definitionBlock);
   }
 
