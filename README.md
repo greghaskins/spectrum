@@ -264,7 +264,7 @@ it("is tagged", with(tags("tag1"), () -> {
 The tagging metadata is presently used to control which parts of the spec are run. There are two controls over what is run,
 complementary to any focus or ignore that's hard-coded into the spec.
 
-* Require tags - when set, only suites that have at least one tag in the required list can be run
+* Include tags - when set, only suites that have at least one tag in this list can be run
 * Exclude tags - when set, any suite or spec that has an excluded tag will be ignored
 
 The rules for selective running can be set by:
@@ -286,7 +286,6 @@ Example: temporarily making only WIP tests run in a test class
   public TestClass {
      {
         configure().includeTags("wip");
-
 
         describe("wip suite", with(tags("wip"), () -> {
            // tests here are run
