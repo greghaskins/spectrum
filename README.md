@@ -264,7 +264,7 @@ it("is tagged", with(tags("tag1"), () -> {
 The tagging metadata is presently used to control which parts of the spec are run. There are two controls over what is run,
 complementary to any focus or ignore that's hard-coded into the spec.
 
-* Require tags - when set, only suites that have a tags in the required list can be run
+* Require tags - when set, only suites that have at least one tag in the required list can be run
 * Exclude tags - when set, any suite or spec that has an excluded tag will be ignored
 
 The rules for selective running can be set by:
@@ -274,8 +274,8 @@ The rules for selective running can be set by:
   * Set `spectrum.require.tags` and `spectrum.exclude.tags` to be a comma separated list of tags
   * This is likely done using a -D option on the java invocation
 * Annotation (See [SpectrumOptions.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java))
-* Function call - `requireTags` and `excludeTags` in the `Spectrum` class - these allow the rules to vary
-over the test initialization block.
+* Function call (See [Configuration.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java)) and `Spectrum.configure()`
+  * `configure().requireTags("foo")` and `configure().excludeTags("bar")` allow the rules to vary based on where they are called in the declaration block.
 
 Tags allow you run different categories of specs in different test runs, either through the
 configuration of your build - usually with system property - or with hard coding in either the

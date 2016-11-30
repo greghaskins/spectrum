@@ -3,10 +3,9 @@ package specs;
 import static com.greghaskins.spectrum.PreConditionBlock.with;
 import static com.greghaskins.spectrum.PreConditions.Factory.tags;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
+import static com.greghaskins.spectrum.Spectrum.configure;
 import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.excludeTags;
 import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.requireTags;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -65,7 +64,7 @@ public class TaggedSpecs {
           final ArrayList<String> specsRun = new ArrayList<>();
 
           SpectrumHelper.run(() -> {
-            requireTags("foo");
+            configure().requireTags("foo");
 
             it("should run spec 1", with(tags("foo"), () -> {
               specsRun.add("spec 1");
@@ -154,7 +153,7 @@ public class TaggedSpecs {
   private static Class<?> getSuiteWithTagsIncluded() {
     class Tagged {
       {
-        requireTags("someTag");
+        configure().requireTags("someTag");
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that runs", () -> {
@@ -171,7 +170,7 @@ public class TaggedSpecs {
     class Tagged {
       {
         // this stops "someTag" from being included by default
-        requireTags("someOtherTag");
+        configure().requireTags("someOtherTag");
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that won't run", () -> {
@@ -187,7 +186,7 @@ public class TaggedSpecs {
   private static Class<?> getSuiteWithTagsExcluded() {
     class Tagged {
       {
-        excludeTags("someTag");
+        configure().excludeTags("someTag");
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that won't run", () -> {
@@ -233,7 +232,7 @@ public class TaggedSpecs {
   private static Class<?> getSuiteWithNoTagsThatShouldNotRunBecauseOfIncludeTags() {
     class Tagged {
       {
-        requireTags("someTag");
+        configure().requireTags("someTag");
 
         describe("An untagged suite in an 'requireTags' situation", () -> {
           it("has a spec that won't run", () -> {
@@ -249,7 +248,7 @@ public class TaggedSpecs {
   private static Class<?> getSuiteWithOneExcludedTaggedSpec() {
     class Tagged {
       {
-        excludeTags("exclude me");
+        configure().excludeTags("exclude me");
 
         describe("A plain suite", () -> {
           it("has a spec that runs fine", () -> {
@@ -334,7 +333,7 @@ public class TaggedSpecs {
           });
         }));
 
-        excludeTags("");
+        configure().excludeTags("");
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that can run this time", () -> {
