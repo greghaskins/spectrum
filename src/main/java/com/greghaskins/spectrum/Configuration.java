@@ -3,6 +3,8 @@ package com.greghaskins.spectrum;
 public class Configuration {
 
   private final Suite suite;
+  public static final String EXCLUDE_TAGS_PROPERTY = "spectrum.exclude.tags";
+  public static final String INCLUDE_TAGS_PROPERTY = "spectrum.include.tags";
 
   Configuration(Suite suite) {
     this.suite = suite;

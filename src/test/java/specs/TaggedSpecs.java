@@ -13,9 +13,9 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import com.greghaskins.spectrum.Configuration;
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.SpectrumHelper;
-import com.greghaskins.spectrum.SpectrumOptions;
 
 import org.junit.Assert;
 import org.junit.runner.Result;
@@ -85,6 +85,49 @@ public class TaggedSpecs {
           assertThat(specsRun, contains("spec 1"));
         });
 
+        it("applies tags recursively to child suites", () -> {
+          final Result result = SpectrumHelper.run(() -> {
+
+            configure().excludeTags("someTag");
+
+            describe("A suite", () -> {
+              describe("With a subsuite", with(tags("someTag"), () -> {
+                it("has a spec that's also going to be excluded", () -> {
+                  assertTrue(true);
+                });
+              }));
+              it("has a spec that will run", () -> {
+                assertTrue(true);
+              });
+            });
+          });
+          assertThat(result.getIgnoreCount(), is(1));
+        });
+
+        it("is possible for the exclusion tags to be modified part way through the definition",
+            () -> {
+              final Result result = SpectrumHelper.run(() -> {
+
+                configure().excludeTags("someTag");
+
+                describe("A suite", with(tags("someTag"), () -> {
+                  it("has a spec that won't run", () -> {
+                    assertTrue(true);
+                  });
+                }));
+
+                configure().excludeTags("");
+
+                describe("A suite", with(tags("someTag"), () -> {
+                  it("has a spec that can run this time", () -> {
+                    assertTrue(true);
+                  });
+                }));
+              });
+              assertThat(result.getIgnoreCount(), is(1));
+            });
+
+
       });
 
       describe("with both includes and excludes", () -> {
@@ -130,36 +173,6 @@ public class TaggedSpecs {
         it("should run all specs that match at least one included tag", () -> {
           assertThat(result.get().getRunCount(), is(3));
         });
-
-      });
-
-      describe("configured by annotation", () -> {
-
-        it("runs completely when its tag is in the includes list", () -> {
-          final Result result = SpectrumHelper.run(getSuiteWithTagsIncludedByAnnotation());
-          assertThat(result.getIgnoreCount(), is(0));
-        });
-
-        it("does not run when it's missing from the includes", () -> {
-          final Result result = SpectrumHelper.run(getSuiteWithTagsNotIncludedByAnnotation());
-          assertThat(result.getIgnoreCount(), is(1));
-        });
-
-        it("does not run when it's in the excludes list", () -> {
-          final Result result = SpectrumHelper.run(getSuiteWithTagsExcludedByAnnotation());
-          assertThat(result.getIgnoreCount(), is(1));
-        });
-
-        it("applies tags recursively to child suites", () -> {
-          final Result result = SpectrumHelper.run(getExcludedSuiteWithNestedSuite());
-          assertThat(result.getIgnoreCount(), is(1));
-        });
-
-        it("is possible for the exclusion tags to be modified part way through the definition",
-            () -> {
-              final Result result = SpectrumHelper.run(getSuiteWhereExclusionIsOverridden());
-              assertThat(result.getIgnoreCount(), is(1));
-            });
 
       });
 
@@ -248,36 +261,6 @@ public class TaggedSpecs {
     return Tagged.class;
   }
 
-  private static Class<?> getSuiteWithTagsIncludedByAnnotation() {
-    @SpectrumOptions(includeTags = "someTag")
-    class Tagged {
-      {
-        describe("A suite", with(tags("someTag"), () -> {
-          it("has a spec that runs", () -> {
-            assertTrue(true);
-          });
-        }));
-      }
-    }
-
-    return Tagged.class;
-  }
-
-  private static Class<?> getSuiteWithTagsNotIncludedByAnnotation() {
-    @SpectrumOptions(includeTags = "someOtherTag")
-    class Tagged {
-      {
-        describe("A suite", with(tags("someTag"), () -> {
-          it("has a spec that won't run", () -> {
-            assertTrue(true);
-          });
-        }));
-      }
-    }
-
-    return Tagged.class;
-  }
-
   private static Class<?> getSuiteWithNoTagsThatShouldNotRunBecauseOfIncludeTags() {
     class Tagged {
       {
@@ -314,84 +297,27 @@ public class TaggedSpecs {
     return Tagged.class;
   }
 
-  private static Class<?> getSuiteWithTagsExcludedByAnnotation() {
-    @SpectrumOptions(excludeTags = "someTag")
-    class Tagged {
-      {
-        describe("A suite", with(tags("someTag"), () -> {
-          it("has a spec that won't run", () -> {
-            assertTrue(true);
-          });
-        }));
-      }
-    }
-
-    return Tagged.class;
-  }
-
   private static Class<?> getSuiteWithTagsIncludedBySystemProperty() {
-    System.setProperty(SpectrumOptions.INCLUDE_TAGS_PROPERTY, "someTag");
+    System.setProperty(Configuration.INCLUDE_TAGS_PROPERTY, "someTag");
 
     return getSuiteWithTagsOnly();
   }
 
   private static Class<?> getSuiteWithTagsNotIncludedBySystemProperty() {
-    System.setProperty(SpectrumOptions.INCLUDE_TAGS_PROPERTY, "someOtherTag");
+    System.setProperty(Configuration.INCLUDE_TAGS_PROPERTY, "someOtherTag");
 
     return getSuiteWithTagsOnly();
   }
 
   private static Class<?> getSuiteWithTagsExcludedBySystemProperty() {
-    System.setProperty(SpectrumOptions.EXCLUDE_TAGS_PROPERTY, "someTag");
+    System.setProperty(Configuration.EXCLUDE_TAGS_PROPERTY, "someTag");
 
     return getSuiteWithTagsOnly();
   }
 
   private static void clearSystemProperties() {
-    System.setProperty(SpectrumOptions.INCLUDE_TAGS_PROPERTY, "");
-    System.setProperty(SpectrumOptions.EXCLUDE_TAGS_PROPERTY, "");
+    System.setProperty(Configuration.INCLUDE_TAGS_PROPERTY, "");
+    System.setProperty(Configuration.EXCLUDE_TAGS_PROPERTY, "");
   }
 
-  private static Class<?> getExcludedSuiteWithNestedSuite() {
-    @SpectrumOptions(excludeTags = "someTag")
-    class Tagged {
-      {
-        describe("A suite", () -> {
-          describe("With a subsuite", with(tags("someTag"), () -> {
-            it("has a spec that's also going to be excluded", () -> {
-              assertTrue(true);
-            });
-          }));
-          it("has a spec that will run", () -> {
-            assertTrue(true);
-          });
-        });
-      }
-    }
-
-    return Tagged.class;
-  }
-
-  private static Class<?> getSuiteWhereExclusionIsOverridden() {
-    @SpectrumOptions(excludeTags = "someTag")
-    class Tagged {
-      {
-        describe("A suite", with(tags("someTag"), () -> {
-          it("has a spec that won't run", () -> {
-            assertTrue(true);
-          });
-        }));
-
-        configure().excludeTags("");
-
-        describe("A suite", with(tags("someTag"), () -> {
-          it("has a spec that can run this time", () -> {
-            assertTrue(true);
-          });
-        }));
-      }
-    }
-
-    return Tagged.class;
-  }
 }

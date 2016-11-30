@@ -14,7 +14,7 @@ public class SpectrumHelper {
 
   public static Result run(final Block block) {
     return runWithJUnit(
-        new Spectrum(Block.class, Description.createSuiteDescription(block.getClass()), block));
+        new Spectrum(Description.createSuiteDescription(block.getClass()), block));
   }
 
   private static Result runWithJUnit(final Runner runner) {

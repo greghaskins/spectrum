@@ -43,12 +43,13 @@ final class Suite implements Parent, Child {
 
   /**
    * Constructs a suite.
+   * 
    * @param description the JUnit description
    * @param parent parent item
    * @param childRunner which child running strategy to use - this will normally be
-   *             {@link #defaultChildRunner(Suite, RunNotifier)} which runs them all
-   *             but can be substituted for a strategy that ignores all specs
-   *             after a test failure  {@link #abortOnFailureChildRunner(Suite, RunNotifier)}
+   *        {@link #defaultChildRunner(Suite, RunNotifier)} which runs them all but can be
+   *        substituted for a strategy that ignores all specs after a test failure
+   *        {@link #abortOnFailureChildRunner(Suite, RunNotifier)}
    * @param taggingState the state of tagging inherited from the parent
    */
   private Suite(final Description description, final Parent parent, final ChildRunner childRunner,
@@ -66,7 +67,8 @@ final class Suite implements Parent, Child {
 
   Suite addSuite(final String name, final ChildRunner childRunner) {
     final Suite suite =
-        new Suite(Description.createSuiteDescription(name), this, childRunner, tagging.clone());
+        new Suite(Description.createSuiteDescription(name), this, childRunner,
+            this.tagging.clone());
     suite.beforeAll.addBlock(this.beforeAll);
     suite.beforeEach.addBlock(this.beforeEach);
     suite.afterEach.addBlock(this.afterEach);
@@ -135,26 +137,20 @@ final class Suite implements Parent, Child {
 
   /**
    * Set the suite to require certain tags of all tests below.
+   * 
    * @param tags required tags - suites must have at least one of these if any are specified
    */
   void includeTags(final String... tags) {
-    tagging.include(tags);
+    this.tagging.include(tags);
   }
 
   /**
    * Set the suite to exclude certain tags of all tests below.
+   * 
    * @param tags excluded tags - suites and specs must not have any of these if any are specified
    */
   void excludeTags(final String... tags) {
-    tagging.exclude(tags);
-  }
-
-  /**
-   * Read the tagging configuration.
-   * @param testClass the test class within which there's tagging configuration - or defaults
-   */
-  void readTagging(Class<?> testClass) {
-    tagging.read(testClass);
+    this.tagging.exclude(tags);
   }
 
   void applyPreConditions(Block block) {
@@ -199,7 +195,7 @@ final class Suite implements Parent, Child {
   }
 
   private void runChildren(final RunNotifier notifier) {
-    childRunner.runChildren(this, notifier);
+    this.childRunner.runChildren(this, notifier);
   }
 
   private void runChild(final Child child, final RunNotifier notifier) {

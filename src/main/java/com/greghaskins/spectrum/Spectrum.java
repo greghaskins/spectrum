@@ -307,13 +307,11 @@ public final class Spectrum extends Runner {
    * @see org.junit.runner.Runner
    */
   public Spectrum(final Class<?> testClass) {
-    this(testClass, Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
+    this(Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
   }
 
-  Spectrum(final Class<?> testClass, final Description description,
-      final com.greghaskins.spectrum.Block definitionBlock) {
+  Spectrum(Description description, com.greghaskins.spectrum.Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
-    this.rootSuite.readTagging(testClass);
     beginDefinition(this.rootSuite, definitionBlock);
   }
 
