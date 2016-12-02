@@ -17,7 +17,8 @@ final class Suite implements Parent, Child {
   private final SetupBlock beforeEach = new SetupBlock();
   private final TeardownBlock afterEach = new TeardownBlock();
 
-  private ThrowingConsumer<Block> aroundEach = block -> block.run();
+  private ThrowingConsumer<Block> aroundEach = Block::run;
+  private ThrowingConsumer<Block> aroundAll = Block::run;
 
   private final List<Child> children = new ArrayList<>();
   private final Set<Child> focusedChildren = new HashSet<>();
@@ -206,8 +207,22 @@ final class Suite implements Parent, Child {
       notifier.fireTestIgnored(this.description);
       runChildren(notifier);
     } else {
+      runSuite(notifier);
+    }
+  }
+
+  private void runSuite(final RunNotifier notifier) {
+    Variable<Boolean> blockWasCalled = new Variable<>(false);
+
+    NotifyingBlock.wrap(() -> this.aroundAll.accept(() -> {
+      blockWasCalled.set(true);
       runChildren(notifier);
       runAfterAll(notifier);
+    })).run(this.description, notifier);
+
+    if (!blockWasCalled.get()) {
+      RuntimeException exception = new RuntimeException("aroundAll did not run the block");
+      notifier.fireTestFailure(new Failure(this.description, exception));
     }
   }
 
@@ -285,5 +300,10 @@ final class Suite implements Parent, Child {
       });
 
     };
+  }
+
+  public void aroundAll(ThrowingConsumer<Block> consumer) {
+    this.aroundAll = consumer;
+
   }
 }

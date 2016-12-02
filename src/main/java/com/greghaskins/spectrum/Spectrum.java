@@ -306,6 +306,17 @@ public final class Spectrum extends Runner {
     getCurrentSuiteBeingDeclared().aroundEach(consumer);
   }
 
+  /**
+   * Declare a block of code that runs once around all specs, partly before and partly after specs
+   * are run. You must call {@link com.greghaskins.spectrum.Block#run} inside this Consumer. This
+   * code is applied once per suite, so be careful about shared state across specs.
+   *
+   * @param consumer to run each spec block
+   */
+  public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
+    getCurrentSuiteBeingDeclared().aroundAll(consumer);
+  }
+
 
   private static final Deque<Suite> suiteStack = new ArrayDeque<>();
 
