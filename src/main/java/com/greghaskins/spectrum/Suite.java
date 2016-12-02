@@ -76,6 +76,7 @@ final class Suite implements Parent, Child {
     suite.beforeAll.addBlock(this.beforeAll);
     suite.beforeEach.addBlock(this.beforeEach);
     suite.afterEach.addBlock(this.afterEach);
+    suite.aroundEach(this.aroundEach);
     addChild(suite);
 
     return suite;
