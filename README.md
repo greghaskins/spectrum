@@ -445,6 +445,7 @@ Spectrum also supports:
 - Rigorous error handling and reporting when something unexpected goes wrong
 - Compatibility with existing JUnit tools; no configuration required
 - Mixing Spectrum tests and normal JUnit tests in the same project suite
+- RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
 
 ### Non-Features
 

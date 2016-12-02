@@ -1,0 +1,342 @@
+package specs;
+
+import static com.greghaskins.spectrum.Spectrum.afterAll;
+import static com.greghaskins.spectrum.Spectrum.afterEach;
+import static com.greghaskins.spectrum.Spectrum.aroundAll;
+import static com.greghaskins.spectrum.Spectrum.aroundEach;
+import static com.greghaskins.spectrum.Spectrum.beforeAll;
+import static com.greghaskins.spectrum.Spectrum.beforeEach;
+import static com.greghaskins.spectrum.Spectrum.describe;
+import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.let;
+import static matchers.IsFailure.failure;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+
+import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
+
+import org.junit.runner.Result;
+import org.junit.runner.RunWith;
+import org.junit.runner.notification.Failure;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+@RunWith(Spectrum.class)
+public class AroundSpecs {
+  {
+    describe("the `aroundEach` hook", () -> {
+
+      it("allows arbitrary code to be run before/after each spec", () -> {
+
+        ArrayList<String> steps = new ArrayList<>();
+        SpectrumHelper.run(() -> {
+
+          aroundEach(block -> {
+            steps.add("A");
+            block.run();
+            steps.add("C");
+          });
+
+          it("first spec", () -> {
+            steps.add("B1");
+          });
+
+          it("second spec", () -> {
+            steps.add("B2");
+          });
+
+        });
+
+        assertThat(steps, contains("A", "B1", "C", "A", "B2", "C"));
+      });
+
+      it("throws an error when you forget to run the spec", () -> {
+
+        Result result = SpectrumHelper.run(() -> {
+
+          aroundEach(block -> {
+          });
+          it("first spec", () -> {
+          });
+
+        });
+
+        assertThat(result.getFailureCount(), is(1));
+        assertThat(result.getFailures().get(0), is(failure("first spec",
+            RuntimeException.class, "aroundEach did not run the block")));
+
+      });
+
+      describe("in multiples", () -> {
+
+        it("each subsequent aroundEach nests inside those preceding it", () -> {
+
+          ArrayList<String> steps = new ArrayList<>();
+          SpectrumHelper.run(() -> {
+
+            aroundEach(block -> {
+              steps.add("pre1");
+              block.run();
+              steps.add("post1");
+            });
+
+            aroundEach(block -> {
+              steps.add("pre2");
+              block.run();
+              steps.add("post2");
+            });
+
+            it("first spec", () -> {
+              steps.add("spec");
+            });
+
+          });
+
+          assertThat(steps, contains("pre1", "pre2", "spec", "post2", "post1"));
+
+        });
+
+        it("fail if any aroundEach forgets to call the block", () -> {
+          Result result = SpectrumHelper.run(() -> {
+
+            aroundEach(block -> {
+              block.run();
+            });
+
+            aroundEach(block -> {
+            });
+
+            it("a spec", () -> {
+            });
+
+          });
+
+          assertThat(result.getFailureCount(), is(1));
+        });
+
+      });
+
+
+
+      describe("that throw errors", () -> {
+
+        Stream.of(new RuntimeException("boom"), new Exception("boom"), new Error("boom"))
+            .forEach(exception -> {
+              describe(exception.getClass().getSimpleName(), () -> {
+
+                Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+
+                  aroundEach(block -> {
+                    throw exception;
+                  });
+
+                  it("spec1", () -> {
+                  });
+                  it("spec2", () -> {
+                  });
+
+                }));
+
+                it("mark all specs in that context as failing", () -> {
+                  assertThat(result.get().getFailureCount(), is(2));
+                  List<Failure> failures = result.get().getFailures();
+                  assertThat(failures.get(0).getMessage(), containsString("boom"));
+                  assertThat(failures.get(1).getMessage(), containsString("boom"));
+                });
+
+              });
+
+            });
+
+      });
+
+
+    });
+
+
+    describe("the `aroundAll` hook", () -> {
+
+      it("allows arbitrary code to run before/after all specs in a suite", () -> {
+
+        ArrayList<String> steps = new ArrayList<>();
+        SpectrumHelper.run(() -> {
+
+          aroundAll(block -> {
+            steps.add("pre");
+            block.run();
+            steps.add("post");
+          });
+
+          it("spec1", () -> {
+            steps.add("spec1");
+          });
+          it("spec2", () -> {
+            steps.add("spec2");
+          });
+        });
+
+        assertThat(steps, contains("pre", "spec1", "spec2", "post"));
+
+      });
+
+      it("throws an error when you forget to run the block", () -> {
+
+        Result result = SpectrumHelper.run(() -> {
+
+          aroundAll(block -> {
+          });
+          it("first spec", () -> {
+          });
+
+        });
+
+        assertThat(result.getFailureCount(), is(1));
+        Failure failure = result.getFailures().get(0);
+        assertThat(failure.getMessage(), is("aroundAll did not run the block"));
+      });
+
+      describe("in multiples", () -> {
+
+        it("each subsequent aroundAll nestsInside those preceding");
+
+        it("fail if any aroundAll forgets to call the block");
+
+      });
+
+      describe("that throws an error itself", () -> {
+
+        describe("before running the suite", () -> {
+
+          Supplier<ArrayList<String>> steps = let(() -> new ArrayList<>());
+          Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+
+            aroundAll(block -> {
+              throw new Exception("boom");
+            });
+
+            it("spec1", () -> {
+              steps.get().add("spec1");
+            });
+            it("spec2", () -> {
+              steps.get().add("spec2");
+            });
+
+          }));
+
+          it("throws a failure with the appropriate message", () -> {
+            assertThat(result.get().getFailureCount(), is(greaterThan(0)));
+            List<Failure> failures = result.get().getFailures();
+            assertThat(failures.get(0).getMessage(), containsString("boom"));
+          });
+
+          it("doesn't run any of the specs", () -> {
+            assertThat(steps.get(), is(empty()));
+          });
+
+        });
+
+        describe("after running the suite", () -> {
+
+          Supplier<ArrayList<String>> steps = let(() -> new ArrayList<>());
+          Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
+
+            aroundAll(block -> {
+              block.run();
+              throw new Exception("boom");
+            });
+
+            it("spec1", () -> {
+              steps.get().add("spec1");
+            });
+            it("spec2", () -> {
+              steps.get().add("spec2");
+            });
+
+          }));
+
+          beforeEach(() -> result.get());
+
+          it("throws a failure with the appropriate message", () -> {
+            assertThat(result.get().getFailureCount(), is(1));
+            List<Failure> failures = result.get().getFailures();
+            assertThat(failures.get(0).getMessage(), containsString("boom"));
+          });
+
+          it("still runs the specs", () -> {
+            assertThat(steps.get(), contains("spec1", "spec2"));
+          });
+
+        });
+
+      });
+    });
+
+    describe("aroundEach and aroundAll with other fixture methods", () -> {
+
+      Supplier<ArrayList<String>> steps = let(() -> new ArrayList<>());
+
+      beforeEach(() -> SpectrumHelper.run(() -> {
+
+        aroundAll(block -> {
+          steps.get().add("pre-aroundAll");
+          block.run();
+          steps.get().add("post-aroundAll");
+        });
+
+        aroundEach(block -> {
+          steps.get().add("pre-aroundEach");
+          block.run();
+          steps.get().add("post-aroundEach");
+        });
+
+        beforeAll(() -> {
+          steps.get().add("beforeAll");
+        });
+        beforeEach(() -> {
+          steps.get().add("beforeEach");
+        });
+        afterEach(() -> {
+          steps.get().add("afterEach");
+        });
+        afterAll(() -> {
+          steps.get().add("afterAll");
+        });
+
+        it("spec1", () -> {
+          steps.get().add("spec1");
+        });
+        it("spec2", () -> {
+          steps.get().add("spec2");
+        });
+      }));
+
+      it("wraps around any declared beforeEach or afterEach blocks", () -> {
+        assertThat(steps.get(), contains(
+            "pre-aroundAll",
+            "beforeAll",
+            "pre-aroundEach",
+            "beforeEach",
+            "spec1",
+            "afterEach",
+            "post-aroundEach",
+            "pre-aroundEach",
+            "beforeEach",
+            "spec2",
+            "afterEach",
+            "post-aroundEach",
+            "afterAll",
+            "post-aroundAll"));
+      });
+
+    });
+
+  }
+}

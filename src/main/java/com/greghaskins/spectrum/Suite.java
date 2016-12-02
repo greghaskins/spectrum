@@ -17,6 +17,9 @@ final class Suite implements Parent, Child {
   private final SetupBlock beforeEach = new SetupBlock();
   private final TeardownBlock afterEach = new TeardownBlock();
 
+  private ThrowingConsumer<Block> aroundEach = Block::run;
+  private ThrowingConsumer<Block> aroundAll = Block::run;
+
   private final List<Child> children = new ArrayList<>();
   private final Set<Child> focusedChildren = new HashSet<>();
 
@@ -44,7 +47,7 @@ final class Suite implements Parent, Child {
 
   /**
    * Constructs a suite.
-   * 
+   *
    * @param description the JUnit description
    * @param parent parent item
    * @param childRunner which child running strategy to use - this will normally be
@@ -102,18 +105,32 @@ final class Suite implements Parent, Child {
       }
 
       NotifyingBlock.wrap(() -> {
-        this.beforeEach.run();
-        block.run();
-      }).run(description, notifier);
 
-      this.afterEach.run(description, notifier);
+        Variable<Boolean> blockWasRun = new Variable<>(false);
+        this.aroundEach.accept(() -> {
+          blockWasRun.set(true);
+
+          NotifyingBlock.wrap(() -> {
+            this.beforeEach.run();
+            block.run();
+          }).run(description, notifier);
+
+          this.afterEach.run(description, notifier);
+        });
+
+
+        if (!blockWasRun.get()) {
+          throw new RuntimeException("aroundEach did not run the block");
+        }
+
+      }).run(description, notifier);
     };
 
     PreConditionBlock preConditionBlock =
         PreConditionBlock.with(this.preconditions.forChild(), block);
 
-    return new Spec(specDescription, specBlockInContext, this)
-        .applyPreConditions(preConditionBlock, this.tagging);
+    return new Spec(specDescription, specBlockInContext, this).applyPreConditions(preConditionBlock,
+        this.tagging);
   }
 
   private void addChild(final Child child) {
@@ -138,7 +155,7 @@ final class Suite implements Parent, Child {
 
   /**
    * Set the suite to require certain tags of all tests below.
-   * 
+   *
    * @param tags required tags - suites must have at least one of these if any are specified
    */
   void includeTags(final String... tags) {
@@ -147,7 +164,7 @@ final class Suite implements Parent, Child {
 
   /**
    * Set the suite to exclude certain tags of all tests below.
-   * 
+   *
    * @param tags excluded tags - suites and specs must not have any of these if any are specified
    */
   void excludeTags(final String... tags) {
@@ -190,8 +207,22 @@ final class Suite implements Parent, Child {
       notifier.fireTestIgnored(this.description);
       runChildren(notifier);
     } else {
+      runSuite(notifier);
+    }
+  }
+
+  private void runSuite(final RunNotifier notifier) {
+    Variable<Boolean> blockWasCalled = new Variable<>(false);
+
+    NotifyingBlock.wrap(() -> this.aroundAll.accept(() -> {
+      blockWasCalled.set(true);
       runChildren(notifier);
       runAfterAll(notifier);
+    })).run(this.description, notifier);
+
+    if (!blockWasCalled.get()) {
+      RuntimeException exception = new RuntimeException("aroundAll did not run the block");
+      notifier.fireTestFailure(new Failure(this.description, exception));
     }
   }
 
@@ -253,11 +284,26 @@ final class Suite implements Parent, Child {
 
     int suffix = 1;
     String deDuplicated = sanitised;
-    while (namesUsed.contains(deDuplicated)) {
+    while (this.namesUsed.contains(deDuplicated)) {
       deDuplicated = sanitised + "_" + suffix++;
     }
-    namesUsed.add(deDuplicated);
+    this.namesUsed.add(deDuplicated);
 
     return deDuplicated;
+  }
+
+  public void aroundEach(ThrowingConsumer<Block> consumer) {
+    ThrowingConsumer<Block> outerAroundEach = this.aroundEach;
+    this.aroundEach = block -> {
+      outerAroundEach.accept(() -> {
+        consumer.accept(block);
+      });
+
+    };
+  }
+
+  public void aroundAll(ThrowingConsumer<Block> consumer) {
+    this.aroundAll = consumer;
+
   }
 }
