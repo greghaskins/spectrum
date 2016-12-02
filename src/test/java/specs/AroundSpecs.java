@@ -338,5 +338,76 @@ public class AroundSpecs {
 
     });
 
+    describe("with nesting", () -> {
+
+      Supplier<ArrayList<String>> steps = let(() -> new ArrayList<>());
+
+      beforeEach(() -> SpectrumHelper.run(() -> {
+
+        aroundAll(block -> {
+          steps.get().add("pre-aroundAll1");
+          block.run();
+          steps.get().add("post-aroundAll1");
+        });
+
+        aroundEach(block -> {
+          steps.get().add("pre-aroundEach1");
+          block.run();
+          steps.get().add("post-aroundEach1");
+        });
+
+        it("spec1", () -> {
+          steps.get().add("spec1");
+        });
+
+        describe("nested", () -> {
+
+          aroundAll(block -> {
+            steps.get().add("pre-aroundAll2");
+            block.run();
+            steps.get().add("post-aroundAll2");
+          });
+
+          aroundEach(block -> {
+            steps.get().add("pre-aroundEach2");
+            block.run();
+            steps.get().add("post-aroundEach2");
+          });
+
+          it("spec2", () -> {
+            steps.get().add("spec2");
+          });
+          it("spec3", () -> {
+            steps.get().add("spec3");
+          });
+        });
+
+      }));
+
+
+      it("run from outside in", () -> {
+        assertThat(steps.get(), contains(
+            "pre-aroundAll1",
+            "pre-aroundEach1",
+            "spec1",
+            "post-aroundEach1",
+            "pre-aroundAll2",
+            "pre-aroundEach1",
+            "pre-aroundEach2",
+            "spec2",
+            "post-aroundEach2",
+            "post-aroundEach1",
+            "pre-aroundEach1",
+            "pre-aroundEach2",
+            "spec3",
+            "post-aroundEach2",
+            "post-aroundEach1",
+            "post-aroundAll2",
+            "post-aroundAll1"));
+      });
+
+
+    });
+
   }
 }
