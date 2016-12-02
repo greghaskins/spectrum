@@ -5,12 +5,20 @@ import static com.greghaskins.spectrum.PreConditions.Factory.focus;
 import static com.greghaskins.spectrum.PreConditions.Factory.ignore;
 
 import org.junit.AssumptionViolatedException;
+import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.Statement;
 
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -315,6 +323,103 @@ public final class Spectrum extends Runner {
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
     getCurrentSuiteBeingDeclared().aroundAll(consumer);
+  }
+
+  public static <T extends JUnitAdapter> Supplier<T> junit4Mixin(Class<T> mixinClass) {
+
+    try {
+      Method adapterMethod = mixinClass.getMethod("spectrum");
+      adapterMethod.setAccessible(true);
+      FrameworkMethod frameworkMethod = new FrameworkMethod(adapterMethod);
+      HackJUnit4Runner runner = new HackJUnit4Runner(mixinClass, frameworkMethod);
+
+
+      aroundAll(block -> {
+        runner.suiteBlock = block;
+        Statement statement = runner.classBlock(null);
+        statement.evaluate();
+      });
+
+      aroundEach(block -> {
+        runner.specBlock = block;
+        Statement statement = runner.methodBlock(frameworkMethod);
+        statement.evaluate();
+        runner.specBlock = null;
+      });
+
+      return let(() -> mixinClass.cast(runner.currentTestInstance));
+
+    } catch (InitializationError | NoSuchMethodException | SecurityException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
+
+  }
+
+  private static class HackJUnit4Runner extends BlockJUnit4ClassRunner {
+
+    private com.greghaskins.spectrum.Block suiteBlock;
+    private com.greghaskins.spectrum.Block specBlock;
+    private Object currentTestInstance;
+    private FrameworkMethod frameworkMethod;
+
+    public HackJUnit4Runner(Class<?> klass, FrameworkMethod frameworkMethod)
+        throws InitializationError {
+      super(klass);
+      this.frameworkMethod = frameworkMethod;
+    }
+
+    @Override
+    public Statement classBlock(RunNotifier notifier) {
+      return super.classBlock(notifier);
+    }
+
+    @Override
+    protected Statement childrenInvoker(RunNotifier notifier) {
+      return new Statement() {
+
+        @Override
+        public void evaluate() throws Throwable {
+          HackJUnit4Runner.this.suiteBlock.run();
+        }
+      };
+    }
+
+    @Override
+    public Statement methodBlock(FrameworkMethod method) {
+      return super.methodBlock(method);
+    }
+
+    @Override
+    protected Statement methodInvoker(FrameworkMethod method, Object test) {
+      this.currentTestInstance = test;
+      return new Statement() {
+
+        @Override
+        public void evaluate() throws Throwable {
+          HackJUnit4Runner.this.specBlock.run();
+        }
+      };
+    }
+
+    @Override
+    protected boolean isIgnored(FrameworkMethod child) {
+      return false;
+    }
+
+    @Override
+    protected List<FrameworkMethod> getChildren() {
+      return Arrays.asList(this.frameworkMethod);
+    }
+
+  }
+
+  public static class JUnitAdapter {
+
+    @Test
+    public final void spectrum() throws Throwable {}
+
   }
 
 
