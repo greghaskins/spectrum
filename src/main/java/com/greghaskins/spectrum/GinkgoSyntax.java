@@ -9,7 +9,7 @@ import static com.greghaskins.spectrum.Spectrum.xdescribe;
  * Ginkgo has a <code>Context</code> keyword that can be mapped to <code>describe</code>
  * in Spectrum terms. Ginkgo is here - https://onsi.github.io/ginkgo/
  */
-public class GinkgoSyntax {
+public interface GinkgoSyntax {
   /**
    * Define a test context.
    * @param context the description of the context
