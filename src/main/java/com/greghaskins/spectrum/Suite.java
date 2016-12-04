@@ -91,7 +91,7 @@ class Suite implements Parent, Child {
     return suite;
   }
 
-  Suite addAbortingSuite(final String name) {
+  Suite addCompositeSuite(final String name) {
     final Suite suite =
         new CompositeTest(Description.createSuiteDescription(sanitise(name)), this,
             this.tagging.clone());
@@ -232,14 +232,7 @@ class Suite implements Parent, Child {
   }
 
   private void runSuite(final RunNotifier notifier) {
-    hooks.once().runAround(description, notifier, () -> doRunSuite(notifier));
-  }
-
-  private void doRunSuite(final RunNotifier notifier) {
-
-    NotifyingBlock.run(this.description, notifier, () -> {
-      runChildren(notifier);
-    });
+    hooks.once().runAround(description, notifier, () -> runChildren(notifier));
   }
 
   private void runChildren(final RunNotifier notifier) {

@@ -15,7 +15,6 @@ import org.junit.runner.notification.RunNotifier;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -62,7 +61,7 @@ public final class Spectrum extends Runner {
    *
    */
   static void compositeSpec(final String context, final com.greghaskins.spectrum.Block block) {
-    final Suite suite = getCurrentSuiteBeingDeclared().addAbortingSuite(context);
+    final Suite suite = getCurrentSuiteBeingDeclared().addCompositeSuite(context);
     beginDefinition(suite, block);
   }
 
