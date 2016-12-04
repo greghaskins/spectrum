@@ -8,7 +8,7 @@ public interface Parent {
 
   boolean isIgnored();
 
-  Hooks getInheritedHooks();
+  Hooks getInheritableHooks();
 
   Parent NONE = new Parent() {
     @Override
@@ -20,7 +20,7 @@ public interface Parent {
     }
 
     @Override
-    public Hooks getInheritedHooks() {
+    public Hooks getInheritableHooks() {
       return new Hooks();
     }
   };

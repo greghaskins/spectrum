@@ -30,9 +30,6 @@ class Suite implements Parent, Child {
   private final SetupBlock beforeEach = new SetupBlock();
   private final TeardownBlock afterEach = new TeardownBlock();
 
-  private ThrowingConsumer<Block> aroundEach = Block::run;
-  private ThrowingConsumer<Block> aroundAll = Block::run;
-
   // the hooks - they will be turned into a chain of responsibility
   // so the first one will be executed last as the chain is built up
   // from first to last.
@@ -98,7 +95,6 @@ class Suite implements Parent, Child {
     suite.beforeAll.addBlock(this.beforeAll);
     suite.beforeEach.addBlock(this.beforeEach);
     suite.afterEach.addBlock(this.afterEach);
-    suite.aroundEach(this.aroundEach);
     addChild(suite);
 
     return suite;
@@ -134,17 +130,15 @@ class Suite implements Parent, Child {
       NotifyingBlock.wrap(() -> {
 
         Variable<Boolean> blockWasRun = new Variable<>(false);
-        this.aroundEach.accept(() -> {
-          blockWasRun.set(true);
 
-          NotifyingBlock.wrap(() -> {
-            this.beforeEach.run();
-            block.run();
-          }).run(description, notifier);
+        blockWasRun.set(true);
 
-          this.afterEach.run(description, notifier);
-        });
+        NotifyingBlock.wrap(() -> {
+          this.beforeEach.run();
+          block.run();
+        }).run(description, notifier);
 
+        this.afterEach.run(description, notifier);
 
         if (!blockWasRun.get()) {
           throw new RuntimeException("aroundEach did not run the block");
@@ -200,18 +194,18 @@ class Suite implements Parent, Child {
   }
 
   Hooks getHooksFor(final Child child) {
-    Hooks allHooks = getInheritedHooks().plus(hooks);
+    Hooks allHooks = parent.getInheritableHooks().plus(hooks);
 
     return child instanceof Atomic ? allHooks.forAtomic() : allHooks.forNonAtomic();
   }
 
   @Override
-  public Hooks getInheritedHooks() {
+  public Hooks getInheritableHooks() {
     // only the atomic hooks can be used by the children of this suite,
     // all other hooks would be executed at suite level only - either for
     // each child of the suite, or once
 
-    return parent.getInheritedHooks().plus(hooks.forAtomic());
+    return parent.getInheritableHooks().plus(hooks.forAtomic());
   }
 
   /**
@@ -273,22 +267,15 @@ class Suite implements Parent, Child {
   }
 
   private void runSuite(final RunNotifier notifier) {
-    hooks.once().runAround(() -> doRunSuite(notifier));
+    hooks.once().runAround(description, notifier, () -> doRunSuite(notifier));
   }
 
   private void doRunSuite(final RunNotifier notifier) {
-    Variable<Boolean> blockWasCalled = new Variable<>(false);
 
-    NotifyingBlock.wrap(() -> this.aroundAll.accept(() -> {
-      blockWasCalled.set(true);
+    NotifyingBlock.run(this.description, notifier, () -> {
       runChildren(notifier);
       runAfterAll(notifier);
-    })).run(this.description, notifier);
-
-    if (!blockWasCalled.get()) {
-      RuntimeException exception = new RuntimeException("aroundAll did not run the block");
-      notifier.fireTestFailure(new Failure(this.description, exception));
-    }
+    });
   }
 
   private void runChildren(final RunNotifier notifier) {
@@ -297,8 +284,8 @@ class Suite implements Parent, Child {
 
   protected void runChild(final Child child, final RunNotifier notifier) {
     if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
-      hooks.forThisLevel().runAround(
-          () -> getHooksFor(child).runAround(() -> child.run(notifier)));
+      hooks.forThisLevel().runAround(getDescription(), notifier,
+          () -> getHooksFor(child).runAround(getDescription(), notifier, () -> child.run(notifier)));
     } else {
       notifier.fireTestIgnored(child.getDescription());
     }
@@ -343,18 +330,11 @@ class Suite implements Parent, Child {
     return deDuplicated;
   }
 
-  public void aroundEach(ThrowingConsumer<Block> consumer) {
-    ThrowingConsumer<Block> outerAroundEach = this.aroundEach;
-    this.aroundEach = block -> {
-      outerAroundEach.accept(() -> {
-        consumer.accept(block);
-      });
-
-    };
+  public void aroundEach(Hook consumer) {
+    hooks.add(new HookContext(consumer, true, false, false));
   }
 
-  public void aroundAll(ThrowingConsumer<Block> consumer) {
-    this.aroundAll = consumer;
-
+  public void aroundAll(Hook consumer) {
+    hooks.add(new HookContext(consumer, false, true, false));
   }
 }

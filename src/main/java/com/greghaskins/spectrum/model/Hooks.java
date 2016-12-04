@@ -2,6 +2,10 @@ package com.greghaskins.spectrum.model;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.ThrowingConsumer;
+import com.greghaskins.spectrum.Variable;
+import com.greghaskins.spectrum.internal.NotifyingBlock;
+import org.junit.runner.Description;
+import org.junit.runner.notification.RunNotifier;
 
 import java.util.LinkedList;
 import java.util.function.Predicate;
@@ -43,15 +47,28 @@ public class Hooks extends LinkedList<HookContext> {
    * a consumer of the given block.
    * @param block to execute
    */
-  public void runAround(Block block) {
-    ThrowingConsumer<Block> consumer = Block::run;
-    for (HookContext context : this) {
-      consumer = wrap(consumer, context);
-    }
-    consumer.accept(block);
+  public void runAround(final Description description, final RunNotifier notifier, final Block block) {
+	  NotifyingBlock.run(description, notifier, () -> runAroundInternal(block));
   }
 
-  private ThrowingConsumer<Block> wrap(ThrowingConsumer<Block> inner, HookContext outer) {
+	private void runAroundInternal(Block block) {
+		Variable<Boolean> hooksRememberedToRunTheInner = new Variable<>(false);
+		ThrowingConsumer<Block> consumer = innerBlock -> {
+			hooksRememberedToRunTheInner.set(true);
+			innerBlock.run();
+		};
+
+		for (HookContext context : this) {
+		  consumer = wrap(consumer, context);
+		}
+		consumer.accept(block);
+
+		if (!hooksRememberedToRunTheInner.get()) {
+			throw new RuntimeException("At least one of the test hooks did not run the test block.");
+		}
+	}
+
+	private ThrowingConsumer<Block> wrap(ThrowingConsumer<Block> inner, HookContext outer) {
     return block -> outer.getHook().acceptOrThrow(() -> inner.acceptOrThrow(block));
   }
 

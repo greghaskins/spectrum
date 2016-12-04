@@ -296,7 +296,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    getCurrentSuiteBeingDeclared().aroundEach(consumer);
+    getCurrentSuiteBeingDeclared().aroundEach(consumer::acceptOrThrow);
   }
 
   /**
@@ -307,7 +307,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    getCurrentSuiteBeingDeclared().aroundAll(consumer);
+    getCurrentSuiteBeingDeclared().aroundAll(consumer::acceptOrThrow);
   }
 
 
