@@ -11,14 +11,12 @@ import com.greghaskins.spectrum.model.Singleton;
  * This is not the only way to achieve that - you can also build from {@link SupplyingHook}
  * but this captures the template for a complex hook.
  */
-public class AbstractSupplyingHook<T> extends Singleton<T> implements SupplyingHook<T> {
+public abstract class AbstractSupplyingHook<T> extends Singleton<T> implements SupplyingHook<T> {
   /**
    * Override this to supply behaviour for before the block is run.
    * @return the value that the singleton will store to supply
    */
-  protected T before() {
-    return null;
-  }
+  protected abstract T before();
 
   /**
    * Override this to supply behaviour for after the block is run.

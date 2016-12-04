@@ -149,15 +149,6 @@ class Suite implements Parent, Child {
     this.hooks.addFirst(hook);
   }
 
-  /**
-   * Insert a hook closest to the start of the chain of responsibility. This is for situations
-   * where a hook is only creatable after test definition, and needs to be run first.
-   * @param hook to add
-   */
-  void insertHook(final HookContext hook) {
-    this.hooks.add(hook);
-  }
-
   Hooks getHooksFor(final Child child) {
     Hooks allHooks = parent.getInheritableHooks().plus(hooks);
 
