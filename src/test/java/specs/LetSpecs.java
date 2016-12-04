@@ -1,5 +1,6 @@
 package specs;
 
+import static com.greghaskins.spectrum.Spectrum.afterEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
@@ -117,6 +118,25 @@ public class LetSpecs {
             assertThat(failure.getException().getCause(), instanceOf(DummyThrowable.class));
           });
 
+        });
+
+        describe("state of let between specs", () -> {
+          it("should not be preserved when a spec has an exception", () -> {
+            final Result result = SpectrumHelper.run(getSuiteWithLetAndSpecThatThrowsError());
+
+            assertThat(result.getFailures(), hasSize(1));
+            final Failure failure = result.getFailures().get(0);
+            assertThat(failure.getException(), instanceOf(RuntimeException.class));
+            assertThat(failure.getException().getMessage(), is("Bong!"));
+          });
+
+          it("should not be preserved when after has an exception", () -> {
+            final Result result = SpectrumHelper.run(getSuiteWithLetAndAfterThatThrowsError());
+
+            assertThat(result.getFailures(), hasSize(2));
+            assertThat(result.getFailures().get(0).getMessage(), is("Bong!"));
+            assertThat(result.getFailures().get(1).getMessage(), is("Bong!"));
+          });
         });
 
 
@@ -243,4 +263,55 @@ public class LetSpecs {
 
     return Suite.class;
   }
+
+  private static Class<?> getSuiteWithLetAndSpecThatThrowsError() {
+    class Suite {
+      {
+        describe("a thing", () -> {
+
+          final Supplier<ArrayList<String>> list = let(ArrayList::new);
+
+          it("has a failing spec which changes the let", () -> {
+            list.get().add("hello world");
+            throw new RuntimeException("Bong!");
+          });
+
+          it("has a spec which should still receive a fresh let", () -> {
+            assertThat(list.get().isEmpty(), is(true));
+          });
+
+        });
+
+      }
+    }
+
+    return Suite.class;
+  }
+
+  private static Class<?> getSuiteWithLetAndAfterThatThrowsError() {
+    class Suite {
+      {
+        describe("a thing", () -> {
+
+          final Supplier<ArrayList<String>> list = let(ArrayList::new);
+          afterEach(() -> {
+            throw new RuntimeException("Bong!");
+          });
+
+          it("has a spec which changes the let", () -> {
+            list.get().add("hello world");
+          });
+
+          it("has a spec which should still receive a fresh let", () -> {
+            assertThat(list.get().isEmpty(), is(true));
+          });
+
+        });
+
+      }
+    }
+
+    return Suite.class;
+  }
+
 }
