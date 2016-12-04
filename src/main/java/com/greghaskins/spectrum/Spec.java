@@ -1,9 +1,14 @@
 package com.greghaskins.spectrum;
 
+import com.greghaskins.spectrum.internal.Atomic;
+import com.greghaskins.spectrum.internal.Child;
+import com.greghaskins.spectrum.internal.NotifyingBlock;
+import com.greghaskins.spectrum.internal.Parent;
+
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
-final class Spec implements Child {
+final class Spec implements Child, Atomic {
 
   private final NotifyingBlock block;
   private final Description description;

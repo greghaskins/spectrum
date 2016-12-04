@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public interface ThrowingConsumer<T> extends Consumer<T> {
 
   /**
-   * Performs this operation on the given argument, or throws an exception.
+   * Performs this operation on the given argument, or throws a throwable.
    *
    * @param object an input argument
    * @throws Throwable when something goes wrong

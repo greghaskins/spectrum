@@ -1,4 +1,8 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.model;
+
+import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.internal.Child;
+import com.greghaskins.spectrum.internal.PreConditionBlock;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -69,7 +73,12 @@ public class PreConditions {
   private boolean isFocused = false;
   private final Set<String> hasTags = new HashSet<>();
 
-  static PreConditions merge(PreConditions... conditions) {
+  /**
+   * Combine provided precondition objects together.
+   * @param conditions to combine
+   * @return a combination of all preconditions as a new object
+   */
+  public static PreConditions merge(PreConditions... conditions) {
     PreConditions merged = new PreConditions();
     Stream.of(conditions).forEach((condition) -> {
       merged.hasTags.addAll(condition.hasTags);
@@ -92,7 +101,7 @@ public class PreConditions {
    *
    * @return a new PreConditions that would apply for a Child
    */
-  PreConditions forChild() {
+  public PreConditions forChild() {
     PreConditions conditions = new PreConditions();
     conditions.hasTags.addAll(this.hasTags);
     conditions.isIgnored = this.isIgnored;
@@ -149,8 +158,9 @@ public class PreConditions {
    * Visitor pattern - when necessary, the child gets the preconditions to apply to it.
    *
    * @param child to be pre-processed according to the preconditions.
+   * @param state the tagging state within which the child is operating
    */
-  void applyTo(Child child, TaggingState state) {
+  public void applyTo(final Child child, final TaggingState state) {
     // the order of precedence = tags, focus, ignored
     // the assumption being that tags are a general purpose override
     // and focus is only ever added as an override

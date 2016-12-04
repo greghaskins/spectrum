@@ -1,4 +1,6 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.model;
+
+import com.greghaskins.spectrum.Configuration;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,17 +12,17 @@ import java.util.stream.Stream;
 /**
  * Represents the state of tagging for Spectrum - what it presently means.
  */
-class TaggingState {
+public class TaggingState {
   private Set<String> included = new HashSet<>();
   private Set<String> excluded = new HashSet<>();
   private static final String TAGS_SEPARATOR = ",";
 
-  TaggingState() {
+  public TaggingState() {
     include(fromSystemProperty(Configuration.INCLUDE_TAGS_PROPERTY));
     exclude(fromSystemProperty(Configuration.EXCLUDE_TAGS_PROPERTY));
   }
 
-  void include(String... tags) {
+  public void include(String... tags) {
     include(Arrays.stream(tags));
   }
 
@@ -29,7 +31,7 @@ class TaggingState {
     tags.forEach(this.included::add);
   }
 
-  void exclude(String... tags) {
+  public void exclude(String... tags) {
     exclude(Arrays.stream(tags));
   }
 

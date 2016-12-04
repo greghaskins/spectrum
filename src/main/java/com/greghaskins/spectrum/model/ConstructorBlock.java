@@ -1,13 +1,15 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.model;
+
+import com.greghaskins.spectrum.Block;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-final class ConstructorBlock implements Block {
+public final class ConstructorBlock implements Block {
 
   private final Class<?> klass;
 
-  ConstructorBlock(final Class<?> klass) {
+  public ConstructorBlock(final Class<?> klass) {
     this.klass = klass;
   }
 

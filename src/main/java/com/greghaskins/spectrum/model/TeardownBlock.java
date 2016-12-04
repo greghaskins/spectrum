@@ -1,4 +1,7 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.model;
+
+import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.internal.NotifyingBlock;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -6,11 +9,11 @@ import org.junit.runner.notification.RunNotifier;
 import java.util.Deque;
 import java.util.LinkedList;
 
-final class TeardownBlock implements NotifyingBlock {
+public final class TeardownBlock implements NotifyingBlock {
 
   private final Deque<NotifyingBlock> blocks;
 
-  TeardownBlock() {
+  public TeardownBlock() {
     this.blocks = new LinkedList<>();
   }
 
@@ -19,11 +22,11 @@ final class TeardownBlock implements NotifyingBlock {
     this.blocks.descendingIterator().forEachRemaining((block) -> block.run(description, notifier));
   }
 
-  void addBlock(final Block block) {
+  public void addBlock(final Block block) {
     addBlock(NotifyingBlock.wrap(block));
   }
 
-  void addBlock(final NotifyingBlock notifyingBlock) {
+  public void addBlock(final NotifyingBlock notifyingBlock) {
     this.blocks.add(notifyingBlock);
   }
 

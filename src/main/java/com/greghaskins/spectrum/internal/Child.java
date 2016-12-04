@@ -1,11 +1,15 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.internal;
 
-import static com.greghaskins.spectrum.PreConditions.Factory.defaultPreConditions;
+import static com.greghaskins.spectrum.model.PreConditions.Factory.defaultPreConditions;
+
+import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.model.PreConditions;
+import com.greghaskins.spectrum.model.TaggingState;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
-interface Child {
+public interface Child {
 
   Description getDescription();
 
@@ -32,6 +36,12 @@ interface Child {
     return this;
   }
 
+  /**
+   * Provide the precondition object for this child's block, which are
+   * either in the block itself, or provided as a default.
+   * @param block the block which may have preconditions
+   * @return a non null preconditions object to use
+   */
   static PreConditions findApplicablePreconditions(final Block block) {
     if (block instanceof PreConditionBlock) {
       return ((PreConditionBlock) block).getPreconditions();

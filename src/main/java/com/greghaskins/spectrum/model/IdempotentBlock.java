@@ -1,11 +1,13 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.model;
 
-final class IdempotentBlock implements Block {
+import com.greghaskins.spectrum.Block;
+
+public final class IdempotentBlock implements Block {
 
   private final Block block;
   private Block result;
 
-  IdempotentBlock(final Block block) {
+  public IdempotentBlock(final Block block) {
     this.block = block;
   }
 

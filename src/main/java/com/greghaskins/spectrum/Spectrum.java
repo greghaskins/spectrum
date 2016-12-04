@@ -1,8 +1,12 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.PreConditionBlock.with;
-import static com.greghaskins.spectrum.PreConditions.Factory.focus;
-import static com.greghaskins.spectrum.PreConditions.Factory.ignore;
+import static com.greghaskins.spectrum.internal.PreConditionBlock.with;
+import static com.greghaskins.spectrum.model.PreConditions.Factory.focus;
+import static com.greghaskins.spectrum.model.PreConditions.Factory.ignore;
+
+import com.greghaskins.spectrum.internal.LetHook;
+import com.greghaskins.spectrum.model.ConstructorBlock;
+import com.greghaskins.spectrum.model.HookContext;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
@@ -249,17 +253,24 @@ public final class Spectrum extends Runner {
    *        `Throwable`
    * @return memoized supplier
    */
-  public static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
-    final ConcurrentHashMap<Supplier<T>, T> cache = new ConcurrentHashMap<>(1);
-    afterEach(cache::clear);
+  public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
+    LetHook<T> letHook = new LetHook<>(supplier);
+    HookContext hookContext = new HookContext(letHook, false, false, true);
+    getCurrentSuiteBeingDeclared().addHook(hookContext);
 
-    return () -> {
-      if (getCurrentSuiteBeingDeclared() == null) {
-        return cache.computeIfAbsent(supplier, Supplier::get);
-      }
-      throw new IllegalStateException("Cannot use the value from let() in a suite declaration. "
+    return letHook;
+  }
+
+  /**
+   * Will throw an exception if this method happens to be called while Spectrum is still defining
+   * tests, rather than executing them. Useful to see if a hook is being accidentally used
+   * during definition.
+   */
+  public static void assertSpectrumInTestMode() {
+    if (getCurrentSuiteBeingDeclared() != null) {
+      throw new IllegalStateException("Cannot use this statement in a suite declaration. "
           + "It may only be used in the context of a running spec.");
-    };
+    }
   }
 
   /**
@@ -271,27 +282,9 @@ public final class Spectrum extends Runner {
    *
    * @param <T> The type of result that will be supplied
    */
+  @Deprecated
   @FunctionalInterface
-  public interface ThrowingSupplier<T> extends Supplier<T> {
-
-    /**
-     * Get a result.
-     *
-     * @return a result
-     * @throws Throwable any uncaught Error or Exception
-     */
-    T getOrThrow() throws Throwable;
-
-    @Override
-    default T get() {
-      try {
-        return getOrThrow();
-      } catch (final RuntimeException | Error unchecked) {
-        throw unchecked;
-      } catch (final Throwable checked) {
-        throw new RuntimeException(checked);
-      }
-    }
+  public interface ThrowingSupplier<T> extends com.greghaskins.spectrum.ThrowingSupplier<T> {
   }
 
 

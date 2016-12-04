@@ -59,7 +59,7 @@ public class LetSpecs {
           final Failure failure = result.get().getFailures().get(0);
           assertThat(failure.getException(), instanceOf(IllegalStateException.class));
           assertThat(failure.getMessage(),
-              is("Cannot use the value from let() in a suite declaration. "
+              is("Cannot use this statement in a suite declaration. "
                   + "It may only be used in the context of a running spec."));
         });
 

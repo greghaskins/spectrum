@@ -1,4 +1,7 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.internal;
+
+import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.model.PreConditions;
 
 /**
  * A block with pre conditions set on it.
