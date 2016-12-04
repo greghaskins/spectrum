@@ -199,7 +199,8 @@ public class AroundSpecs {
 
         assertThat(result.getFailureCount(), is(1));
         Failure failure = result.getFailures().get(0);
-        assertThat(failure.getMessage(), is("At least one of the test hooks did not run the test block."));
+        assertThat(failure.getMessage(),
+            is("At least one of the test hooks did not run the test block."));
       });
 
       describe("in multiples", () -> {

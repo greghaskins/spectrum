@@ -1,5 +1,8 @@
 package com.greghaskins.spectrum;
 
+import static com.greghaskins.spectrum.internal.AfterHook.after;
+import static com.greghaskins.spectrum.internal.BeforeHook.before;
+
 import com.greghaskins.spectrum.internal.Atomic;
 import com.greghaskins.spectrum.internal.Child;
 import com.greghaskins.spectrum.internal.NotifyingBlock;
@@ -9,9 +12,7 @@ import com.greghaskins.spectrum.model.HookContext;
 import com.greghaskins.spectrum.model.Hooks;
 import com.greghaskins.spectrum.model.IdempotentBlock;
 import com.greghaskins.spectrum.model.PreConditions;
-import com.greghaskins.spectrum.model.SetupBlock;
 import com.greghaskins.spectrum.model.TaggingState;
-import com.greghaskins.spectrum.model.TeardownBlock;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
@@ -23,13 +24,6 @@ import java.util.List;
 import java.util.Set;
 
 class Suite implements Parent, Child {
-
-  private final SetupBlock beforeAll = new SetupBlock();
-  private final TeardownBlock afterAll = new TeardownBlock();
-
-  private final SetupBlock beforeEach = new SetupBlock();
-  private final TeardownBlock afterEach = new TeardownBlock();
-
   // the hooks - they will be turned into a chain of responsibility
   // so the first one will be executed last as the chain is built up
   // from first to last.
@@ -88,13 +82,10 @@ class Suite implements Parent, Child {
         new Suite(Description.createSuiteDescription(sanitise(name)), this, childRunner,
             this.tagging.clone());
 
-    return withExtraValues(suite);
+    return addedToThis(suite);
   }
 
-  private Suite withExtraValues(Suite suite) {
-    suite.beforeAll.addBlock(this.beforeAll);
-    suite.beforeEach.addBlock(this.beforeEach);
-    suite.afterEach.addBlock(this.afterEach);
+  private Suite addedToThis(Suite suite) {
     addChild(suite);
 
     return suite;
@@ -105,7 +96,7 @@ class Suite implements Parent, Child {
         new CompositeTest(Description.createSuiteDescription(sanitise(name)), this,
             this.tagging.clone());
 
-    return withExtraValues(suite);
+    return addedToThis(suite);
   }
 
   Child addSpec(final String name, final Block block) {
@@ -119,33 +110,7 @@ class Suite implements Parent, Child {
     final Description specDescription =
         Description.createTestDescription(this.description.getClassName(), sanitise(name));
 
-    final NotifyingBlock specBlockInContext = (description, notifier) -> {
-      try {
-        this.beforeAll.run();
-      } catch (final Throwable exception) {
-        notifier.fireTestFailure(new Failure(description, exception));
-        return;
-      }
-
-      NotifyingBlock.wrap(() -> {
-
-        Variable<Boolean> blockWasRun = new Variable<>(false);
-
-        blockWasRun.set(true);
-
-        NotifyingBlock.wrap(() -> {
-          this.beforeEach.run();
-          block.run();
-        }).run(description, notifier);
-
-        this.afterEach.run(description, notifier);
-
-        if (!blockWasRun.get()) {
-          throw new RuntimeException("aroundEach did not run the block");
-        }
-
-      }).run(description, notifier);
-    };
+    final NotifyingBlock specBlockInContext = NotifyingBlock.wrap(block);
 
     PreConditionBlock preConditionBlock =
         PreConditionBlock.with(this.preconditions.forChild(), block);
@@ -159,23 +124,23 @@ class Suite implements Parent, Child {
   }
 
   void beforeAll(final Block block) {
-    this.beforeAll.addBlock(new IdempotentBlock(block));
+    addHook(new HookContext(before(new IdempotentBlock(block)), false, false, true));
   }
 
   void afterAll(final Block block) {
-    this.afterAll.addBlock(block);
+    addHook(new HookContext(after(block), false, true, false));
   }
 
   void beforeEach(final Block block) {
-    this.beforeEach.addBlock(block);
+    addHook(new HookContext(before(block), true, false, false));
   }
 
   void afterEach(final Block block) {
-    this.afterEach.addBlock(block);
+    addHook(new HookContext(after(block), true, false, false));
   }
 
   /**
-   * Adds a hook to be the last one executed before the block.
+   * Adds a hook to be the first one executed before the block.
    * This is the default. Hooks should be executed in the order they
    * are declared in the test.
    * @param hook to add
@@ -185,8 +150,8 @@ class Suite implements Parent, Child {
   }
 
   /**
-   * Insert a hook at the front - this is for situations where a hook is only creatable
-   * after test definition, but is still to be run first.
+   * Insert a hook closest to the start of the chain of responsibility. This is for situations
+   * where a hook is only creatable after test definition, and needs to be run first.
    * @param hook to add
    */
   void insertHook(final HookContext hook) {
@@ -274,7 +239,6 @@ class Suite implements Parent, Child {
 
     NotifyingBlock.run(this.description, notifier, () -> {
       runChildren(notifier);
-      runAfterAll(notifier);
     });
   }
 
@@ -284,15 +248,17 @@ class Suite implements Parent, Child {
 
   protected void runChild(final Child child, final RunNotifier notifier) {
     if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
-      hooks.forThisLevel().runAround(getDescription(), notifier,
-          () -> getHooksFor(child).runAround(getDescription(), notifier, () -> child.run(notifier)));
+      hooks.forThisLevel().runAround(child.getDescription(), notifier,
+          () -> runChildWithHooksInNotifierBlock(child, notifier));
     } else {
       notifier.fireTestIgnored(child.getDescription());
     }
   }
 
-  private void runAfterAll(final RunNotifier notifier) {
-    this.afterAll.run(this.description, notifier);
+  private void runChildWithHooksInNotifierBlock(final Child child, final RunNotifier notifier) {
+    NotifyingBlock.run(child.getDescription(), notifier,
+        () -> getHooksFor(child).runAround(child.getDescription(), notifier,
+            () -> child.run(notifier)));
   }
 
   @Override
@@ -331,10 +297,10 @@ class Suite implements Parent, Child {
   }
 
   public void aroundEach(Hook consumer) {
-    hooks.add(new HookContext(consumer, true, false, false));
+    addHook(new HookContext(consumer, true, false, false));
   }
 
   public void aroundAll(Hook consumer) {
-    hooks.add(new HookContext(consumer, false, true, false));
+    addHook(new HookContext(consumer, false, true, false));
   }
 }

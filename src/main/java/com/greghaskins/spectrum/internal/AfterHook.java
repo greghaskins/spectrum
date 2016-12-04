@@ -15,8 +15,11 @@ public interface AfterHook {
    */
   static Hook after(final Block block) {
     return inner -> {
-      inner.run();
-      block.run();
+      try {
+        inner.run();
+      } finally {
+        block.run();
+      }
     };
   }
 }

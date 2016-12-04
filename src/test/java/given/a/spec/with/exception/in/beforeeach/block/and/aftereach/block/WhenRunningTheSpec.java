@@ -21,16 +21,20 @@ public class WhenRunningTheSpec {
   }
 
   @Test
-  public void thereAreTwoFailuresForEachAffectedTest() throws Exception {
-    assertThat(this.result.getFailureCount(), is(4));
+  public void theActualTestsCanOnlyFailOnceEach() throws Exception {
+    assertThat(this.result.getFailureCount(), is(2));
   }
 
   @Test
   public void theFailuresExplainWhatHappened() throws Exception {
     assertThat(this.result.getFailures().get(0),
-        is(failure("a failing test", Fixture.SomeException.class, "kaboom")));
+        is(failure("a failing test", RuntimeException.class,
+            "given.a.spec.with.exception.in.beforeeach.block.and.aftereach.block."
+                + "Fixture$SomeException: beforeEach went kaboom")));
     assertThat(this.result.getFailures().get(1),
-        is(failure("a failing test", Fixture.SomeException.class, "poof")));
+        is(failure("another failing test", RuntimeException.class,
+            "given.a.spec.with.exception.in.beforeeach.block.and.aftereach.block."
+                + "Fixture$SomeException: beforeEach went kaboom")));
   }
 
 }
