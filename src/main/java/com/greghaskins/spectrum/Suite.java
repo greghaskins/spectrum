@@ -3,19 +3,17 @@ package com.greghaskins.spectrum;
 import static com.greghaskins.spectrum.internal.AfterHook.after;
 import static com.greghaskins.spectrum.internal.BeforeHook.before;
 
-import com.greghaskins.spectrum.internal.Atomic;
 import com.greghaskins.spectrum.internal.Child;
+import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.NotifyingBlock;
 import com.greghaskins.spectrum.internal.Parent;
-import com.greghaskins.spectrum.internal.PreConditionBlock;
 import com.greghaskins.spectrum.model.HookContext;
 import com.greghaskins.spectrum.model.Hooks;
 import com.greghaskins.spectrum.model.IdempotentBlock;
 import com.greghaskins.spectrum.model.PreConditions;
-import com.greghaskins.spectrum.model.TaggingState;
+import com.greghaskins.spectrum.model.TaggingFilterCriteria;
 
 import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import java.util.ArrayList;
@@ -38,7 +36,7 @@ class Suite implements Parent, Child {
   private final Parent parent;
   private boolean ignored;
 
-  private final TaggingState tagging;
+  private final TaggingFilterCriteria tagging;
   private PreConditions preconditions = PreConditions.Factory.defaultPreConditions();
   private Set<String> namesUsed = new HashSet<>();
 
@@ -51,7 +49,8 @@ class Suite implements Parent, Child {
   }
 
   static Suite rootSuite(final Description description) {
-    return new Suite(description, Parent.NONE, Suite::defaultChildRunner, new TaggingState());
+    return new Suite(description, Parent.NONE, Suite::defaultChildRunner,
+        new TaggingFilterCriteria());
   }
 
   /**
@@ -62,15 +61,15 @@ class Suite implements Parent, Child {
    * @param childRunner which child running strategy to use - this will normally be
    *        {@link #defaultChildRunner(Suite, RunNotifier)} which runs them all but can be
    *        substituted.
-   * @param taggingState the state of tagging inherited from the parent
+   * @param taggingFilterCriteria the state of tagging inherited from the parent
    */
   protected Suite(final Description description, final Parent parent, final ChildRunner childRunner,
-      final TaggingState taggingState) {
+      final TaggingFilterCriteria taggingFilterCriteria) {
     this.description = description;
     this.parent = parent;
     this.ignored = parent.isIgnored();
     this.childRunner = childRunner;
-    this.tagging = taggingState;
+    this.tagging = taggingFilterCriteria;
   }
 
   Suite addSuite(final String name) {
@@ -112,10 +111,10 @@ class Suite implements Parent, Child {
 
     final NotifyingBlock specBlockInContext = NotifyingBlock.wrap(block);
 
-    PreConditionBlock preConditionBlock =
-        PreConditionBlock.with(this.preconditions.forChild(), block);
+    ConfiguredBlock configuredBlock =
+        ConfiguredBlock.with(this.preconditions.forChild(), block);
 
-    return new Spec(specDescription, specBlockInContext, this).applyPreConditions(preConditionBlock,
+    return new Spec(specDescription, specBlockInContext, this).applyPreConditions(configuredBlock,
         this.tagging);
   }
 
@@ -152,7 +151,7 @@ class Suite implements Parent, Child {
   Hooks getHooksFor(final Child child) {
     Hooks allHooks = parent.getInheritableHooks().plus(hooks);
 
-    return child instanceof Atomic ? allHooks.forAtomic() : allHooks.forNonAtomic();
+    return child.isAtomic() ? allHooks.forAtomic() : allHooks.forNonAtomic();
   }
 
   @Override

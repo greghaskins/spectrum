@@ -6,7 +6,7 @@ import com.greghaskins.spectrum.model.PreConditions;
 /**
  * A block with pre conditions set on it.
  */
-public class PreConditionBlock implements Block {
+public class ConfiguredBlock implements Block {
   private final PreConditions preConditions;
   private final Block innerBlock;
 
@@ -18,12 +18,12 @@ public class PreConditionBlock implements Block {
    * @param block the enclosed block
    * @return a PreconditionBlock to use
    */
-  public static PreConditionBlock with(final PreConditions preConditions, final Block block) {
+  public static ConfiguredBlock with(final PreConditions preConditions, final Block block) {
 
     PreConditions existingPreConditions = Child.findApplicablePreconditions(block);
     PreConditions mergedPreConditions = PreConditions.merge(existingPreConditions, preConditions);
 
-    return new PreConditionBlock(mergedPreConditions, block);
+    return new ConfiguredBlock(mergedPreConditions, block);
   }
 
   /**
@@ -31,7 +31,7 @@ public class PreConditionBlock implements Block {
    * @param block the block to ignore
    * @return a PreconditionBlock - preignored
    */
-  public static PreConditionBlock ignore(final Block block) {
+  public static ConfiguredBlock ignore(final Block block) {
     return with(PreConditions.Factory.ignore(), block);
   }
 
@@ -41,7 +41,7 @@ public class PreConditionBlock implements Block {
    * @param block the block to ignore
    * @return a PreconditionBlock - preignored
    */
-  public static PreConditionBlock ignore(final String why, final Block block) {
+  public static ConfiguredBlock ignore(final String why, final Block block) {
     return with(PreConditions.Factory.ignore(why), block);
   }
 
@@ -49,7 +49,7 @@ public class PreConditionBlock implements Block {
    * Construct a new precondition block to wrap a block.
    * @param innerBlock the block to wrap
    */
-  private PreConditionBlock(final PreConditions preConditions, final Block innerBlock) {
+  private ConfiguredBlock(final PreConditions preConditions, final Block innerBlock) {
     this.preConditions = preConditions;
     this.innerBlock = innerBlock;
   }

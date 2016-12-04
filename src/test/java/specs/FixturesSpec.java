@@ -7,7 +7,7 @@ import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.internal.PreConditionBlock.ignore;
+import static com.greghaskins.spectrum.internal.ConfiguredBlock.ignore;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -484,11 +484,11 @@ public class FixturesSpec {
               .map((failure) -> failure.getMessage())
               .collect(Collectors.toList()));
 
-          it("report the error only once", () -> {
-            assertThat(result.get().getFailureCount(), is(1));
+          it("report each error", ignore(() -> {
+            assertThat(result.get().getFailureCount(), is(2));
 
             assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom 1"));
-          });
+          }));
 
         });
 

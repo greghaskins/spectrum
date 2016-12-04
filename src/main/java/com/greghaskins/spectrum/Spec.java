@@ -1,6 +1,5 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.internal.Atomic;
 import com.greghaskins.spectrum.internal.Child;
 import com.greghaskins.spectrum.internal.NotifyingBlock;
 import com.greghaskins.spectrum.internal.Parent;
@@ -8,7 +7,7 @@ import com.greghaskins.spectrum.internal.Parent;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
-final class Spec implements Child, Atomic {
+final class Spec implements Child {
 
   private final NotifyingBlock block;
   private final Description description;
@@ -56,5 +55,10 @@ final class Spec implements Child, Atomic {
   @Override
   public void ignore() {
     this.ignored = true;
+  }
+
+  @Override
+  public boolean isAtomic() {
+    return true;
   }
 }

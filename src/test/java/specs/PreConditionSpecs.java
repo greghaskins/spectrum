@@ -2,8 +2,8 @@ package specs;
 
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.internal.PreConditionBlock.ignore;
-import static com.greghaskins.spectrum.internal.PreConditionBlock.with;
+import static com.greghaskins.spectrum.internal.ConfiguredBlock.ignore;
+import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
 import static com.greghaskins.spectrum.model.PreConditions.Factory.ignore;
 
 import com.greghaskins.spectrum.Spectrum;

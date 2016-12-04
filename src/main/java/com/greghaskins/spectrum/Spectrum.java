@@ -1,6 +1,6 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.internal.PreConditionBlock.with;
+import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
 import static com.greghaskins.spectrum.model.PreConditions.Factory.focus;
 import static com.greghaskins.spectrum.model.PreConditions.Factory.ignore;
 

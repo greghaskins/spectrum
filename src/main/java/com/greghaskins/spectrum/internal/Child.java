@@ -4,7 +4,7 @@ import static com.greghaskins.spectrum.model.PreConditions.Factory.defaultPreCon
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.model.PreConditions;
-import com.greghaskins.spectrum.model.TaggingState;
+import com.greghaskins.spectrum.model.TaggingFilterCriteria;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -22,16 +22,25 @@ public interface Child {
   void ignore();
 
   /**
+   * Is this child something which runs as a test.
+   * @return if the child is atomic
+   */
+  default boolean isAtomic() {
+    return false;
+  }
+
+  /**
    * Gets the object to be filtered appropriately with its preconditions.
    * @param block the block that will be executed by the child - this may be of
-   *              type {@link PreConditionBlock} if declared with
-   *              {@link PreConditionBlock#with(PreConditions, Block)}
-   * @param taggingState the tagging state in the parent of this suite or spec.
+   *              type {@link ConfiguredBlock} if declared with
+   *              {@link ConfiguredBlock#with(PreConditions, Block)}
+   * @param taggingFilterCriteria the tagging state in the parent of this suite or spec.
    *                     This is used to determine what filters apply to the block
    * @return the child itself for fluent calling
    */
-  default Child applyPreConditions(final Block block, final TaggingState taggingState) {
-    findApplicablePreconditions(block).applyTo(this, taggingState);
+  default Child applyPreConditions(final Block block,
+      final TaggingFilterCriteria taggingFilterCriteria) {
+    findApplicablePreconditions(block).applyTo(this, taggingFilterCriteria);
 
     return this;
   }
@@ -43,8 +52,8 @@ public interface Child {
    * @return a non null preconditions object to use
    */
   static PreConditions findApplicablePreconditions(final Block block) {
-    if (block instanceof PreConditionBlock) {
-      return ((PreConditionBlock) block).getPreconditions();
+    if (block instanceof ConfiguredBlock) {
+      return ((ConfiguredBlock) block).getPreconditions();
     } else {
       return defaultPreConditions();
     }

@@ -12,12 +12,12 @@ import java.util.stream.Stream;
 /**
  * Represents the state of tagging for Spectrum - what it presently means.
  */
-public class TaggingState {
+public class TaggingFilterCriteria {
   private Set<String> included = new HashSet<>();
   private Set<String> excluded = new HashSet<>();
   private static final String TAGS_SEPARATOR = ",";
 
-  public TaggingState() {
+  public TaggingFilterCriteria() {
     include(fromSystemProperty(Configuration.INCLUDE_TAGS_PROPERTY));
     exclude(fromSystemProperty(Configuration.EXCLUDE_TAGS_PROPERTY));
   }
@@ -41,8 +41,8 @@ public class TaggingState {
   }
 
   @Override
-  public TaggingState clone() {
-    TaggingState copy = new TaggingState();
+  public TaggingFilterCriteria clone() {
+    TaggingFilterCriteria copy = new TaggingFilterCriteria();
     copy.include(this.included.stream());
     copy.exclude(this.excluded.stream());
 
@@ -70,8 +70,8 @@ public class TaggingState {
 
   private String[] fromSystemProperty(final String property) {
     return Optional.ofNullable(System.getProperty(property))
-        .map(string -> string.split(TaggingState.TAGS_SEPARATOR))
-        .filter(TaggingState::notArrayWithEmptyValue)
+        .map(string -> string.split(TaggingFilterCriteria.TAGS_SEPARATOR))
+        .filter(TaggingFilterCriteria::notArrayWithEmptyValue)
         .orElse(new String[0]);
   }
 

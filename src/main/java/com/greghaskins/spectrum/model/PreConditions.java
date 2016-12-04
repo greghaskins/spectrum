@@ -2,7 +2,7 @@ package com.greghaskins.spectrum.model;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.internal.Child;
-import com.greghaskins.spectrum.internal.PreConditionBlock;
+import com.greghaskins.spectrum.internal.ConfiguredBlock;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,12 +10,12 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * Pre conditions that apply to a {@link PreConditionBlock}.
+ * Pre conditions and configurations that apply to a {@link ConfiguredBlock}.
  */
 public class PreConditions {
   /**
    * Contains factory methods for creating {@link PreConditions} objects so you can include them in
-   * {@link PreConditionBlock#with(PreConditions, Block)}. The {@link PreConditions} object has
+   * {@link ConfiguredBlock#with(PreConditions, Block)}. The {@link PreConditions} object has
    * fluent setters so you can add more properties. This is an interface since it has nothing but
    * static methods.
    */
@@ -24,7 +24,7 @@ public class PreConditions {
      * Ignore the suite or spec.
      *
      * @return a precondition that will ignore the block within a
-     *         {@link PreConditionBlock#with(PreConditions, Block)}
+     *         {@link ConfiguredBlock#with(PreConditions, Block)}
      */
     static PreConditions ignore() {
       return new PreConditions().ignore();
@@ -35,7 +35,7 @@ public class PreConditions {
      *
      * @param why reason for ignoring
      * @return a precondition that will ignore the block within a
-     *         {@link PreConditionBlock#with(PreConditions, Block)}
+     *         {@link ConfiguredBlock#with(PreConditions, Block)}
      */
     static PreConditions ignore(final String why) {
       return new PreConditions().ignore(why);
@@ -43,12 +43,12 @@ public class PreConditions {
 
     /**
      * Tags the suite or spec that is being built using
-     * {@link PreConditionBlock#with(PreConditions, Block)}. Dependent on the current selection of
+     * {@link ConfiguredBlock#with(PreConditions, Block)}. Dependent on the current selection of
      * tags, this may lead to the item being ignored during this execution.
      *
      * @param tags tags that relate to the suite or spec
      * @return a precondition that has these tags set
-     *         {@link PreConditionBlock#with(PreConditions, Block)}
+     *         {@link ConfiguredBlock#with(PreConditions, Block)}
      */
     static PreConditions tags(final String... tags) {
       return new PreConditions().tags(tags);
@@ -58,7 +58,7 @@ public class PreConditions {
      * Tags the suite or spec to be focused.
      *
      * @return a precondition that will focus the suite or spec around the
-     *         {@link PreConditionBlock#with(PreConditions, Block)}
+     *         {@link ConfiguredBlock#with(PreConditions, Block)}
      */
     static PreConditions focus() {
       return new PreConditions().focus();
@@ -160,7 +160,7 @@ public class PreConditions {
    * @param child to be pre-processed according to the preconditions.
    * @param state the tagging state within which the child is operating
    */
-  public void applyTo(final Child child, final TaggingState state) {
+  public void applyTo(final Child child, final TaggingFilterCriteria state) {
     // the order of precedence = tags, focus, ignored
     // the assumption being that tags are a general purpose override
     // and focus is only ever added as an override
