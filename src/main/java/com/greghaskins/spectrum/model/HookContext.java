@@ -1,5 +1,11 @@
 package com.greghaskins.spectrum.model;
 
+import static com.greghaskins.spectrum.model.HookContext.AppliesTo.ATOMIC_ONLY;
+import static com.greghaskins.spectrum.model.HookContext.AppliesTo.EACH_CHILD;
+import static com.greghaskins.spectrum.model.HookContext.AppliesTo.ONCE;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.greghaskins.spectrum.Hook;
 
 /**
@@ -8,23 +14,26 @@ import com.greghaskins.spectrum.Hook;
  */
 public class HookContext {
   private final Hook hook;
-  private final boolean atomicOnly;
-  private final boolean once;
-  private final boolean eachChild;
+  private final AppliesTo appliesTo;
+  private final int sequenceNumber;
+
+  private static final AtomicInteger SEQUENCE_GENERATOR = new AtomicInteger();
+
+  public enum AppliesTo {
+    ATOMIC_ONLY,
+    ONCE,
+    EACH_CHILD
+  }
 
   /**
    * Construct a hook context.
    * @param hook the hook being wrapped
-   * @param atomicOnly is this run for atomics only?
-   * @param once is this a one time hook?
-   * @param eachChild is this for each individual child of the parent?
+   * @param appliesTo where in the lifecycle is this hook applied?
    */
-  public HookContext(final Hook hook, final boolean atomicOnly,
-      final boolean once, final boolean eachChild) {
+  public HookContext(final Hook hook, final AppliesTo appliesTo) {
     this.hook = hook;
-    this.atomicOnly = atomicOnly;
-    this.once = once;
-    this.eachChild = eachChild;
+    this.appliesTo = appliesTo;
+    this.sequenceNumber = SEQUENCE_GENERATOR.incrementAndGet();
   }
 
   /**
@@ -41,7 +50,7 @@ public class HookContext {
    * @return if this is for atomic items only
    */
   public boolean isAtomicOnly() {
-    return atomicOnly;
+    return appliesTo.equals(ATOMIC_ONLY);
   }
 
   /**
@@ -50,7 +59,7 @@ public class HookContext {
    * @return is this a one time hook?
    */
   public boolean isOnce() {
-    return once;
+    return appliesTo.equals(ONCE);
   }
 
   /**
@@ -58,6 +67,6 @@ public class HookContext {
    * @return if this is a hook to apply before each direct child
    */
   public boolean isEachChild() {
-    return eachChild;
+    return appliesTo.equals(EACH_CHILD);
   }
 }

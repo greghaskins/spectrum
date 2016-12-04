@@ -123,19 +123,19 @@ class Suite implements Parent, Child {
   }
 
   void beforeAll(final Block block) {
-    addHook(new HookContext(before(new IdempotentBlock(block)), false, false, true));
+    addHook(new HookContext(before(new IdempotentBlock(block)), HookContext.AppliesTo.EACH_CHILD));
   }
 
   void afterAll(final Block block) {
-    addHook(new HookContext(after(block), false, true, false));
+    addHook(new HookContext(after(block), HookContext.AppliesTo.ONCE));
   }
 
   void beforeEach(final Block block) {
-    addHook(new HookContext(before(block), true, false, false));
+    addHook(new HookContext(before(block), HookContext.AppliesTo.ATOMIC_ONLY));
   }
 
   void afterEach(final Block block) {
-    addHook(new HookContext(after(block), true, false, false));
+    addHook(new HookContext(after(block), HookContext.AppliesTo.ATOMIC_ONLY));
   }
 
   /**
@@ -280,10 +280,10 @@ class Suite implements Parent, Child {
   }
 
   public void aroundEach(Hook consumer) {
-    addHook(new HookContext(consumer, true, false, false));
+    addHook(new HookContext(consumer, HookContext.AppliesTo.ATOMIC_ONLY));
   }
 
   public void aroundAll(Hook consumer) {
-    addHook(new HookContext(consumer, false, true, false));
+    addHook(new HookContext(consumer, HookContext.AppliesTo.ONCE));
   }
 }
