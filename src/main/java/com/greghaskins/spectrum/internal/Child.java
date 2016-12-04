@@ -1,9 +1,9 @@
 package com.greghaskins.spectrum.internal;
 
-import static com.greghaskins.spectrum.model.PreConditions.Factory.defaultPreConditions;
+import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.defaultPreConditions;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.model.PreConditions;
+import com.greghaskins.spectrum.model.BlockConfiguration;
 import com.greghaskins.spectrum.model.TaggingFilterCriteria;
 
 import org.junit.runner.Description;
@@ -33,7 +33,7 @@ public interface Child {
    * Gets the object to be filtered appropriately with its preconditions.
    * @param block the block that will be executed by the child - this may be of
    *              type {@link ConfiguredBlock} if declared with
-   *              {@link ConfiguredBlock#with(PreConditions, Block)}
+   *              {@link ConfiguredBlock#with(BlockConfiguration, Block)}
    * @param taggingFilterCriteria the tagging state in the parent of this suite or spec.
    *                     This is used to determine what filters apply to the block
    * @return the child itself for fluent calling
@@ -51,7 +51,7 @@ public interface Child {
    * @param block the block which may have preconditions
    * @return a non null preconditions object to use
    */
-  static PreConditions findApplicablePreconditions(final Block block) {
+  static BlockConfiguration findApplicablePreconditions(final Block block) {
     if (block instanceof ConfiguredBlock) {
       return ((ConfiguredBlock) block).getPreconditions();
     } else {

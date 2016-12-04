@@ -1,8 +1,8 @@
 package com.greghaskins.spectrum;
 
 import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
-import static com.greghaskins.spectrum.model.PreConditions.Factory.focus;
-import static com.greghaskins.spectrum.model.PreConditions.Factory.ignore;
+import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
+import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 
 import com.greghaskins.spectrum.internal.LetHook;
 import com.greghaskins.spectrum.model.ConstructorBlock;

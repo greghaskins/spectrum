@@ -7,10 +7,10 @@ import com.greghaskins.spectrum.internal.Child;
 import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.NotifyingBlock;
 import com.greghaskins.spectrum.internal.Parent;
+import com.greghaskins.spectrum.model.BlockConfiguration;
 import com.greghaskins.spectrum.model.HookContext;
 import com.greghaskins.spectrum.model.Hooks;
 import com.greghaskins.spectrum.model.IdempotentBlock;
-import com.greghaskins.spectrum.model.PreConditions;
 import com.greghaskins.spectrum.model.TaggingFilterCriteria;
 
 import org.junit.runner.Description;
@@ -37,7 +37,7 @@ class Suite implements Parent, Child {
   private boolean ignored;
 
   private final TaggingFilterCriteria tagging;
-  private PreConditions preconditions = PreConditions.Factory.defaultPreConditions();
+  private BlockConfiguration preconditions = BlockConfiguration.Factory.defaultPreConditions();
   private Set<String> namesUsed = new HashSet<>();
 
   /**

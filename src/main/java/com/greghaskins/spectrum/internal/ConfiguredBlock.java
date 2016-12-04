@@ -1,29 +1,32 @@
 package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.model.PreConditions;
+import com.greghaskins.spectrum.model.BlockConfiguration;
 
 /**
  * A block with pre conditions set on it.
  */
 public class ConfiguredBlock implements Block {
-  private final PreConditions preConditions;
+  private final BlockConfiguration blockConfiguration;
   private final Block innerBlock;
 
   /**
-   * Surround a {@link Block} with the {@link #with(PreConditions, Block)} statement
+   * Surround a {@link Block} with the {@link #with(BlockConfiguration, Block)} statement
    * to add preconditions and metadata to it.
    * E.g. <code>with(tags("foo"), () -&gt; {})</code>
-   * @param preConditions the precondition object - see the factory methods in {@link PreConditions}
+   * @param blockConfiguration the precondition object - see the factory methods in
+   *        {@link BlockConfiguration}
    * @param block the enclosed block
    * @return a PreconditionBlock to use
    */
-  public static ConfiguredBlock with(final PreConditions preConditions, final Block block) {
+  public static ConfiguredBlock with(final BlockConfiguration blockConfiguration,
+      final Block block) {
 
-    PreConditions existingPreConditions = Child.findApplicablePreconditions(block);
-    PreConditions mergedPreConditions = PreConditions.merge(existingPreConditions, preConditions);
+    BlockConfiguration existingBlockConfiguration = Child.findApplicablePreconditions(block);
+    BlockConfiguration mergedBlockConfiguration =
+        BlockConfiguration.merge(existingBlockConfiguration, blockConfiguration);
 
-    return new ConfiguredBlock(mergedPreConditions, block);
+    return new ConfiguredBlock(mergedBlockConfiguration, block);
   }
 
   /**
@@ -32,7 +35,7 @@ public class ConfiguredBlock implements Block {
    * @return a PreconditionBlock - preignored
    */
   public static ConfiguredBlock ignore(final Block block) {
-    return with(PreConditions.Factory.ignore(), block);
+    return with(BlockConfiguration.Factory.ignore(), block);
   }
 
   /**
@@ -42,15 +45,15 @@ public class ConfiguredBlock implements Block {
    * @return a PreconditionBlock - preignored
    */
   public static ConfiguredBlock ignore(final String why, final Block block) {
-    return with(PreConditions.Factory.ignore(why), block);
+    return with(BlockConfiguration.Factory.ignore(why), block);
   }
 
   /**
    * Construct a new precondition block to wrap a block.
    * @param innerBlock the block to wrap
    */
-  private ConfiguredBlock(final PreConditions preConditions, final Block innerBlock) {
-    this.preConditions = preConditions;
+  private ConfiguredBlock(final BlockConfiguration blockConfiguration, final Block innerBlock) {
+    this.blockConfiguration = blockConfiguration;
     this.innerBlock = innerBlock;
   }
 
@@ -58,8 +61,8 @@ public class ConfiguredBlock implements Block {
    * Get the pre conditions that apply to the block.
    * @return the preconditons on the block
    */
-  PreConditions getPreconditions() {
-    return preConditions;
+  BlockConfiguration getPreconditions() {
+    return blockConfiguration;
   }
 
   @Override

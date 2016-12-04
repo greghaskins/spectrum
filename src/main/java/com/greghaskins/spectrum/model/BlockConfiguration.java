@@ -12,22 +12,22 @@ import java.util.stream.Stream;
 /**
  * Pre conditions and configurations that apply to a {@link ConfiguredBlock}.
  */
-public class PreConditions {
+public class BlockConfiguration {
   /**
-   * Contains factory methods for creating {@link PreConditions} objects so you can include them in
-   * {@link ConfiguredBlock#with(PreConditions, Block)}. The {@link PreConditions} object has
-   * fluent setters so you can add more properties. This is an interface since it has nothing but
-   * static methods.
+   * Contains factory methods for creating {@link BlockConfiguration} objects so you can include
+   * them in {@link ConfiguredBlock#with(BlockConfiguration, Block)}. The
+   * {@link BlockConfiguration} object has fluent setters so you can add more properties.
+   * This is an interface since it has nothing but static methods.
    */
   public interface Factory {
     /**
      * Ignore the suite or spec.
      *
      * @return a precondition that will ignore the block within a
-     *         {@link ConfiguredBlock#with(PreConditions, Block)}
+     *         {@link ConfiguredBlock#with(BlockConfiguration, Block)}
      */
-    static PreConditions ignore() {
-      return new PreConditions().ignore();
+    static BlockConfiguration ignore() {
+      return new BlockConfiguration().ignore();
     }
 
     /**
@@ -35,37 +35,37 @@ public class PreConditions {
      *
      * @param why reason for ignoring
      * @return a precondition that will ignore the block within a
-     *         {@link ConfiguredBlock#with(PreConditions, Block)}
+     *         {@link ConfiguredBlock#with(BlockConfiguration, Block)}
      */
-    static PreConditions ignore(final String why) {
-      return new PreConditions().ignore(why);
+    static BlockConfiguration ignore(final String why) {
+      return new BlockConfiguration().ignore(why);
     }
 
     /**
      * Tags the suite or spec that is being built using
-     * {@link ConfiguredBlock#with(PreConditions, Block)}. Dependent on the current selection of
-     * tags, this may lead to the item being ignored during this execution.
+     * {@link ConfiguredBlock#with(BlockConfiguration, Block)}. Dependent on the current selection
+     * of tags, this may lead to the item being ignored during this execution.
      *
      * @param tags tags that relate to the suite or spec
      * @return a precondition that has these tags set
-     *         {@link ConfiguredBlock#with(PreConditions, Block)}
+     *         {@link ConfiguredBlock#with(BlockConfiguration, Block)}
      */
-    static PreConditions tags(final String... tags) {
-      return new PreConditions().tags(tags);
+    static BlockConfiguration tags(final String... tags) {
+      return new BlockConfiguration().tags(tags);
     }
 
     /**
      * Tags the suite or spec to be focused.
      *
      * @return a precondition that will focus the suite or spec around the
-     *         {@link ConfiguredBlock#with(PreConditions, Block)}
+     *         {@link ConfiguredBlock#with(BlockConfiguration, Block)}
      */
-    static PreConditions focus() {
-      return new PreConditions().focus();
+    static BlockConfiguration focus() {
+      return new BlockConfiguration().focus();
     }
 
-    static PreConditions defaultPreConditions() {
-      return new PreConditions();
+    static BlockConfiguration defaultPreConditions() {
+      return new BlockConfiguration();
     }
   }
 
@@ -78,8 +78,8 @@ public class PreConditions {
    * @param conditions to combine
    * @return a combination of all preconditions as a new object
    */
-  public static PreConditions merge(PreConditions... conditions) {
-    PreConditions merged = new PreConditions();
+  public static BlockConfiguration merge(BlockConfiguration... conditions) {
+    BlockConfiguration merged = new BlockConfiguration();
     Stream.of(conditions).forEach((condition) -> {
       merged.hasTags.addAll(condition.hasTags);
       merged.isIgnored |= condition.isIgnored;
@@ -92,17 +92,17 @@ public class PreConditions {
   /**
    * Hidden default constructor. Build using {@link Factory}
    */
-  private PreConditions() {
+  private BlockConfiguration() {
 
   }
 
   /**
    * Children should inherit tags and ignore status, but not focus.
    *
-   * @return a new PreConditions that would apply for a Child
+   * @return a new BlockConfiguration that would apply for a Child
    */
-  public PreConditions forChild() {
-    PreConditions conditions = new PreConditions();
+  public BlockConfiguration forChild() {
+    BlockConfiguration conditions = new BlockConfiguration();
     conditions.hasTags.addAll(this.hasTags);
     conditions.isIgnored = this.isIgnored;
 
@@ -114,7 +114,7 @@ public class PreConditions {
    *
    * @return this for fluent use
    */
-  public PreConditions ignore() {
+  public BlockConfiguration ignore() {
     this.isIgnored = true;
 
     return this;
@@ -126,7 +126,7 @@ public class PreConditions {
    * @param why the reason for ignoring
    * @return this for fluent use
    */
-  public PreConditions ignore(final String why) {
+  public BlockConfiguration ignore(final String why) {
     return ignore();
   }
 
@@ -135,7 +135,7 @@ public class PreConditions {
    *
    * @return this for fluent use
    */
-  public PreConditions focus() {
+  public BlockConfiguration focus() {
     this.isFocused = true;
 
     return this;
@@ -148,7 +148,7 @@ public class PreConditions {
    * @param tags the tags of the block
    * @return this for fluent use
    */
-  public PreConditions tags(String... tags) {
+  public BlockConfiguration tags(String... tags) {
     Arrays.stream(tags).forEach(this.hasTags::add);
 
     return this;
