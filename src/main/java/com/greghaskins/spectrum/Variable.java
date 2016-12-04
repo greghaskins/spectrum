@@ -27,6 +27,14 @@ public class Variable<T> implements Supplier<T> {
   }
 
   /**
+   * Create a variable to have a supplied initial value.
+   * @param initialValue supplier of that value
+   */
+  public Variable(Supplier<T> initialValue) {
+    value = ThreadLocal.withInitial(initialValue);
+  }
+
+  /**
    * Get the current value of this Variable.
    *
    * @return current value

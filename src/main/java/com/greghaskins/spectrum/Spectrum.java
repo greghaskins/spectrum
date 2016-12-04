@@ -310,7 +310,7 @@ public final class Spectrum extends Runner {
   }
 
 
-  private static final Deque<Suite> suiteStack = new ArrayDeque<>();
+  private static final Variable<Deque<Suite>> suiteStack = new Variable<>(ArrayDeque::new);
 
   private final Suite rootSuite;
 
@@ -340,9 +340,9 @@ public final class Spectrum extends Runner {
     this.rootSuite.run(notifier);
   }
 
-  private static synchronized void beginDefinition(final Suite suite,
+  private static void beginDefinition(final Suite suite,
       final com.greghaskins.spectrum.Block definitionBlock) {
-    suiteStack.push(suite);
+    suiteStack.get().push(suite);
     try {
       definitionBlock.run();
     } catch (final Throwable error) {
@@ -351,11 +351,10 @@ public final class Spectrum extends Runner {
         throw error;
       });
     }
-    suiteStack.pop();
+    suiteStack.get().pop();
   }
 
-  private static synchronized Suite getCurrentSuiteBeingDeclared() {
-    return suiteStack.peek();
+  private static Suite getCurrentSuiteBeingDeclared() {
+    return suiteStack.get().peek();
   }
-
 }
