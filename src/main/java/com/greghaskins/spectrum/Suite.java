@@ -123,19 +123,33 @@ class Suite implements Parent, Child {
   }
 
   void beforeAll(final Block block) {
-    addHook(new HookContext(before(new IdempotentBlock(block)), HookContext.AppliesTo.EACH_CHILD));
+    addHook(new HookContext(before(new IdempotentBlock(block)), HookContext.AppliesTo.EACH_CHILD,
+        HookContext.Precedence.SET_UP));
   }
 
   void afterAll(final Block block) {
-    addHook(new HookContext(after(block), HookContext.AppliesTo.ONCE));
+    addHook(new HookContext(after(block), HookContext.AppliesTo.ONCE,
+        HookContext.Precedence.GUARANTEED_CLEAN_UP));
   }
 
   void beforeEach(final Block block) {
-    addHook(new HookContext(before(block), HookContext.AppliesTo.ATOMIC_ONLY));
+    addHook(new HookContext(before(block), HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.LOCAL));
   }
 
   void afterEach(final Block block) {
-    addHook(new HookContext(after(block), HookContext.AppliesTo.ATOMIC_ONLY));
+    addHook(new HookContext(after(block), HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.LOCAL));
+  }
+
+  public void aroundEach(Hook consumer) {
+    addHook(new HookContext(consumer, HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.LOCAL));
+  }
+
+  public void aroundAll(Hook consumer) {
+    addHook(new HookContext(consumer, HookContext.AppliesTo.ONCE,
+        HookContext.Precedence.OUTER));
   }
 
   /**
@@ -145,7 +159,7 @@ class Suite implements Parent, Child {
    * @param hook to add
    */
   void addHook(final HookContext hook) {
-    this.hooks.addFirst(hook);
+    this.hooks.add(hook);
   }
 
   Hooks getHooksFor(final Child child) {
@@ -222,7 +236,8 @@ class Suite implements Parent, Child {
   }
 
   private void runSuite(final RunNotifier notifier) {
-    hooks.once().runAround(description, notifier, () -> runChildren(notifier));
+    hooks.once().sorted()
+        .runAround(description, notifier, () -> runChildren(notifier));
   }
 
   private void runChildren(final RunNotifier notifier) {
@@ -231,7 +246,7 @@ class Suite implements Parent, Child {
 
   protected void runChild(final Child child, final RunNotifier notifier) {
     if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
-      hooks.forThisLevel().runAround(child.getDescription(), notifier,
+      hooks.forThisLevel().sorted().runAround(child.getDescription(), notifier,
           () -> runChildWithHooksInNotifierBlock(child, notifier));
     } else {
       notifier.fireTestIgnored(child.getDescription());
@@ -240,7 +255,7 @@ class Suite implements Parent, Child {
 
   private void runChildWithHooksInNotifierBlock(final Child child, final RunNotifier notifier) {
     NotifyingBlock.run(child.getDescription(), notifier,
-        () -> getHooksFor(child).runAround(child.getDescription(), notifier,
+        () -> getHooksFor(child).sorted().runAround(child.getDescription(), notifier,
             () -> child.run(notifier)));
   }
 
@@ -279,11 +294,4 @@ class Suite implements Parent, Child {
     return deDuplicated;
   }
 
-  public void aroundEach(Hook consumer) {
-    addHook(new HookContext(consumer, HookContext.AppliesTo.ATOMIC_ONLY));
-  }
-
-  public void aroundAll(Hook consumer) {
-    addHook(new HookContext(consumer, HookContext.AppliesTo.ONCE));
-  }
 }

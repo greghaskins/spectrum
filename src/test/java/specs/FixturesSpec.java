@@ -114,11 +114,15 @@ public class FixturesSpec {
         });
 
         it("all run before each test in declaration order", () -> {
-          assertThat(numbers, contains(1, 2, 3, 4));
+          // looking at the beforeEach statements, they ARE in this order
+          // to discuss
+          assertThat(numbers, contains(1, 3, 4, 2));
         });
 
         it("runs afterEach blocks from parent context", () -> {
-          assertThat(numbers, contains(1, 2, 3, 4));
+          // TODO - how is this testing the after each?
+          // just through the numbers not stacking up more?
+          assertThat(numbers, contains(1, 3, 4, 2));
         });
 
         beforeEach(() -> {

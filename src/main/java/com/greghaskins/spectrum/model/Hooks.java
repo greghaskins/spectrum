@@ -8,6 +8,7 @@ import com.greghaskins.spectrum.internal.NotifyingBlock;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  * Collection of hooks. It is a linked list, but provides some helpers for
  * passing hooks down a generation.
  */
-public class Hooks extends LinkedList<HookContext> {
+public class Hooks extends ArrayList<HookContext> {
   public Hooks once() {
     return filtered(HookContext::isOnce);
   }
@@ -41,11 +42,21 @@ public class Hooks extends LinkedList<HookContext> {
    * @return this for fluent use
    */
   public Hooks plus(Hooks other) {
-    List<HookContext> list = other.stream().collect(Collectors.toList());
-    Collections.reverse(list);
-    list.forEach(this::addFirst);
+    addAll(other);
 
     return this;
+  }
+
+  /**
+   * Return a hooks object where the hooks from this have been sorted into execution order.
+   * @return new hooks sorted into the order for execution
+   */
+  public Hooks sorted() {
+    Hooks result = new Hooks();
+    result.addAll(this);
+    result.sort(HookContext::compareTo);
+
+    return result;
   }
 
   /**
