@@ -211,16 +211,15 @@ class Suite implements Parent, Child {
   protected void runChild(final Child child, final RunNotifier notifier) {
     if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
       hooks.forThisLevel().sorted().runAround(child.getDescription(), notifier,
-          () -> runChildWithHooksInNotifierBlock(child, notifier));
+          () -> runChildWithHooks(child, notifier));
     } else {
       notifier.fireTestIgnored(child.getDescription());
     }
   }
 
-  private void runChildWithHooksInNotifierBlock(final Child child, final RunNotifier notifier) {
-    NotifyingBlock.run(child.getDescription(), notifier,
-        () -> getHooksFor(child).sorted().runAround(child.getDescription(), notifier,
-            () -> child.run(notifier)));
+  private void runChildWithHooks(final Child child, final RunNotifier notifier) {
+    getHooksFor(child).sorted().runAround(child.getDescription(), notifier,
+            () -> child.run(notifier));
   }
 
   @Override
