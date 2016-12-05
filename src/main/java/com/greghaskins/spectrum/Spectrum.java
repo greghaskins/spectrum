@@ -205,8 +205,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(before(block), HookContext.AppliesTo.ATOMIC_ONLY,
-        HookContext.Precedence.LOCAL));
+    addHook(new HookContext(before(block), getDepth(),
+        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL));
   }
 
   /**
@@ -220,8 +220,8 @@ public final class Spectrum extends Runner {
    * @param block {@link Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(after(block), HookContext.AppliesTo.ATOMIC_ONLY,
-        HookContext.Precedence.LOCAL));
+    addHook(new HookContext(after(block), getDepth(),
+        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL));
   }
 
   /**
@@ -235,7 +235,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before all specs in this suite
    */
   public static void beforeAll(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(before(new IdempotentBlock(block)),
+    addHook(new HookContext(before(new IdempotentBlock(block)), getDepth(),
         HookContext.AppliesTo.EACH_CHILD, HookContext.Precedence.SET_UP));
   }
 
@@ -251,7 +251,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once after all specs in this suite
    */
   public static void afterAll(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(after(block), HookContext.AppliesTo.ONCE,
+    addHook(new HookContext(after(block), getDepth(), HookContext.AppliesTo.ONCE,
         HookContext.Precedence.GUARANTEED_CLEAN_UP));
   }
 
@@ -264,7 +264,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(consumer::acceptOrThrow,
+    addHook(new HookContext(consumer::acceptOrThrow, getDepth(),
         HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL));
   }
 
@@ -276,7 +276,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(consumer::acceptOrThrow,
+    addHook(new HookContext(consumer::acceptOrThrow, getDepth(),
         HookContext.AppliesTo.ONCE, HookContext.Precedence.OUTER));
   }
 
@@ -296,8 +296,8 @@ public final class Spectrum extends Runner {
    */
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
     LetHook<T> letHook = new LetHook<>(supplier);
-    HookContext hookContext = new HookContext(letHook, HookContext.AppliesTo.EACH_CHILD,
-        HookContext.Precedence.LOCAL);
+    HookContext hookContext = new HookContext(letHook, getDepth(),
+        HookContext.AppliesTo.EACH_CHILD, HookContext.Precedence.LOCAL);
     addHook(hookContext);
 
     return letHook;
@@ -361,6 +361,10 @@ public final class Spectrum extends Runner {
 
   private static Deque<Suite> getSuiteStack() {
     return suiteStack.get();
+  }
+
+  private static int getDepth() {
+    return getSuiteStack().size();
   }
 
   private static Suite getCurrentSuiteBeingDeclared() {

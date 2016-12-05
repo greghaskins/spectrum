@@ -116,13 +116,13 @@ public class FixturesSpec {
         it("all run before each test in declaration order", () -> {
           // looking at the beforeEach statements, they ARE in this order
           // to discuss
-          assertThat(numbers, contains(1, 3, 4, 2));
+          assertThat(numbers, contains(1, 2, 3, 4));
         });
 
         it("runs afterEach blocks from parent context", () -> {
-          // TODO - how is this testing the after each?
-          // just through the numbers not stacking up more?
-          assertThat(numbers, contains(1, 3, 4, 2));
+          // if afterEach block didn't call clear, then
+          // the numbers would be of size 8, not a fresh four
+          assertThat(numbers.size(), is(4));
         });
 
         beforeEach(() -> {
@@ -507,7 +507,7 @@ public class FixturesSpec {
           (result) -> () -> result.get()
               .getFailures()
               .stream()
-              .map((failure) -> failure.getMessage())
+              .map(Failure::getMessage)
               .collect(Collectors.toList());
 
       describe("in beforeEach and afterEach", () -> {
