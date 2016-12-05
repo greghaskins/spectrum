@@ -219,7 +219,7 @@ class Suite implements Parent, Child {
 
   private void runChildWithHooks(final Child child, final RunNotifier notifier) {
     getHooksFor(child).sorted().runAround(child.getDescription(), notifier,
-            () -> child.run(notifier));
+        () -> child.run(notifier));
   }
 
   @Override
