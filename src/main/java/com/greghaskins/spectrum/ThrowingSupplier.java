@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 /**
  * Supplier of results similar to {@link Supplier}, but may optionally throw checked exceptions.
- * Using {@link Spectrum.ThrowingSupplier} is more convenient for lambda functions since it
+ * Using {@link ThrowingSupplier} is more convenient for lambda functions since it
  * requires less exception handling.
  *
  * @see Supplier

@@ -1,16 +1,13 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.internal.AfterHook.after;
-import static com.greghaskins.spectrum.internal.BeforeHook.before;
-
 import com.greghaskins.spectrum.internal.Child;
 import com.greghaskins.spectrum.internal.ConfiguredBlock;
+import com.greghaskins.spectrum.internal.NameSanitiser;
 import com.greghaskins.spectrum.internal.NotifyingBlock;
 import com.greghaskins.spectrum.internal.Parent;
 import com.greghaskins.spectrum.model.BlockConfiguration;
 import com.greghaskins.spectrum.model.HookContext;
 import com.greghaskins.spectrum.model.Hooks;
-import com.greghaskins.spectrum.model.IdempotentBlock;
 import com.greghaskins.spectrum.model.TaggingFilterCriteria;
 
 import org.junit.runner.Description;
@@ -22,9 +19,6 @@ import java.util.List;
 import java.util.Set;
 
 class Suite implements Parent, Child {
-  // the hooks - they will be turned into a chain of responsibility
-  // so the first one will be executed last as the chain is built up
-  // from first to last.
   private Hooks hooks = new Hooks();
 
   protected final List<Child> children = new ArrayList<>();
@@ -38,7 +32,7 @@ class Suite implements Parent, Child {
 
   private final TaggingFilterCriteria tagging;
   private BlockConfiguration preconditions = BlockConfiguration.Factory.defaultPreConditions();
-  private Set<String> namesUsed = new HashSet<>();
+  private NameSanitiser nameSanitiser = new NameSanitiser();
 
   /**
    * The strategy for running the children within the suite.
@@ -122,47 +116,17 @@ class Suite implements Parent, Child {
     this.children.add(child);
   }
 
-  void beforeAll(final Block block) {
-    addHook(new HookContext(before(new IdempotentBlock(block)), HookContext.AppliesTo.EACH_CHILD,
-        HookContext.Precedence.SET_UP));
-  }
-
-  void afterAll(final Block block) {
-    addHook(new HookContext(after(block), HookContext.AppliesTo.ONCE,
-        HookContext.Precedence.GUARANTEED_CLEAN_UP));
-  }
-
-  void beforeEach(final Block block) {
-    addHook(new HookContext(before(block), HookContext.AppliesTo.ATOMIC_ONLY,
-        HookContext.Precedence.LOCAL));
-  }
-
-  void afterEach(final Block block) {
-    addHook(new HookContext(after(block), HookContext.AppliesTo.ATOMIC_ONLY,
-        HookContext.Precedence.LOCAL));
-  }
-
-  public void aroundEach(Hook consumer) {
-    addHook(new HookContext(consumer, HookContext.AppliesTo.ATOMIC_ONLY,
-        HookContext.Precedence.LOCAL));
-  }
-
-  public void aroundAll(Hook consumer) {
-    addHook(new HookContext(consumer, HookContext.AppliesTo.ONCE,
-        HookContext.Precedence.OUTER));
-  }
-
   /**
-   * Adds a hook to be the first one executed before the block.
-   * This is the default. Hooks should be executed in the order they
-   * are declared in the test.
-   * @param hook to add
-   */
+  * Adds a hook to be the first one executed before the block.
+  * This is the default. Hooks should be executed in the order they
+  * are declared in the test.
+  * @param hook to add
+  */
   void addHook(final HookContext hook) {
     this.hooks.add(hook);
   }
 
-  Hooks getHooksFor(final Child child) {
+  private Hooks getHooksFor(final Child child) {
     Hooks allHooks = parent.getInheritableHooks().plus(hooks);
 
     return child.isAtomic() ? allHooks.forAtomic() : allHooks.forNonAtomic();
@@ -281,17 +245,6 @@ class Suite implements Parent, Child {
   }
 
   private String sanitise(final String name) {
-    String sanitised = name.replaceAll("\\(", "[")
-        .replaceAll("\\)", "]");
-
-    int suffix = 1;
-    String deDuplicated = sanitised;
-    while (this.namesUsed.contains(deDuplicated)) {
-      deDuplicated = sanitised + "_" + suffix++;
-    }
-    this.namesUsed.add(deDuplicated);
-
-    return deDuplicated;
+    return nameSanitiser.sanitise(name);
   }
-
 }

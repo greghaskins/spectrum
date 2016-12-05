@@ -20,8 +20,8 @@ import static org.hamcrest.Matchers.nullValue;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.Spectrum;
-import com.greghaskins.spectrum.Spectrum.ThrowingSupplier;
 import com.greghaskins.spectrum.SpectrumHelper;
+import com.greghaskins.spectrum.ThrowingSupplier;
 
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
@@ -488,10 +488,11 @@ public class FixturesSpec {
               .map((failure) -> failure.getMessage())
               .collect(Collectors.toList()));
 
-          it("report each error", ignore(() -> {
+          it("report each error", ignore("Waiting for completed algorithm", () -> {
             assertThat(result.get().getFailureCount(), is(2));
 
             assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom 1"));
+            assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom 2"));
           }));
 
         });
