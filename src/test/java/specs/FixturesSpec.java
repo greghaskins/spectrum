@@ -7,7 +7,6 @@ import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.internal.ConfiguredBlock.ignore;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -488,12 +487,12 @@ public class FixturesSpec {
               .map((failure) -> failure.getMessage())
               .collect(Collectors.toList()));
 
-          it("report each error", ignore("Waiting for completed algorithm", () -> {
+          it("report each error", () -> {
             assertThat(result.get().getFailureCount(), is(2));
 
             assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom 1"));
-            assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom 2"));
-          }));
+            assertThat(failureMessages.get(), hasItem("boom 2"));
+          });
 
         });
 
@@ -512,10 +511,10 @@ public class FixturesSpec {
 
       describe("in beforeEach and afterEach", () -> {
 
-        final Supplier<List<String>> exceptionsThrown = let(() -> new ArrayList<>());
+        final Supplier<List<String>> exceptionsThrown = let(ArrayList::new);
 
         final Function<Throwable, Throwable> recordException = (throwable) -> {
-          exceptionsThrown.get().add("java.lang.Exception: " + throwable.getMessage());
+          exceptionsThrown.get().add(throwable.getMessage());
 
           return throwable;
         };
@@ -524,21 +523,21 @@ public class FixturesSpec {
           describe("an explosive suite", () -> {
 
             beforeEach(() -> {
-              throw recordException.apply(new Exception("boom beforeEach 1"));
+              throw recordException.apply(new RuntimeException("boom beforeEach 1"));
             });
             beforeEach(() -> {
-              throw recordException.apply(new Exception("boom beforeEach 2"));
+              throw recordException.apply(new RuntimeException("boom beforeEach 2"));
             });
 
             afterEach(() -> {
-              throw recordException.apply(new Exception("boom afterEach 1"));
+              throw recordException.apply(new RuntimeException("boom afterEach 1"));
             });
             afterEach(() -> {
-              throw recordException.apply(new Exception("boom afterEach 2"));
+              throw recordException.apply(new RuntimeException("boom afterEach 2"));
             });
 
             it("explodes", () -> {
-              throw recordException.apply(new Exception("boom in spec"));
+              throw recordException.apply(new RuntimeException("boom in spec"));
             });
           });
         }));
@@ -546,21 +545,21 @@ public class FixturesSpec {
         final Supplier<List<String>> failureMessages = let(getFailureMessages.apply(result));
 
         it("should stop running beforeEach blocks after the first error", () -> {
-          assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom beforeEach 1"));
-          assertThat(failureMessages.get(), not(hasItem("java.lang.Exception: boom beforeEach 2")));
+          assertThat(failureMessages.get(), hasItem("boom beforeEach 1"));
+          assertThat(failureMessages.get(), not(hasItem("boom beforeEach 2")));
         });
 
         it("should not run any specs", () -> {
           assertThat(exceptionsThrown.get(), not(hasItem("spec")));
         });
 
-        it("should report all errors individually", ignore("To discuss", () -> {
+        it("should report all errors individually", () -> {
           assertThat(failureMessages.get(),
               contains(
-                  "java.lang.Exception: boom beforeEach 1",
-                  "java.lang.Exception: boom afterEach 2",
-                  "java.lang.Exception: boom afterEach 1"));
-        }));
+                  "boom beforeEach 1",
+                  "boom afterEach 2",
+                  "boom afterEach 1"));
+        });
 
         it("should report all exceptions as failures", () -> {
           assertThat(failureMessages.get(), contains(exceptionsThrown.get().toArray()));
@@ -573,7 +572,7 @@ public class FixturesSpec {
         final Supplier<List<String>> exceptionsThrown = let(() -> new ArrayList<>());
 
         final Function<Throwable, Throwable> recordException = (throwable) -> {
-          exceptionsThrown.get().add("java.lang.Exception: " + throwable.getMessage());
+          exceptionsThrown.get().add(throwable.getMessage());
 
           return throwable;
         };
@@ -582,32 +581,32 @@ public class FixturesSpec {
           describe("an explosive suite", () -> {
 
             beforeAll(() -> {
-              throw recordException.apply(new Exception("boom beforeAll 1"));
+              throw recordException.apply(new RuntimeException("boom beforeAll 1"));
             });
             beforeAll(() -> {
-              throw recordException.apply(new Exception("boom beforeAll 2"));
+              throw recordException.apply(new RuntimeException("boom beforeAll 2"));
             });
 
 
             beforeEach(() -> {
-              throw recordException.apply(new Exception("boom beforeEach"));
+              throw recordException.apply(new RuntimeException("boom beforeEach"));
             });
 
             afterEach(() -> {
-              throw recordException.apply(new Exception("boom afterEach"));
+              throw recordException.apply(new RuntimeException("boom afterEach"));
             });
 
 
             afterAll(() -> {
-              throw recordException.apply(new Exception("boom afterAll 1"));
+              throw recordException.apply(new RuntimeException("boom afterAll 1"));
             });
             afterAll(() -> {
-              throw recordException.apply(new Exception("boom afterAll 2"));
+              throw recordException.apply(new RuntimeException("boom afterAll 2"));
             });
 
 
             it("explodes", () -> {
-              throw recordException.apply(new Exception("boom in spec"));
+              throw recordException.apply(new RuntimeException("boom in spec"));
             });
           });
         }));
@@ -615,8 +614,8 @@ public class FixturesSpec {
         final Supplier<List<String>> failureMessages = let(getFailureMessages.apply(result));
 
         it("stop running beforeAll blocks after the first error", () -> {
-          assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom beforeAll 1"));
-          assertThat(failureMessages.get(), not(hasItem("java.lang.Exception: boom beforeAll 2")));
+          assertThat(failureMessages.get(), hasItem("boom beforeAll 1"));
+          assertThat(failureMessages.get(), not(hasItem("boom beforeAll 2")));
         });
 
         it("does not run beforeEach", () -> {
@@ -631,17 +630,17 @@ public class FixturesSpec {
           assertThat(exceptionsThrown.get(), not(hasItem("boom in spec")));
         });
 
-        it("should report all errors individually", ignore("To discuss", () -> {
+        it("should report all errors individually", () -> {
           assertThat(failureMessages.get(),
               contains(
-                  "java.lang.Exception: boom beforeAll 1",
-                  "java.lang.Exception: boom afterAll 2",
-                  "java.lang.Exception: boom afterAll 1"));
-        }));
+                  "boom beforeAll 1",
+                  "boom afterAll 2",
+                  "boom afterAll 1"));
+        });
 
-        it("should report all exceptions as failures", ignore("To discuss", () -> {
+        it("should report all exceptions as failures", () -> {
           assertThat(failureMessages.get(), contains(exceptionsThrown.get().toArray()));
-        }));
+        });
 
       });
     });

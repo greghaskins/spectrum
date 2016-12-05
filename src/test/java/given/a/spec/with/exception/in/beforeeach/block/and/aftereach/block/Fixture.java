@@ -34,7 +34,7 @@ class Fixture {
     return Spec.class;
   }
 
-  public static class SomeException extends Exception {
+  public static class SomeException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public SomeException(final String message) {

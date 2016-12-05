@@ -1,5 +1,7 @@
 package com.greghaskins.spectrum.model;
 
+import static com.greghaskins.spectrum.internal.NotifyingBlock.wrapWithReporting;
+
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.ThrowingConsumer;
 import com.greghaskins.spectrum.Variable;
@@ -68,10 +70,12 @@ public class Hooks extends ArrayList<HookContext> {
    */
   public void runAround(final Description description, final RunNotifier notifier,
       final Block block) {
-    NotifyingBlock.run(description, notifier, () -> runAroundInternal(block));
+    NotifyingBlock.run(description, notifier,
+        () -> runAroundInternal(description, notifier, block));
   }
 
-  private void runAroundInternal(Block block) {
+  private void runAroundInternal(final Description description, final RunNotifier notifier,
+      final Block block) {
     Variable<Boolean> hooksRememberedToRunTheInner = new Variable<>(false);
     ThrowingConsumer<Block> consumer = innerBlock -> {
       hooksRememberedToRunTheInner.set(true);
@@ -79,7 +83,7 @@ public class Hooks extends ArrayList<HookContext> {
     };
 
     for (HookContext context : this) {
-      consumer = wrap(consumer, context);
+      consumer = wrap(description, notifier, consumer, context);
     }
     consumer.accept(block);
 
@@ -88,8 +92,10 @@ public class Hooks extends ArrayList<HookContext> {
     }
   }
 
-  private ThrowingConsumer<Block> wrap(ThrowingConsumer<Block> inner, HookContext outer) {
-    return block -> outer.getHook().acceptOrThrow(() -> inner.acceptOrThrow(block));
+  private ThrowingConsumer<Block> wrap(final Description description, final RunNotifier notifier,
+      final ThrowingConsumer<Block> inner, final HookContext outer) {
+    return block -> outer.getHook().acceptOrThrow(
+        wrapWithReporting(description, notifier, () -> inner.acceptOrThrow(block)));
   }
 
 

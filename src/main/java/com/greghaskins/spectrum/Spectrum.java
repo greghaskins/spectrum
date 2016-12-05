@@ -221,7 +221,7 @@ public final class Spectrum extends Runner {
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
     addHook(new HookContext(after(block), getDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL));
+        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
   /**
@@ -252,7 +252,7 @@ public final class Spectrum extends Runner {
    */
   public static void afterAll(final com.greghaskins.spectrum.Block block) {
     addHook(new HookContext(after(block), getDepth(), HookContext.AppliesTo.ONCE,
-        HookContext.Precedence.GUARANTEED_CLEAN_UP));
+        HookContext.Precedence.GUARANTEED_CLEAN_UP_GLOBAL));
   }
 
 
@@ -265,7 +265,7 @@ public final class Spectrum extends Runner {
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
     addHook(new HookContext(consumer::acceptOrThrow, getDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL));
+        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
   /**

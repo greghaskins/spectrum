@@ -34,12 +34,43 @@ public interface NotifyingBlock {
   static NotifyingBlock wrap(final Block block) {
     return (description, notifier) -> {
       try {
-        block.run();
-      } catch (final AssumptionViolatedException assumptionViolation) {
-        notifier.fireTestAssumptionFailed(new Failure(description, assumptionViolation));
+        executeAndReport(description, notifier, block);
       } catch (final Throwable exception) {
-        notifier.fireTestFailure(new Failure(description, exception));
+        // the exception has already been reported and should not be rethrown
       }
     };
+  }
+
+  /**
+   * Add the reporting capability to a block. The block runs as normal, but
+   * any exceptions are ALSO reported on the way to outer catch blocks.
+   * @param description which test called the block
+   * @param notifier notifier to inform of failure
+   * @param block the block to execute
+   * @return a block which has notification built in
+   */
+  static Block wrapWithReporting(final Description description, final RunNotifier notifier,
+      final Block block) {
+    return () -> executeAndReport(description, notifier, block);
+  }
+
+  /**
+   * Add notification of exceptions to a throwing block.
+   * @param description which test called the block
+   * @param notifier notifier to inform of failure
+   * @param block the block to execute
+   * @throws Throwable the error which was reported to the {@link RunNotifier}
+   */
+  static void executeAndReport(final Description description, final RunNotifier notifier,
+      final Block block) throws Throwable {
+    try {
+      block.run();
+    } catch (final AssumptionViolatedException assumptionViolation) {
+      notifier.fireTestAssumptionFailed(new Failure(description, assumptionViolation));
+      throw assumptionViolation;
+    } catch (final Throwable throwable) {
+      notifier.fireTestFailure(new Failure(description, throwable));
+      throw throwable;
+    }
   }
 }
