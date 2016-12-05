@@ -113,8 +113,6 @@ public class FixturesSpec {
         });
 
         it("all run before each test in declaration order", () -> {
-          // looking at the beforeEach statements, they ARE in this order
-          // to discuss
           assertThat(numbers, contains(1, 2, 3, 4));
         });
 
