@@ -7,7 +7,6 @@ import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /**
  * Pre conditions and configurations that apply to a {@link ConfiguredBlock}.
@@ -80,7 +79,7 @@ public class BlockConfiguration {
    */
   public static BlockConfiguration merge(BlockConfiguration... conditions) {
     BlockConfiguration merged = new BlockConfiguration();
-    Stream.of(conditions).forEach((condition) -> {
+    Arrays.stream(conditions).forEach((condition) -> {
       merged.hasTags.addAll(condition.hasTags);
       merged.isIgnored |= condition.isIgnored;
       merged.isFocused |= condition.isFocused;
