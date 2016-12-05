@@ -53,6 +53,17 @@ public final class Spectrum extends Runner {
     void run() throws Throwable;
   }
 
+
+  /**
+   * Supplier that is allowed to throw.
+   * @param <T> type of object to supply
+   * @deprecated since 1.0.1 - use {@link com.greghaskins.spectrum.ThrowingSupplier} instead
+   */
+  @Deprecated
+  @FunctionalInterface
+  public interface ThrowingSupplier<T> extends com.greghaskins.spectrum.ThrowingSupplier<T> {
+  }
+
   /**
    * Declare a test suite that is made of interdependent children. The whole suite should pass
    * atomically and if it fails, any remaining children can stop running.
@@ -279,11 +290,11 @@ public final class Spectrum extends Runner {
    *
    * @param <T> The type of value
    *
-   * @param supplier {@link ThrowingSupplier} function that either generates the value, or throws a
-   *        `Throwable`
+   * @param supplier {@link com.greghaskins.spectrum.ThrowingSupplier} function that either
+   *        generates the value, or throws a `Throwable`
    * @return supplier which is refreshed for each spec's context
    */
-  public static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
+  public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
     LetHook<T> letHook = new LetHook<>(supplier);
     HookContext hookContext = new HookContext(letHook, HookContext.AppliesTo.EACH_CHILD,
         HookContext.Precedence.LOCAL);
