@@ -425,18 +425,6 @@ feature("Gherkin-like test DSL", () -> {
 
 When using the Gherkin syntax, each `given`/`when`/`then` step must pass before the next is run. Note that they must be declared inside a `scenario` block to work correctly. Multiple `scenario` blocks can be defined as part of a `feature`.
 
-### Ginkgo Syntax
-
-Ginkgo shares a lot in common with RSpec and Jasmine except that Ginkgo uses uppercase keywords, so `describe` is `Describe` in Ginkgo etc. Spectrum does not provide the uppercase version of the keywords but provides for the `context` keyword.
-
-Examples can be found in [GinkgoExampleSpecs.java](src/test/java/specs/GinkgoExampleSpecs.java)
-
-The keywords are:
-
-* `context` - a context block
-* `fcontext` - a focused context block
-* `xcontext` - an ignored context block
-
 ## Supported Features
 
 The Spectrum API is designed to be familiar to Jasmine and RSpec users, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Specturm should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)

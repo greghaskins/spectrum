@@ -124,6 +124,34 @@ public final class Spectrum extends Runner {
   }
 
   /**
+   * Define a test context.
+   * @param context the description of the context
+   * @param block the block to execute
+   */
+  public static void context(final String context, final com.greghaskins.spectrum.Block block) {
+    describe(context, block);
+  }
+
+  /**
+   * Define a focused test context. See {@link #fdescribe(String, com.greghaskins.spectrum.Block)}.
+   * @param context the description of the context
+   * @param block the block to execute
+   */
+  public static void fcontext(final String context, final com.greghaskins.spectrum.Block block) {
+    fdescribe(context, block);
+  }
+
+  /**
+   * Define an ignored test context. See
+   * {@link #xdescribe(String, com.greghaskins.spectrum.Block)}.
+   * @param context the description of the context
+   * @param block the block to execute
+   */
+  public static void xcontext(final String context, final com.greghaskins.spectrum.Block block) {
+    xdescribe(context, block);
+  }
+
+  /**
    * Declare a spec, or test, for an expected behavior of the system in this suite context.
    *
    * @param behavior Description of the expected behavior

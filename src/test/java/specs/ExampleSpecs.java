@@ -4,8 +4,11 @@ import static com.greghaskins.spectrum.Spectrum.afterAll;
 import static com.greghaskins.spectrum.Spectrum.afterEach;
 import static com.greghaskins.spectrum.Spectrum.beforeAll;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
+import static com.greghaskins.spectrum.Spectrum.context;
 import static com.greghaskins.spectrum.Spectrum.describe;
+import static com.greghaskins.spectrum.Spectrum.fcontext;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.xcontext;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
@@ -15,7 +18,11 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 
+import org.hamcrest.core.Is;
+import org.junit.Assert;
+import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
@@ -133,5 +140,54 @@ public class ExampleSpecs {
 
     });
 
+    describe("a spec can have a context", () -> {
+      context("surrounding the specs", () -> {
+        it("helping to document the specification", () -> {
+        });
+      });
+    });
+
+    describe("selective running", () -> {
+      context("with contexts", () -> {
+        it("focusing is possible", ExampleSpecs::focusingContextExample);
+        it("ignoring is possible", ExampleSpecs::ignoringContextExample);
+      });
+    });
   }
+
+  private static void focusingContextExample() throws Exception {
+    class Example {
+      {
+        describe("a spec with", () -> {
+          fcontext("a focused context", () -> {
+            it("runs the spec", () -> {
+            });
+          });
+
+          it("doesn't run this one", () -> {
+          });
+        });
+      }
+    }
+
+    final Result result = SpectrumHelper.run(Example.class);
+    Assert.assertThat(result.getRunCount(), Is.is(1));
+  }
+
+  private static void ignoringContextExample() throws Exception {
+    class Example {
+      {
+        describe("a spec with", () -> {
+          xcontext("an ignored context", () -> {
+            it("does not run the spec", () -> {
+            });
+          });
+        });
+      }
+    }
+
+    final Result result = SpectrumHelper.run(Example.class);
+    Assert.assertThat(result.getIgnoreCount(), Is.is(1));
+  }
+
 }
