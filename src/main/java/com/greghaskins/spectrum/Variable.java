@@ -10,7 +10,7 @@ import java.util.function.Supplier;
  */
 public class Variable<T> implements Supplier<T> {
 
-  private T value;
+  private ThreadLocal<T> value = new ThreadLocal<>();
 
   /**
    * Create a Variable with a {@code null} initial value.
@@ -23,7 +23,15 @@ public class Variable<T> implements Supplier<T> {
    * @param value starting value
    */
   public Variable(final T value) {
-    this.value = value;
+    set(value);
+  }
+
+  /**
+   * Create a variable to have a supplied initial value.
+   * @param initialValue supplier of that value
+   */
+  public Variable(Supplier<T> initialValue) {
+    value = ThreadLocal.withInitial(initialValue);
   }
 
   /**
@@ -33,7 +41,7 @@ public class Variable<T> implements Supplier<T> {
    */
   @Override
   public T get() {
-    return this.value;
+    return this.value.get();
   }
 
   /**
@@ -42,6 +50,6 @@ public class Variable<T> implements Supplier<T> {
    * @param value new value
    */
   public void set(final T value) {
-    this.value = value;
+    this.value.set(value);
   }
 }

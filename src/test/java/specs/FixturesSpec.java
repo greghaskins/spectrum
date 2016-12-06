@@ -19,8 +19,8 @@ import static org.hamcrest.Matchers.nullValue;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.Spectrum;
-import com.greghaskins.spectrum.Spectrum.ThrowingSupplier;
 import com.greghaskins.spectrum.SpectrumHelper;
+import com.greghaskins.spectrum.ThrowingSupplier;
 
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
@@ -117,7 +117,9 @@ public class FixturesSpec {
         });
 
         it("runs afterEach blocks from parent context", () -> {
-          assertThat(numbers, contains(1, 2, 3, 4));
+          // if afterEach block didn't call clear, then
+          // the numbers would be of size 8, not a fresh four
+          assertThat(numbers.size(), is(4));
         });
 
         beforeEach(() -> {
@@ -486,7 +488,7 @@ public class FixturesSpec {
           it("report each error", () -> {
             assertThat(result.get().getFailureCount(), is(2));
 
-            assertThat(failureMessages.get(), hasItem("boom 1"));
+            assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom 1"));
             assertThat(failureMessages.get(), hasItem("boom 2"));
           });
 
@@ -502,12 +504,12 @@ public class FixturesSpec {
           (result) -> () -> result.get()
               .getFailures()
               .stream()
-              .map((failure) -> failure.getMessage())
+              .map(Failure::getMessage)
               .collect(Collectors.toList());
 
       describe("in beforeEach and afterEach", () -> {
 
-        final Supplier<List<String>> exceptionsThrown = let(() -> new ArrayList<>());
+        final Supplier<List<String>> exceptionsThrown = let(ArrayList::new);
 
         final Function<Throwable, Throwable> recordException = (throwable) -> {
           exceptionsThrown.get().add(throwable.getMessage());
@@ -519,21 +521,21 @@ public class FixturesSpec {
           describe("an explosive suite", () -> {
 
             beforeEach(() -> {
-              throw recordException.apply(new Exception("boom beforeEach 1"));
+              throw recordException.apply(new RuntimeException("boom beforeEach 1"));
             });
             beforeEach(() -> {
-              throw recordException.apply(new Exception("boom beforeEach 2"));
+              throw recordException.apply(new RuntimeException("boom beforeEach 2"));
             });
 
             afterEach(() -> {
-              throw recordException.apply(new Exception("boom afterEach 1"));
+              throw recordException.apply(new RuntimeException("boom afterEach 1"));
             });
             afterEach(() -> {
-              throw recordException.apply(new Exception("boom afterEach 2"));
+              throw recordException.apply(new RuntimeException("boom afterEach 2"));
             });
 
             it("explodes", () -> {
-              throw recordException.apply(new Exception("boom in spec"));
+              throw recordException.apply(new RuntimeException("boom in spec"));
             });
           });
         }));
@@ -577,32 +579,32 @@ public class FixturesSpec {
           describe("an explosive suite", () -> {
 
             beforeAll(() -> {
-              throw recordException.apply(new Exception("boom beforeAll 1"));
+              throw recordException.apply(new RuntimeException("boom beforeAll 1"));
             });
             beforeAll(() -> {
-              throw recordException.apply(new Exception("boom beforeAll 2"));
+              throw recordException.apply(new RuntimeException("boom beforeAll 2"));
             });
 
 
             beforeEach(() -> {
-              throw recordException.apply(new Exception("boom beforeEach"));
+              throw recordException.apply(new RuntimeException("boom beforeEach"));
             });
 
             afterEach(() -> {
-              throw recordException.apply(new Exception("boom afterEach"));
+              throw recordException.apply(new RuntimeException("boom afterEach"));
             });
 
 
             afterAll(() -> {
-              throw recordException.apply(new Exception("boom afterAll 1"));
+              throw recordException.apply(new RuntimeException("boom afterAll 1"));
             });
             afterAll(() -> {
-              throw recordException.apply(new Exception("boom afterAll 2"));
+              throw recordException.apply(new RuntimeException("boom afterAll 2"));
             });
 
 
             it("explodes", () -> {
-              throw recordException.apply(new Exception("boom in spec"));
+              throw recordException.apply(new RuntimeException("boom in spec"));
             });
           });
         }));

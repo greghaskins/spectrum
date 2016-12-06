@@ -1,5 +1,9 @@
 package com.greghaskins.spectrum;
 
+/**
+ * Allows the injection of suite configuration during test definition. A wrapper for the
+ * suite which exposes configurables.
+ */
 public class Configuration {
 
   private final Suite suite;

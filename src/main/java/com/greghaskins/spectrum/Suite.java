@@ -1,7 +1,16 @@
 package com.greghaskins.spectrum;
 
+import com.greghaskins.spectrum.internal.Child;
+import com.greghaskins.spectrum.internal.ConfiguredBlock;
+import com.greghaskins.spectrum.internal.NameSanitiser;
+import com.greghaskins.spectrum.internal.NotifyingBlock;
+import com.greghaskins.spectrum.internal.Parent;
+import com.greghaskins.spectrum.model.BlockConfiguration;
+import com.greghaskins.spectrum.model.HookContext;
+import com.greghaskins.spectrum.model.Hooks;
+import com.greghaskins.spectrum.model.TaggingFilterCriteria;
+
 import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 
 import java.util.ArrayList;
@@ -9,18 +18,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-final class Suite implements Parent, Child {
+class Suite implements Parent, Child {
+  private Hooks hooks = new Hooks();
 
-  private final SetupBlock beforeAll = new SetupBlock();
-  private final TeardownBlock afterAll = new TeardownBlock();
-
-  private final SetupBlock beforeEach = new SetupBlock();
-  private final TeardownBlock afterEach = new TeardownBlock();
-
-  private ThrowingConsumer<Block> aroundEach = Block::run;
-  private ThrowingConsumer<Block> aroundAll = Block::run;
-
-  private final List<Child> children = new ArrayList<>();
+  protected final List<Child> children = new ArrayList<>();
   private final Set<Child> focusedChildren = new HashSet<>();
 
   private final ChildRunner childRunner;
@@ -29,9 +30,9 @@ final class Suite implements Parent, Child {
   private final Parent parent;
   private boolean ignored;
 
-  private final TaggingState tagging;
-  private PreConditions preconditions = PreConditions.Factory.defaultPreConditions();
-  private Set<String> namesUsed = new HashSet<>();
+  private final TaggingFilterCriteria tagging;
+  private BlockConfiguration preconditions = BlockConfiguration.Factory.defaultPreConditions();
+  private NameSanitiser nameSanitiser = new NameSanitiser();
 
   /**
    * The strategy for running the children within the suite.
@@ -42,7 +43,8 @@ final class Suite implements Parent, Child {
   }
 
   static Suite rootSuite(final Description description) {
-    return new Suite(description, Parent.NONE, Suite::defaultChildRunner, new TaggingState());
+    return new Suite(description, Parent.NONE, Suite::defaultChildRunner,
+        new TaggingFilterCriteria());
   }
 
   /**
@@ -52,17 +54,16 @@ final class Suite implements Parent, Child {
    * @param parent parent item
    * @param childRunner which child running strategy to use - this will normally be
    *        {@link #defaultChildRunner(Suite, RunNotifier)} which runs them all but can be
-   *        substituted for a strategy that ignores all specs after a test failure
-   *        {@link #abortOnFailureChildRunner(Suite, RunNotifier)}
-   * @param taggingState the state of tagging inherited from the parent
+   *        substituted.
+   * @param taggingFilterCriteria the state of tagging inherited from the parent
    */
-  private Suite(final Description description, final Parent parent, final ChildRunner childRunner,
-      final TaggingState taggingState) {
+  protected Suite(final Description description, final Parent parent, final ChildRunner childRunner,
+      final TaggingFilterCriteria taggingFilterCriteria) {
     this.description = description;
     this.parent = parent;
     this.ignored = parent.isIgnored();
     this.childRunner = childRunner;
-    this.tagging = taggingState;
+    this.tagging = taggingFilterCriteria;
   }
 
   Suite addSuite(final String name) {
@@ -73,17 +74,22 @@ final class Suite implements Parent, Child {
     final Suite suite =
         new Suite(Description.createSuiteDescription(sanitise(name)), this, childRunner,
             this.tagging.clone());
-    suite.beforeAll.addBlock(this.beforeAll);
-    suite.beforeEach.addBlock(this.beforeEach);
-    suite.afterEach.addBlock(this.afterEach);
-    suite.aroundEach(this.aroundEach);
+
+    return addedToThis(suite);
+  }
+
+  private Suite addedToThis(Suite suite) {
     addChild(suite);
 
     return suite;
   }
 
-  Suite addAbortingSuite(final String name) {
-    return addSuite(name, Suite::abortOnFailureChildRunner);
+  Suite addCompositeSuite(final String name) {
+    final Suite suite =
+        new CompositeTest(Description.createSuiteDescription(sanitise(name)), this,
+            this.tagging.clone());
+
+    return addedToThis(suite);
   }
 
   Child addSpec(final String name, final Block block) {
@@ -97,40 +103,12 @@ final class Suite implements Parent, Child {
     final Description specDescription =
         Description.createTestDescription(this.description.getClassName(), sanitise(name));
 
-    final NotifyingBlock specBlockInContext = (description, notifier) -> {
-      try {
-        this.beforeAll.run();
-      } catch (final Throwable exception) {
-        notifier.fireTestFailure(new Failure(description, exception));
-        return;
-      }
+    final NotifyingBlock specBlockInContext = NotifyingBlock.wrap(block);
 
-      NotifyingBlock.wrap(() -> {
+    ConfiguredBlock configuredBlock =
+        ConfiguredBlock.with(this.preconditions.forChild(), block);
 
-        Variable<Boolean> blockWasRun = new Variable<>(false);
-        this.aroundEach.accept(() -> {
-          blockWasRun.set(true);
-
-          NotifyingBlock.wrap(() -> {
-            this.beforeEach.run();
-            block.run();
-          }).run(description, notifier);
-
-          this.afterEach.run(description, notifier);
-        });
-
-
-        if (!blockWasRun.get()) {
-          throw new RuntimeException("aroundEach did not run the block");
-        }
-
-      }).run(description, notifier);
-    };
-
-    PreConditionBlock preConditionBlock =
-        PreConditionBlock.with(this.preconditions.forChild(), block);
-
-    return new Spec(specDescription, specBlockInContext, this).applyPreConditions(preConditionBlock,
+    return new Spec(specDescription, specBlockInContext, this).applyPreConditions(configuredBlock,
         this.tagging);
   }
 
@@ -138,20 +116,29 @@ final class Suite implements Parent, Child {
     this.children.add(child);
   }
 
-  void beforeAll(final Block block) {
-    this.beforeAll.addBlock(new IdempotentBlock(block));
+  /**
+  * Adds a hook to be the first one executed before the block.
+  * This is the default. Hooks should be executed in the order they
+  * are declared in the test.
+  * @param hook to add
+  */
+  void addHook(final HookContext hook) {
+    this.hooks.add(hook);
   }
 
-  void afterAll(final Block block) {
-    this.afterAll.addBlock(block);
+  private Hooks getHooksFor(final Child child) {
+    Hooks allHooks = parent.getInheritableHooks().plus(hooks);
+
+    return child.isAtomic() ? allHooks.forAtomic() : allHooks.forNonAtomic();
   }
 
-  void beforeEach(final Block block) {
-    this.beforeEach.addBlock(block);
-  }
+  @Override
+  public Hooks getInheritableHooks() {
+    // only the atomic hooks can be used by the children of this suite,
+    // all other hooks would be executed at suite level only - either for
+    // each child of the suite, or once
 
-  void afterEach(final Block block) {
-    this.afterEach.addBlock(block);
+    return parent.getInheritableHooks().plus(hooks.forAtomic());
   }
 
   /**
@@ -213,34 +200,26 @@ final class Suite implements Parent, Child {
   }
 
   private void runSuite(final RunNotifier notifier) {
-    Variable<Boolean> blockWasCalled = new Variable<>(false);
-
-    NotifyingBlock.wrap(() -> this.aroundAll.accept(() -> {
-      blockWasCalled.set(true);
-      runChildren(notifier);
-      runAfterAll(notifier);
-    })).run(this.description, notifier);
-
-    if (!blockWasCalled.get()) {
-      RuntimeException exception = new RuntimeException("aroundAll did not run the block");
-      notifier.fireTestFailure(new Failure(this.description, exception));
-    }
+    hooks.once().sorted()
+        .runAround(description, notifier, () -> runChildren(notifier));
   }
 
   private void runChildren(final RunNotifier notifier) {
     this.childRunner.runChildren(this, notifier);
   }
 
-  private void runChild(final Child child, final RunNotifier notifier) {
+  protected void runChild(final Child child, final RunNotifier notifier) {
     if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
-      child.run(notifier);
+      hooks.forThisLevel().sorted().runAround(child.getDescription(), notifier,
+          () -> runChildWithHooks(child, notifier));
     } else {
       notifier.fireTestIgnored(child.getDescription());
     }
   }
 
-  private void runAfterAll(final RunNotifier notifier) {
-    this.afterAll.run(this.description, notifier);
+  private void runChildWithHooks(final Child child, final RunNotifier notifier) {
+    getHooksFor(child).sorted().runAround(child.getDescription(), notifier,
+        () -> child.run(notifier));
   }
 
   @Override
@@ -264,47 +243,7 @@ final class Suite implements Parent, Child {
     suite.children.forEach((child) -> suite.runChild(child, runNotifier));
   }
 
-  private static void abortOnFailureChildRunner(final Suite suite, final RunNotifier runNotifier) {
-    FailureDetectingRunListener listener = new FailureDetectingRunListener();
-    runNotifier.addListener(listener);
-    try {
-      for (Child child : suite.children) {
-        if (listener.hasFailedYet()) {
-          child.ignore();
-        }
-        suite.runChild(child, runNotifier);
-      }
-    } finally {
-      runNotifier.removeListener(listener);
-    }
-  }
-
   private String sanitise(final String name) {
-    String sanitised = name.replaceAll("\\(", "[")
-        .replaceAll("\\)", "]");
-
-    int suffix = 1;
-    String deDuplicated = sanitised;
-    while (this.namesUsed.contains(deDuplicated)) {
-      deDuplicated = sanitised + "_" + suffix++;
-    }
-    this.namesUsed.add(deDuplicated);
-
-    return deDuplicated;
-  }
-
-  public void aroundEach(ThrowingConsumer<Block> consumer) {
-    ThrowingConsumer<Block> outerAroundEach = this.aroundEach;
-    this.aroundEach = block -> {
-      outerAroundEach.accept(() -> {
-        consumer.accept(block);
-      });
-
-    };
-  }
-
-  public void aroundAll(ThrowingConsumer<Block> consumer) {
-    this.aroundAll = consumer;
-
+    return nameSanitiser.sanitise(name);
   }
 }

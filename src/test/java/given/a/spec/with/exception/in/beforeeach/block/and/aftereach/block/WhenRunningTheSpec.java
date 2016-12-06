@@ -28,9 +28,11 @@ public class WhenRunningTheSpec {
   @Test
   public void theFailuresExplainWhatHappened() throws Exception {
     assertThat(this.result.getFailures().get(0),
-        is(failure("a failing test", Fixture.SomeException.class, "kaboom")));
+        is(failure("a failing test", Fixture.SomeException.class,
+            "beforeEach went kaboom")));
     assertThat(this.result.getFailures().get(1),
-        is(failure("a failing test", Fixture.SomeException.class, "poof")));
+        is(failure("a failing test", Fixture.SomeException.class,
+            "afterEach went poof")));
   }
 
 }

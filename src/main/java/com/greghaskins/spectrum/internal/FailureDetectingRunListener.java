@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.internal;
 
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
@@ -6,14 +6,14 @@ import org.junit.runner.notification.RunListener;
 /**
  * A listener to detect test failure.
  */
-class FailureDetectingRunListener extends RunListener {
+public class FailureDetectingRunListener extends RunListener {
   private boolean hasFailedYet = false;
 
   /**
    * Has the run failed since we've been listening.
    * @return whether any previous failures have been reported
    */
-  boolean hasFailedYet() {
+  public boolean hasFailedYet() {
     return hasFailedYet;
   }
 

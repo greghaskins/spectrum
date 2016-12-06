@@ -13,11 +13,11 @@ class Fixture {
         describe("an exploding beforeEach", () -> {
 
           beforeEach(() -> {
-            throw new SomeException("kaboom");
+            throw new SomeException("beforeEach went kaboom");
           });
 
           afterEach(() -> {
-            throw new SomeException("poof");
+            throw new SomeException("afterEach went poof");
           });
 
           it("a failing test", () -> {
@@ -34,7 +34,7 @@ class Fixture {
     return Spec.class;
   }
 
-  public static class SomeException extends Exception {
+  public static class SomeException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public SomeException(final String message) {

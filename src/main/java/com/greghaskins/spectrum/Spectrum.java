@@ -1,8 +1,15 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.PreConditionBlock.with;
-import static com.greghaskins.spectrum.PreConditions.Factory.focus;
-import static com.greghaskins.spectrum.PreConditions.Factory.ignore;
+import static com.greghaskins.spectrum.internal.AfterHook.after;
+import static com.greghaskins.spectrum.internal.BeforeHook.before;
+import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
+import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
+import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
+
+import com.greghaskins.spectrum.internal.LetHook;
+import com.greghaskins.spectrum.model.ConstructorBlock;
+import com.greghaskins.spectrum.model.HookContext;
+import com.greghaskins.spectrum.model.IdempotentBlock;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
@@ -11,7 +18,6 @@ import org.junit.runner.notification.RunNotifier;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -47,6 +53,17 @@ public final class Spectrum extends Runner {
     void run() throws Throwable;
   }
 
+
+  /**
+   * Supplier that is allowed to throw.
+   * @param <T> type of object to supply
+   * @deprecated since 1.0.1 - use {@link com.greghaskins.spectrum.ThrowingSupplier} instead
+   */
+  @Deprecated
+  @FunctionalInterface
+  public interface ThrowingSupplier<T> extends com.greghaskins.spectrum.ThrowingSupplier<T> {
+  }
+
   /**
    * Declare a test suite that is made of interdependent children. The whole suite should pass
    * atomically and if it fails, any remaining children can stop running.
@@ -58,7 +75,7 @@ public final class Spectrum extends Runner {
    *
    */
   static void compositeSpec(final String context, final com.greghaskins.spectrum.Block block) {
-    final Suite suite = getCurrentSuiteBeingDeclared().addAbortingSuite(context);
+    final Suite suite = getCurrentSuiteBeingDeclared().addCompositeSuite(context);
     beginDefinition(suite, block);
   }
 
@@ -188,7 +205,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
-    getCurrentSuiteBeingDeclared().beforeEach(block);
+    addHook(new HookContext(before(block), getDepth(),
+        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL));
   }
 
   /**
@@ -202,7 +220,8 @@ public final class Spectrum extends Runner {
    * @param block {@link Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
-    getCurrentSuiteBeingDeclared().afterEach(block);
+    addHook(new HookContext(after(block), getDepth(),
+        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
   /**
@@ -216,7 +235,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before all specs in this suite
    */
   public static void beforeAll(final com.greghaskins.spectrum.Block block) {
-    getCurrentSuiteBeingDeclared().beforeAll(block);
+    addHook(new HookContext(before(new IdempotentBlock(block)), getDepth(),
+        HookContext.AppliesTo.EACH_CHILD, HookContext.Precedence.SET_UP));
   }
 
   /**
@@ -231,67 +251,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once after all specs in this suite
    */
   public static void afterAll(final com.greghaskins.spectrum.Block block) {
-    getCurrentSuiteBeingDeclared().afterAll(block);
-  }
-
-  /**
-   * Define a memoized helper function. The value will be cached across multiple calls in the same
-   * spec, but not across specs.
-   *
-   * <p>
-   * Note that {@code let} is lazy-evaluated: the {@code supplier} is not called until the first
-   * time it is used.
-   * </p>
-   *
-   * @param <T> The type of value
-   *
-   * @param supplier {@link ThrowingSupplier} function that either generates the value, or throws a
-   *        `Throwable`
-   * @return memoized supplier
-   */
-  public static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
-    final ConcurrentHashMap<Supplier<T>, T> cache = new ConcurrentHashMap<>(1);
-    afterEach(cache::clear);
-
-    return () -> {
-      if (getCurrentSuiteBeingDeclared() == null) {
-        return cache.computeIfAbsent(supplier, Supplier::get);
-      }
-      throw new IllegalStateException("Cannot use the value from let() in a suite declaration. "
-          + "It may only be used in the context of a running spec.");
-    };
-  }
-
-  /**
-   * Supplier of results similar to {@link Supplier}, but may optionally throw checked exceptions.
-   * Using {@link ThrowingSupplier} is more convenient for lambda functions since it requires less
-   * exception handling.
-   *
-   * @see Supplier
-   *
-   * @param <T> The type of result that will be supplied
-   */
-  @FunctionalInterface
-  public interface ThrowingSupplier<T> extends Supplier<T> {
-
-    /**
-     * Get a result.
-     *
-     * @return a result
-     * @throws Throwable any uncaught Error or Exception
-     */
-    T getOrThrow() throws Throwable;
-
-    @Override
-    default T get() {
-      try {
-        return getOrThrow();
-      } catch (final RuntimeException | Error unchecked) {
-        throw unchecked;
-      } catch (final Throwable checked) {
-        throw new RuntimeException(checked);
-      }
-    }
+    addHook(new HookContext(after(block), getDepth(), HookContext.AppliesTo.ONCE,
+        HookContext.Precedence.GUARANTEED_CLEAN_UP_GLOBAL));
   }
 
 
@@ -303,7 +264,8 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    getCurrentSuiteBeingDeclared().aroundEach(consumer);
+    addHook(new HookContext(consumer::acceptOrThrow, getDepth(),
+        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
   /**
@@ -314,11 +276,46 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    getCurrentSuiteBeingDeclared().aroundAll(consumer);
+    addHook(new HookContext(consumer::acceptOrThrow, getDepth(),
+        HookContext.AppliesTo.ONCE, HookContext.Precedence.OUTER));
   }
 
+  /**
+   * A value that will be fresh within each spec and cannot bleed across specs.
+   *
+   * <p>
+   * Note that {@code let} is lazy-evaluated: the {@code supplier} is not called until the first
+   * time it is used.
+   * </p>
+   *
+   * @param <T> The type of value
+   *
+   * @param supplier {@link com.greghaskins.spectrum.ThrowingSupplier} function that either
+   *        generates the value, or throws a `Throwable`
+   * @return supplier which is refreshed for each spec's context
+   */
+  public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
+    LetHook<T> letHook = new LetHook<>(supplier);
+    HookContext hookContext = new HookContext(letHook, getDepth(),
+        HookContext.AppliesTo.EACH_CHILD, HookContext.Precedence.LOCAL);
+    addHook(hookContext);
 
-  private static final Deque<Suite> suiteStack = new ArrayDeque<>();
+    return letHook;
+  }
+
+  /**
+   * Will throw an exception if this method happens to be called while Spectrum is still defining
+   * tests, rather than executing them. Useful to see if a hook is being accidentally used
+   * during definition.
+   */
+  public static void assertSpectrumInTestMode() {
+    if (getCurrentSuiteBeingDeclared() != null) {
+      throw new IllegalStateException("Cannot use this statement in a suite declaration. "
+          + "It may only be used in the context of a running spec.");
+    }
+  }
+
+  private static final Variable<Deque<Suite>> suiteStack = new Variable<>(ArrayDeque::new);
 
   private final Suite rootSuite;
 
@@ -348,9 +345,9 @@ public final class Spectrum extends Runner {
     this.rootSuite.run(notifier);
   }
 
-  private static synchronized void beginDefinition(final Suite suite,
+  private static void beginDefinition(final Suite suite,
       final com.greghaskins.spectrum.Block definitionBlock) {
-    suiteStack.push(suite);
+    getSuiteStack().push(suite);
     try {
       definitionBlock.run();
     } catch (final Throwable error) {
@@ -359,11 +356,22 @@ public final class Spectrum extends Runner {
         throw error;
       });
     }
-    suiteStack.pop();
+    getSuiteStack().pop();
   }
 
-  private static synchronized Suite getCurrentSuiteBeingDeclared() {
-    return suiteStack.peek();
+  private static Deque<Suite> getSuiteStack() {
+    return suiteStack.get();
   }
 
+  private static int getDepth() {
+    return getSuiteStack().size();
+  }
+
+  private static Suite getCurrentSuiteBeingDeclared() {
+    return getSuiteStack().peek();
+  }
+
+  private static void addHook(HookContext hook) {
+    getCurrentSuiteBeingDeclared().addHook(hook);
+  }
 }
