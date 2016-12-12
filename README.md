@@ -438,6 +438,9 @@ The main functions for defining a test are:
 - `fit` / `fdescribe`
 - `xit` / `xdescribe`
 - `let`
+- `feature` / `scenario`
+- `given` / `when` / `then`
+- `context` / `fcontext` / `xcontext`
 
 Spectrum also supports:
 
