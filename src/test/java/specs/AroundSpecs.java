@@ -205,9 +205,52 @@ public class AroundSpecs {
 
       describe("in multiples", () -> {
 
-        it("each subsequent aroundAll nestsInside those preceding");
+        it("each subsequent aroundAll nests inside those preceding", () -> {
+          ArrayList<String> steps = new ArrayList<>();
+          SpectrumHelper.run(() -> {
 
-        it("fail if any aroundAll forgets to call the block");
+            aroundAll(block -> {
+              steps.add("pre1");
+              block.run();
+              steps.add("post1");
+            });
+
+            aroundAll(block -> {
+              steps.add("pre2");
+              block.run();
+              steps.add("post2");
+            });
+
+            it("first spec", () -> {
+              steps.add("spec");
+            });
+
+          });
+
+          assertThat(steps, contains("pre1", "pre2", "spec", "post2", "post1"));
+        });
+
+        it("fail if any aroundAll forgets to call the block", () -> {
+          Result result = SpectrumHelper.run(() -> {
+
+            aroundAll(block -> {
+              block.run();
+            });
+
+            aroundAll(block -> {
+            });
+
+            aroundAll(block -> {
+              block.run();
+            });
+
+            it("a spec", () -> {
+            });
+
+          });
+
+          assertThat(result.getFailureCount(), is(1));
+        });
 
       });
 
