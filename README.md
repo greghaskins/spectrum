@@ -313,6 +313,50 @@ Example: temporarily making only WIP tests run in a test class
      }
   }
 ```
+### Paramaterized Specs
+
+Paramaterization involves supplying some examples via the `withExamples` function. These examples are objects with between 1 and 8 values. This allows you to:
+
+- Provide a list of objects that parameterize your specs
+- Provide a table of values which are turned into ad-hoc tuples with test data in
+
+Thanks to Java 8's generic type system, you can use the examples to drive the type of paramaterized block you need to provide.
+
+E.g.
+
+```java
+// provides examples of two ints and a String
+withExamples(
+  example(1,2,"12"),
+  example(2,3,"23")
+)
+```
+
+The above expects you to provide a parameterized block to use the parameters which has three parameters, two of which are integer and the other is String. This might formally be declared as:
+
+```java
+(int i1, int i3, String s) -> { ... }
+```
+
+But you don't need to provide the types, so it's more tersely written as:
+
+```java
+(i1, it2, s) -> { ... }
+```
+
+Think of the `withExamples` and `example` syntax as being a table structure with coherent types within each column. Think of the lambda you write to receive those parameters as the table's header. Intuitively you'd expect something like:
+
+```java
+         (num1, num2, num3) -> { ... },
+withExamples(
+  example(1,    2,    3),
+  example(2,    3,    4)
+)
+```
+
+This is how the syntax of both `describeParameterized` and `scenarioOutline` work. You provide a consuming block to take the values for each example and define specs with those values, and you provide the values as examples.
+
+For examples of this in action, see [ParameterizedSpecs.java](src/test/java/specs/ParameterizedSpecs.java).
 
 ### Common Variable Initialization
 
@@ -429,20 +473,22 @@ feature("Gherkin-like test DSL", () -> {
 
 When using the Gherkin syntax, each `given`/`when`/`then` step must pass before the next is run. Note that they must be declared inside a `scenario` block to work correctly. Multiple `scenario` blocks can be defined as part of a `feature`.
 
+Parameterized Gherkin scenarios are achieved with `scenarioOutline` see [ParameterizedSpecs.java](src/test/java/specs/ParameterizedSpecs.java).
+
 ## Supported Features
 
 The Spectrum API is designed to be familiar to Jasmine and RSpec users, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Specturm should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)
 
 The main functions for defining a test are:
 
-- `describe`
+- `describe` / `describeParamaterized`
 - `it`
 - `beforeEach` / `afterEach`
 - `beforeAll` / `afterAll`
 - `fit` / `fdescribe`
 - `xit` / `xdescribe`
 - `let`
-- `feature` / `scenario`
+- `feature` / `scenario` / `scenarioOutline`
 - `given` / `when` / `then`
 - `context` / `fcontext` / `xcontext`
 
