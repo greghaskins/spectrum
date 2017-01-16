@@ -51,42 +51,42 @@ public class LetSpecs {
       describe("in complex test hierarchies", () -> {
         describe("a new let object is created for each spec", () -> {
           AtomicInteger integer = new AtomicInteger();
-              describe("a thing", () -> {
+          describe("a thing", () -> {
 
-              final Supplier<Integer> intLet = let(integer::getAndIncrement);
+            final Supplier<Integer> intLet = let(integer::getAndIncrement);
 
-              it("starts with one value", () -> {
-                assertThat(intLet.get(), is(0));
+            it("starts with one value", () -> {
+              assertThat(intLet.get(), is(0));
 
-                // still the same inside this test
-                assertThat(intLet.get(), is(0));
-              });
+              // still the same inside this test
+              assertThat(intLet.get(), is(0));
+            });
 
-              it("gets a second", () -> {
-                assertThat(intLet.get(), is(1));
+            it("gets a second", () -> {
+              assertThat(intLet.get(), is(1));
+            });
+
+            it("and another", () -> {
+              assertThat(intLet.get(), is(2));
+            });
+
+            describe("a sub suite", () -> {
+              it("gets another", () -> {
+                assertThat(intLet.get(), is(3));
               });
 
               it("and another", () -> {
-                assertThat(intLet.get(), is(2));
+                assertThat(intLet.get(), is(4));
               });
 
-              describe("a sub suite", () -> {
+              describe("and a sub suite of that", () -> {
                 it("gets another", () -> {
-                  assertThat(intLet.get(), is(3));
-                });
-
-                it("and another", () -> {
-                  assertThat(intLet.get(), is(4));
-                });
-
-                describe("and a sub suite of that", () -> {
-                  it("gets another", () -> {
-                    assertThat(intLet.get(), is(5));
-                  });
+                  assertThat(intLet.get(), is(5));
                 });
               });
-
             });
+
+          });
 
         });
       });
