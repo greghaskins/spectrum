@@ -14,7 +14,7 @@ public interface AfterHook {
    * @return new {@link Hook} which runs the inner then the provided block
    */
   static Hook after(final Block block) {
-    return inner -> {
+    return (description, notifier, inner) -> {
       try {
         inner.run();
       } finally {

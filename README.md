@@ -425,6 +425,128 @@ feature("Gherkin-like test DSL", () -> {
 
 When using the Gherkin syntax, each `given`/`when`/`then` step must pass before the next is run. Note that they must be declared inside a `scenario` block to work correctly. Multiple `scenario` blocks can be defined as part of a `feature`.
 
+### JUnit Rules
+
+Spectrum's runner works differently to the normal JUnit `ParentRunner` and `BlockJUnitRunner` derived test runners. In JUnit you normally have a new instance of the test class for every single test method to work with. As Spectrum uses the test class to write functional definitions of tests, there is only a single instance of the test object used throughout.
+
+To enable users to mix in features from across the JUnit ecosystem, there are two ways you can add JUnit behaviour to Spectrum tests.
+
+* You can wire in Rules classes using `applyRules` - these provide multiple instances of the test object of that rules class and execute JUnit `@Rule` directives within it along the way.
+* You _can_ use the Java class within which you have declared the Spectrum tests. This can contain local variables and `@Rule` annotated objects. They will be reused over the course of the test.
+
+The Spectrum native approach is the safest and cleanest, but is less familiar to JUnit users. The native JUnit approach will work for many cases, but may cause problems with some third party rules.
+
+#### Spectrum style
+
+##### Step 1 - create a class with your JUnit rules in it.
+
+In Spectrum's own test cases, the mix-in class is a `public static class` inside the test class. This is one option. It does not matter whether the rules class is an inner class, or whether it's external, so long as it is public and has a default constructor. Making these mix-in classes as external reusable objects may be a useful way to modularise testing. It is up to you whether you make the fields accessible, or put getters on them. For simplicity here is an example with accessible fields:
+
+```java
+public class TestRuleMixin {
+  @Rule
+  public TemporaryFolder tempFolderRule = new TemporaryFolder();
+}
+```
+
+##### Step 2 - use that junit.rule within your tests with `applyRules`
+
+The `applyRules` function returns a `Supplier`. That supplier's `get` function will allow you to access the current instance of the mix-in object during your tests/specs. The rules mentioned will have been executed already.
+
+```java
+@RunWith(Spectrum.class)
+public class SpectrumSpec {{
+  Supplier<TestRuleMixin> testObject = applyRules(TestRuleMixin.class);
+  describe("a set of test specs", () -> {
+    it("has a fresh copy of the test object here", () -> {
+      // testObject.get() gives us one instance here having run
+    });
+    it("has a different fresh copy of the test object here", () -> {
+      // testObject.get() gives us another instance here too
+    });
+  });
+}}
+```
+The rules are applied and the test object created just in time for each atomic test within the describe blocks etc. An atomic test is either an `it` level test or a `compositeTest` for example a `GherkinSyntax` `scenario`.
+
+The `applyRules` function causes a fresh initialisation of the mix-in object for every atomic child anywhere in the hierarchy following where `applyRules` is called. This might have adverse side effects if your rules are setting up a large ecosystem that you wish to reuse across tests.
+The alternative `applyRulesHere` causes the mix-in object only to be created for each *immediate* child of the suite in which
+it is called.
+
+E.g.
+
+```java
+@RunWith(Spectrum.class)
+public class SpectrumSpec {{
+  Supplier<TestRuleMixin> testObject = applyRulesHere(TestRuleMixin.class);
+  describe("a set of test specs", () -> {
+    it("has a fresh copy of the test object here", () -> {
+      // testObject.get() gives us one instance here having run
+    });
+    it("has the same copy of the test object here", () -> {
+      // testObject.get() gives us the same instance
+    });
+  });
+  describe("this sibling would get a fresh set of the rules-applied test object" () -> {});
+}}
+```
+
+#### JUnit style
+
+With many of the JUnit rules, you can pretend that Spectrum works like JUnit and ignore the issue of the test object being reused. When things stop working, move to Spectrum style.
+
+```java
+@RunWith(Spectrum.class)
+public class SpectrumSpec {
+  @Rule
+  public TemporaryFolder tempFolderRule = new TemporaryFolder();
+
+{
+  describe("a set of test specs", () -> {
+    it("has a freshly prepared tempFolderRule", () -> {
+      // tempFolderRule gives us one folder here having been set up by the junit.rule
+    });
+    it("has a different fresh copy of the test object here", () -> {
+      // tempFolderRule gives us another folder here too
+    });
+  });
+}}
+```
+
+#### What is provided
+
+* `@ClassRule` is applied
+* `@BeforeAll` is applied
+* `@AfterAll` is applied
+* `@Rule` objects:
+  * `TestRule`s are applied at the level of each atomic test
+  * `MethodRule`s are applied at the level of each atomic test
+* `applyRules` and `applyRulesHere` are implemented to be thread-safe
+
+#### What is not supported
+
+Native JUnit allows you to put annotations on specific test methods for the rules to pick up.
+
+E.g.
+
+```java
+@Test
+@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+public void willDoSomethingDestructiveToSpring() throws Exception {
+    myBean.deleteAll();
+}
+```
+
+This is not yet supported in Spectrum. You can work around it for Spring by using different mix-in classes with different class-level annotations to control this sort of behaviour, and segmenting your test suite so that specs that need certain behaviour are within one `describe` block etc.
+
+#### Examples
+
+> See: [JUnitRulesExample](src/test/java/specs/JUnitRulesExample.java),
+[MockitoSpecJUnitStyle](src/test/java/specs/MockitoSpecJUnitStyle.java),
+[MockitoSpecWithRuleClasses](src/test/java/specs/MockitoSpecWithRuleClasses.java),
+[SpringSpecJUnitStyle](src/test/java/specs/SpringSpecJUnitStyle.java) and
+[SpringSpecWithRuleClasses](src/test/java/specs/SpringSpecWithRuleClasses.java)
+
 ## Supported Features
 
 The Spectrum API is designed to be familiar to Jasmine and RSpec users, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Specturm should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)
@@ -449,6 +571,7 @@ Spectrum also supports:
 - Compatibility with existing JUnit tools; no configuration required
 - Mixing Spectrum tests and normal JUnit tests in the same project suite
 - RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
+- Plugging in familiar JUnit-friendly libraries like Mockito or SpringJUnit via JUnit `@Rules` handling.
 
 ### Non-Features
 

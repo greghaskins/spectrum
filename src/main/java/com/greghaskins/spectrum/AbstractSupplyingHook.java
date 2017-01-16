@@ -2,6 +2,9 @@ package com.greghaskins.spectrum;
 
 import static com.greghaskins.spectrum.Spectrum.assertSpectrumInTestMode;
 
+import org.junit.runner.Description;
+import org.junit.runner.notification.RunNotifier;
+
 /**
  * A base class for supplying hooks to use. Override before or after. Return the singleton
  * value from the before method.
@@ -23,11 +26,14 @@ public abstract class AbstractSupplyingHook<T> extends Variable<T> implements Su
 
   /**
    * Template method for a hook which supplies.
+   * @param description description - unused here
+   * @param runNotifier runNotifier - unused here
    * @param block the inner block that will be run
    * @throws Throwable on error
    */
   @Override
-  public void acceptOrThrow(Block block) throws Throwable {
+  public void accept(final Description description, final RunNotifier runNotifier,
+      final Block block) throws Throwable {
     try {
       set(before());
       block.run();

@@ -7,6 +7,7 @@ import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 
 import com.greghaskins.spectrum.internal.LetHook;
+import com.greghaskins.spectrum.internal.junit.Rules;
 import com.greghaskins.spectrum.model.ConstructorBlock;
 import com.greghaskins.spectrum.model.HookContext;
 import com.greghaskins.spectrum.model.IdempotentBlock;
@@ -223,6 +224,30 @@ public final class Spectrum extends Runner {
 
 
   /**
+   * Implements a rules context within the current suite using the given rules class as a mix-in.
+   * These rules will cascade down and be applied at the level of specs or atomic specs.
+   * @param rulesClass type of object to create and apply rules to for each spec.
+   * @param <T> type of the object
+   * @return a supplier of the rules object
+   */
+  public static <T> Supplier<T> applyRules(final Class<T> rulesClass) {
+    return Rules.applyRules(rulesClass);
+  }
+
+  /**
+   * Implements a rules context within the current suite using the given rules class as a mix-in.
+   * These rules will only run for each immediate child of the suite. If the rules should
+   * run fresh in a fresh rules object for each atomic spec
+   * ({@link #it(String, com.greghaskins.spectrum.Block)} etc) then use {@link #applyRules(Class)}
+   * @param rulesClass type of object to create and apply rules to for each spec.
+   * @param <T> type of the object
+   * @return a supplier of the rules object
+   */
+  public static <T> Supplier<T> applyRulesHere(final Class<T> rulesClass) {
+    return Rules.applyRulesHere(rulesClass);
+  }
+
+  /**
    * Declare a {@link com.greghaskins.spectrum.Block} to be run before each spec in the suite.
    *
    * <p>
@@ -292,7 +317,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(consumer::acceptOrThrow, getDepth(),
+    addHook(new HookContext(Hook.from(consumer), getDepth(),
         HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
@@ -304,7 +329,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(consumer::acceptOrThrow, getDepth(),
+    addHook(new HookContext(Hook.from(consumer), getDepth(),
         HookContext.AppliesTo.ONCE, HookContext.Precedence.OUTER));
   }
 
@@ -329,6 +354,22 @@ public final class Spectrum extends Runner {
     addHook(hookContext);
 
     return letHook;
+  }
+
+  /**
+   * Insert a hook into the current level of definition.
+   * @param hook to insert
+   * @param appliesTo the {@link com.greghaskins.spectrum.model.HookContext.AppliesTo} indicating
+   *                  where the hook is run
+   * @param precedence the importance of the hook compared to others
+   */
+  public static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,
+      final HookContext.Precedence precedence) {
+    addHook(new HookContext(hook, getDepth(), appliesTo, precedence));
+  }
+
+  private static void addHook(HookContext hook) {
+    getCurrentSuiteBeingDeclared().addHook(hook);
   }
 
   /**
@@ -376,8 +417,10 @@ public final class Spectrum extends Runner {
   private static void beginDefinition(final Suite suite,
       final com.greghaskins.spectrum.Block definitionBlock) {
     getSuiteStack().push(suite);
+
     try {
       definitionBlock.run();
+      addRootJUnitHook(definitionBlock);
     } catch (final Throwable error) {
       suite.removeAllChildren();
       it("encountered an error", () -> {
@@ -399,7 +442,16 @@ public final class Spectrum extends Runner {
     return getSuiteStack().peek();
   }
 
-  private static void addHook(HookContext hook) {
-    getCurrentSuiteBeingDeclared().addHook(hook);
+  /**
+   * If the definition is at the right level and the block is the right sort
+   * of block, then this is might be an opportunity to hook in JUnit rules.
+   * @param definitionBlock the block used to make this suite
+   */
+  private static void addRootJUnitHook(com.greghaskins.spectrum.Block definitionBlock) {
+    if (getDepth() == 1) {
+      if (definitionBlock instanceof ConstructorBlock) {
+        Rules.applyRules(((ConstructorBlock) definitionBlock).get());
+      }
+    }
   }
 }

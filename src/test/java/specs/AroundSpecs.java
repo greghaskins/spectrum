@@ -9,6 +9,7 @@ import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
+import static com.greghaskins.spectrum.Spectrum.xit;
 import static matchers.IsFailure.failure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -250,6 +251,27 @@ public class AroundSpecs {
           });
 
           assertThat(result.getFailureCount(), is(1));
+        });
+
+      });
+
+      describe("a suite with only ignored specs", () -> {
+
+        it("should not run aroundAll", () -> {
+          ArrayList<String> steps = new ArrayList<>();
+          SpectrumHelper.run(() -> {
+
+            aroundAll(block -> {
+              steps.add("aroundAll");
+              block.run();
+            });
+
+            xit("foo", () -> {
+            });
+
+          });
+
+          assertThat(steps, is(empty()));
         });
 
       });

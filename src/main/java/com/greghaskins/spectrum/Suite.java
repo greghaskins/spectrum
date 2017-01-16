@@ -200,8 +200,12 @@ class Suite implements Parent, Child {
   }
 
   private void runSuite(final RunNotifier notifier) {
-    hooks.once().sorted()
-        .runAround(description, notifier, () -> runChildren(notifier));
+    if (isEffectivelyIgnored()) {
+      runChildren(notifier);
+    } else {
+      hooks.once().sorted()
+          .runAround(description, notifier, () -> runChildren(notifier));
+    }
   }
 
   private void runChildren(final RunNotifier notifier) {
@@ -209,12 +213,19 @@ class Suite implements Parent, Child {
   }
 
   protected void runChild(final Child child, final RunNotifier notifier) {
-    if (this.focusedChildren.isEmpty() || this.focusedChildren.contains(child)) {
+    if (child.isEffectivelyIgnored()) {
+      // running the child will make it act ignored
+      child.run(notifier);
+    } else if (childIsNotInFocus(child)) {
+      notifier.fireTestIgnored(child.getDescription());
+    } else {
       hooks.forThisLevel().sorted().runAround(child.getDescription(), notifier,
           () -> runChildWithHooks(child, notifier));
-    } else {
-      notifier.fireTestIgnored(child.getDescription());
     }
+  }
+
+  private boolean childIsNotInFocus(Child child) {
+    return !this.focusedChildren.isEmpty() && !this.focusedChildren.contains(child);
   }
 
   private void runChildWithHooks(final Child child, final RunNotifier notifier) {
@@ -245,5 +256,17 @@ class Suite implements Parent, Child {
 
   private String sanitise(final String name) {
     return nameSanitiser.sanitise(name);
+  }
+
+  @Override
+  public boolean isEffectivelyIgnored() {
+    return ignored || !hasANonIgnoredChild();
+  }
+
+  private boolean hasANonIgnoredChild() {
+    return children.stream()
+        .filter(child -> !child.isEffectivelyIgnored())
+        .findFirst()
+        .isPresent();
   }
 }

@@ -22,6 +22,12 @@ public interface Child {
   void ignore();
 
   /**
+   * Is either this child ignored or are all of its children ignored.
+   * @return true if nothing will run from here
+   */
+  boolean isEffectivelyIgnored();
+
+  /**
    * Is this child something which runs as a test.
    * @return if the child is atomic
    */
