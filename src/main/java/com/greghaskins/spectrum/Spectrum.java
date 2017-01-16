@@ -325,7 +325,7 @@ public final class Spectrum extends Runner {
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
     LetHook<T> letHook = new LetHook<>(supplier);
     HookContext hookContext = new HookContext(letHook, getDepth(),
-        HookContext.AppliesTo.EACH_CHILD, HookContext.Precedence.LOCAL);
+        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL);
     addHook(hookContext);
 
     return letHook;

@@ -22,6 +22,7 @@ import org.junit.runner.notification.Failure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
@@ -45,6 +46,49 @@ public class LetSpecs {
 
       it("creates a fresh value for every spec", () -> {
         assertThat(items.get(), contains("foo", "bar"));
+      });
+
+      describe("in complex test hierarchies", () -> {
+        describe("a new let object is created for each spec", () -> {
+          AtomicInteger integer = new AtomicInteger();
+          describe("a thing", () -> {
+
+            final Supplier<Integer> intLet = let(integer::getAndIncrement);
+
+            it("starts with one value", () -> {
+              assertThat(intLet.get(), is(0));
+
+              // still the same inside this test
+              assertThat(intLet.get(), is(0));
+            });
+
+            it("gets a second", () -> {
+              assertThat(intLet.get(), is(1));
+            });
+
+            it("and another", () -> {
+              assertThat(intLet.get(), is(2));
+            });
+
+            describe("a sub suite", () -> {
+              it("gets another", () -> {
+                assertThat(intLet.get(), is(3));
+              });
+
+              it("and another", () -> {
+                assertThat(intLet.get(), is(4));
+              });
+
+              describe("and a sub suite of that", () -> {
+                it("gets another", () -> {
+                  assertThat(intLet.get(), is(5));
+                });
+              });
+            });
+
+          });
+
+        });
       });
 
       describe("when trying to use a value outside a spec", () -> {
@@ -313,5 +357,4 @@ public class LetSpecs {
 
     return Suite.class;
   }
-
 }
