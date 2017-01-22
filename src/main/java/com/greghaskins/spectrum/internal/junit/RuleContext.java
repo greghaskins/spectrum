@@ -209,10 +209,6 @@ public class RuleContext<T> implements Supplier<T> {
    * @return a new description
    */
   private Description fakeForJunit(final Description description) {
-    if (description.isSuite()) {
-      return Description.createSuiteDescription(testClass.getJavaClass());
-    }
-
     return Description.createTestDescription(testClass.getJavaClass(), description.getMethodName());
   }
 }
