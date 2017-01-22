@@ -13,7 +13,7 @@ public interface Rules {
    * Apply JUnit rules by adding a hook to hook in the rules class.
    * This runs the rules for each atomic.
    * @param rulesClass type of object to create
-   * @param <T> type of object that will be build
+   * @param <T> type of object that will be built
    * @return a supplier that provides access to the test object created
    */
   static <T> Supplier<T> applyRules(Class<T> rulesClass) {
@@ -28,9 +28,10 @@ public interface Rules {
   /**
    * Add a test object junit.rule set.
    * @param object the JUnit test object - this will never be recreated
+   * @param <T> type of the test object
    */
-  static void applyRules(Object object) {
-    RuleContext context = new RuleContext<>(object);
+  static <T> void applyRules(T object) {
+    RuleContext<T> context = new RuleContext<>(object);
     if (context.hasAnyJUnitAnnotations()) {
       Spectrum.addHook(context.classHook(), HookContext.AppliesTo.ONCE,
           HookContext.Precedence.LOCAL);
@@ -39,19 +40,4 @@ public interface Rules {
     }
   }
 
-  /**
-   * Apply JUnit rules by adding a hook to hook in the rules class. This
-   * will run the junit.rule the level of the suite only.
-   * @param rulesClass type of object to create
-   * @param <T> type of object that will be build
-   * @return a supplier that provides access to the test object created
-   */
-  static <T> Supplier<T> applyRulesHere(Class<T> rulesClass) {
-    RuleContext<T> context = new RuleContext<>(rulesClass);
-    Spectrum.addHook(context.classHook(), HookContext.AppliesTo.ONCE, HookContext.Precedence.LOCAL);
-    Spectrum.addHook(context.methodHook(), HookContext.AppliesTo.EACH_CHILD,
-        HookContext.Precedence.LOCAL);
-
-    return context;
-  }
 }

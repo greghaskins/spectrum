@@ -1,9 +1,8 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.applyRules;
-import static com.greghaskins.spectrum.Spectrum.applyRulesHere;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.junitMixin;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -21,7 +20,7 @@ import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class JUnitRuleExample {
-  public static class TempFolderRule {
+  public static class TempFolderRuleMixin {
     @Rule
     public TemporaryFolder tempFolderRule = new TemporaryFolder();
   }
@@ -29,61 +28,26 @@ public class JUnitRuleExample {
   {
     final Set<File> filesSeen = new HashSet<>();
     describe("A parent spec", () -> {
-      Supplier<TempFolderRule> tempFolderRuleSupplier = applyRules(TempFolderRule.class);
+      Supplier<TempFolderRuleMixin> tempFolderRuleMixin = junitMixin(TempFolderRuleMixin.class);
 
       it("has access to the folder at suite level", () -> {
-        assertNotNull(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-        filesSeen.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
+        assertNotNull(tempFolderRuleMixin.get().tempFolderRule.getRoot());
+        filesSeen.add(tempFolderRuleMixin.get().tempFolderRule.getRoot());
       });
 
       describe("with a nested set of specs", () -> {
         it("has access to the folder at nested level", () -> {
-          assertNotNull(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-          filesSeen.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
+          assertNotNull(tempFolderRuleMixin.get().tempFolderRule.getRoot());
+          filesSeen.add(tempFolderRuleMixin.get().tempFolderRule.getRoot());
         });
         it("has access to the folder with different value ", () -> {
-          assertNotNull(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-          filesSeen.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
+          assertNotNull(tempFolderRuleMixin.get().tempFolderRule.getRoot());
+          filesSeen.add(tempFolderRuleMixin.get().tempFolderRule.getRoot());
         });
       });
 
       it("has seen several different folders", () -> {
         assertThat(filesSeen.size(), is(3));
-      });
-    });
-
-    describe("Each nested spec should not have its own instance of test object", () -> {
-      Supplier<TempFolderRule> tempFolderRuleSupplier = applyRulesHere(TempFolderRule.class);
-      final Set<File> filesSeen2 = new HashSet<>();
-
-      // should have the folder once for here
-      describe("with a nested set of specs", () -> {
-        it("has access to the folder", () -> {
-          filesSeen2.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-        });
-        it("has access to the folder", () -> {
-          filesSeen2.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-        });
-      });
-
-      // and once for here
-      describe("with a nested set of specs", () -> {
-        describe("more nesting", () -> {
-          it("has access to the folder", () -> {
-            filesSeen2.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-          });
-        });
-        it("has access to the folder", () -> {
-          filesSeen2.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-        });
-        it("has access to the folder", () -> {
-          filesSeen2.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-        });
-      });
-
-      it("has only had new folders at this level of the test", () -> {
-        filesSeen2.add(tempFolderRuleSupplier.get().tempFolderRule.getRoot());
-        assertThat(filesSeen2.size(), is(3));
       });
     });
   }

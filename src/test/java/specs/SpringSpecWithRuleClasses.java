@@ -1,8 +1,8 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.applyRules;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.junitMixin;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -44,7 +44,7 @@ public class SpringSpecWithRuleClasses {
   // Normal testing starts here
   {
     describe("A spring specification", () -> {
-      Supplier<Mixin> springMixin = applyRules(Mixin.class);
+      Supplier<Mixin> springMixin = junitMixin(Mixin.class);
 
       it("can access a spring bean from the mixin object", () -> {
         assertThat(springMixin.get().someService.getGreeting(), is("Hello world!"));

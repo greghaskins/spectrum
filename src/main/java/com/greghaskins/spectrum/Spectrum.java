@@ -224,27 +224,14 @@ public final class Spectrum extends Runner {
 
 
   /**
-   * Implements a rules context within the current suite using the given rules class as a mix-in.
+   * Uses the given class as a mix-in for JUnit rules to be applied.
    * These rules will cascade down and be applied at the level of specs or atomic specs.
    * @param rulesClass type of object to create and apply rules to for each spec.
    * @param <T> type of the object
    * @return a supplier of the rules object
    */
-  public static <T> Supplier<T> applyRules(final Class<T> rulesClass) {
+  public static <T> Supplier<T> junitMixin(final Class<T> rulesClass) {
     return Rules.applyRules(rulesClass);
-  }
-
-  /**
-   * Implements a rules context within the current suite using the given rules class as a mix-in.
-   * These rules will only run for each immediate child of the suite. If the rules should
-   * run fresh in a fresh rules object for each atomic spec
-   * ({@link #it(String, com.greghaskins.spectrum.Block)} etc) then use {@link #applyRules(Class)}
-   * @param rulesClass type of object to create and apply rules to for each spec.
-   * @param <T> type of the object
-   * @return a supplier of the rules object
-   */
-  public static <T> Supplier<T> applyRulesHere(final Class<T> rulesClass) {
-    return Rules.applyRulesHere(rulesClass);
   }
 
   /**
@@ -396,7 +383,7 @@ public final class Spectrum extends Runner {
    * @see org.junit.runner.Runner
    */
   public Spectrum(final Class<?> testClass) {
-    this(Description.createSuiteDescription(testClass), new ConstructorBlock(testClass));
+    this(Description.createSuiteDescription(testClass), createTestClassDefinitionBlock(testClass));
   }
 
   Spectrum(Description description, com.greghaskins.spectrum.Block definitionBlock) {
@@ -420,7 +407,6 @@ public final class Spectrum extends Runner {
 
     try {
       definitionBlock.run();
-      addRootJUnitHook(definitionBlock);
     } catch (final Throwable error) {
       suite.removeAllChildren();
       it("encountered an error", () -> {
@@ -428,6 +414,23 @@ public final class Spectrum extends Runner {
       });
     }
     getSuiteStack().pop();
+  }
+
+  /**
+   * Links the test class construction to JUnit rules implementation.
+   * @param testClass type of the test object
+   * @return a block which when executed will perform test definition against Spectrum
+   *         and also hooks JUnit rule implementation to the definition based on any
+   *         "@Rule" annotations on the members - see {@link Rules}
+   */
+  private static <T> com.greghaskins.spectrum.Block createTestClassDefinitionBlock(
+      final Class<T> testClass) {
+    ConstructorBlock<T> constructTestClass = new ConstructorBlock<>(testClass);
+
+    return () -> {
+      constructTestClass.run();
+      Rules.applyRules(constructTestClass.get());
+    };
   }
 
   private static Deque<Suite> getSuiteStack() {
@@ -440,18 +443,5 @@ public final class Spectrum extends Runner {
 
   private static Suite getCurrentSuiteBeingDeclared() {
     return getSuiteStack().peek();
-  }
-
-  /**
-   * If the definition is at the right level and the block is the right sort
-   * of block, then this is might be an opportunity to hook in JUnit rules.
-   * @param definitionBlock the block used to make this suite
-   */
-  private static void addRootJUnitHook(com.greghaskins.spectrum.Block definitionBlock) {
-    if (getDepth() == 1) {
-      if (definitionBlock instanceof ConstructorBlock) {
-        Rules.applyRules(((ConstructorBlock) definitionBlock).get());
-      }
-    }
   }
 }

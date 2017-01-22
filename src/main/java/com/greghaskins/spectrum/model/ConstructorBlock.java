@@ -6,19 +6,19 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 
-public final class ConstructorBlock implements Block, Supplier<Object> {
+public final class ConstructorBlock<T> implements Block, Supplier<Object> {
 
-  private final Class<?> klass;
-  private Object testObject;
+  private final Class<T> klass;
+  private T testObject;
 
-  public ConstructorBlock(final Class<?> klass) {
+  public ConstructorBlock(final Class<T> klass) {
     this.klass = klass;
   }
 
   @Override
   public void run() throws Throwable {
     try {
-      final Constructor<?> constructor = this.klass.getDeclaredConstructor();
+      final Constructor<T> constructor = this.klass.getDeclaredConstructor();
       constructor.setAccessible(true);
       testObject = constructor.newInstance();
     } catch (final InvocationTargetException invocationTargetException) {
@@ -29,11 +29,11 @@ public final class ConstructorBlock implements Block, Supplier<Object> {
   }
 
   @Override
-  public Object get() {
+  public T get() {
     return testObject;
   }
 
-  private class UnableToConstructSpecException extends RuntimeException {
+  private static class UnableToConstructSpecException extends RuntimeException {
 
     private UnableToConstructSpecException(final Class<?> klass, final Throwable cause) {
       super(klass.getName(), cause);

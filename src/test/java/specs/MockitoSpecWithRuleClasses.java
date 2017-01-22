@@ -1,10 +1,10 @@
 package specs;
 
 
-import static com.greghaskins.spectrum.Spectrum.applyRules;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.Spectrum.junitMixin;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -59,22 +59,22 @@ public class MockitoSpecWithRuleClasses {
   // test specs start here
   {
     describe("A suite which needs mockito", () -> {
-      Supplier<Mocks> mocks = applyRules(Mocks.class);
+      Supplier<Mocks> mocksMixin = junitMixin(Mocks.class);
 
       beforeEach(() -> {
-        given(mocks.get().mockInterface.getInput()).willReturn("Hello world");
+        given(mocksMixin.get().mockInterface.getInput()).willReturn("Hello world");
       });
 
       it("can use the mocks", () -> {
-        assertThat(mocks.get().objectUnderTest.getResult(), is("Hello world"));
+        assertThat(mocksMixin.get().objectUnderTest.getResult(), is("Hello world"));
       });
 
       it("can use the mocks again", () -> {
-        assertThat(mocks.get().objectUnderTest.getResult(), is("Hello world"));
+        assertThat(mocksMixin.get().objectUnderTest.getResult(), is("Hello world"));
       });
 
       it("gets a fresh mock each time", () -> {
-        verify(mocks.get().mockInterface, never()).getInput();
+        verify(mocksMixin.get().mockInterface, never()).getInput();
       });
 
     });

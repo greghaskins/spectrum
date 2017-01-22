@@ -18,6 +18,8 @@ import java.util.function.Predicate;
  * passing hooks down a generation.
  */
 public class Hooks extends ArrayList<HookContext> {
+  private static final long serialVersionUID = 1L;
+
   public Hooks once() {
     return filtered(HookContext::isOnce);
   }

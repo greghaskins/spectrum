@@ -22,7 +22,7 @@ import org.mockito.junit.MockitoRule;
  * Demonstration of how to mix metaphors and use Mockito with Spectrum via
  * class members. There is only one instance of the test objects
  * so {@link org.mockito.InjectMocks} may have unexpected behaviour in some
- * complex situations. Recommendation is to use {@link Spectrum#applyRules(Class)}.
+ * complex situations. If this doesn't work use {@link Spectrum#junitMixin(Class)}.
  */
 @RunWith(Spectrum.class)
 public class MockitoSpecJUnitStyle {
