@@ -273,11 +273,11 @@ complementary to any focus or ignore that's hard-coded into the spec.
 
 The rules for selective running can be set by:
 
-* System property (See [SpectrumOptions.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java))
+* System property (See [Configuration.java](src/main/java/com/greghaskins/spectrum/Configuration.java))
   * This will be the common use case for CI Builds
   * Set `spectrum.tags.include` and `spectrum.tags.exclude` to be a comma separated list of tags
-  * This is likely done using a -D option on the java invocation
-* Function call (See [Configuration.java](src/main/java/com/greghaskins/spectrum/SpectrumOptions.java)) and `Spectrum.configure()`
+  * This is likely done using a `-D` option on the java invocation
+* Function call (See [Configuration.java](src/main/java/com/greghaskins/spectrum/Configuration.java)) and `Spectrum.configure()`
   * `configure().includeTags("foo")` and `configure().excludeTags("bar")` allow the rules to vary based on where they are called in the declaration block.
 
 Tags allow you run different categories of specs in different test runs, either through the
