@@ -14,7 +14,7 @@ public interface BeforeHook {
    * @return new {@link Hook} which runs the provided block then the inner
    */
   static Hook before(final Block block) {
-    return inner -> {
+    return (description, notifier, inner) -> {
       block.run();
       inner.run();
     };

@@ -61,4 +61,9 @@ final class Spec implements Child {
   public boolean isAtomic() {
     return true;
   }
+
+  @Override
+  public boolean isEffectivelyIgnored() {
+    return ignored;
+  }
 }

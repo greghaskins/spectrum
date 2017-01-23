@@ -3,7 +3,7 @@ package com.greghaskins.spectrum.model;
 import static com.greghaskins.spectrum.internal.NotifyingBlock.wrapWithReporting;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.ThrowingConsumer;
+import com.greghaskins.spectrum.Hook;
 import com.greghaskins.spectrum.Variable;
 import com.greghaskins.spectrum.internal.NotifyingBlock;
 
@@ -11,17 +11,15 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Collection of hooks. It is a linked list, but provides some helpers for
  * passing hooks down a generation.
  */
 public class Hooks extends ArrayList<HookContext> {
+  private static final long serialVersionUID = 1L;
+
   public Hooks once() {
     return filtered(HookContext::isOnce);
   }
@@ -75,29 +73,33 @@ public class Hooks extends ArrayList<HookContext> {
   }
 
   private void runAroundInternal(final Description description, final RunNotifier notifier,
-      final Block block) {
+      final Block block) throws Throwable {
     Variable<Boolean> hooksRememberedToRunTheInner = new Variable<>(false);
-    ThrowingConsumer<Block> consumer = innerBlock -> {
-      hooksRememberedToRunTheInner.set(true);
-      innerBlock.run();
-    };
+
+    Hook chainOfResponsibility = innerHook(hooksRememberedToRunTheInner);
 
     for (HookContext context : this) {
-      consumer = wrap(description, notifier, consumer, context);
+      chainOfResponsibility = wrap(chainOfResponsibility, context);
     }
-    consumer.accept(block);
+    chainOfResponsibility.accept(description, notifier, block);
 
     if (!hooksRememberedToRunTheInner.get()) {
       throw new RuntimeException("At least one of the test hooks did not run the test block.");
     }
   }
 
-  private ThrowingConsumer<Block> wrap(final Description description, final RunNotifier notifier,
-      final ThrowingConsumer<Block> inner, final HookContext outer) {
-    return block -> outer.getHook().acceptOrThrow(
-        wrapWithReporting(description, notifier, () -> inner.acceptOrThrow(block)));
+  private Hook innerHook(Variable<Boolean> hooksRememberedToRunTheInner) {
+    return (description, notifier, innerBlock) -> {
+      hooksRememberedToRunTheInner.set(true);
+      innerBlock.run();
+    };
   }
 
+  private Hook wrap(final Hook inner, final HookContext outer) {
+    return (description, notifier, block) -> outer.getHook().accept(description, notifier,
+        wrapWithReporting(description, notifier,
+            () -> inner.accept(description, notifier, block)));
+  }
 
   private Hooks filtered(Predicate<HookContext> predicate) {
     Hooks filtered = new Hooks();
