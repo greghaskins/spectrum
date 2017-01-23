@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
+import com.greghaskins.spectrum.Hook;
 import com.greghaskins.spectrum.Spectrum;
 
 import org.junit.runner.RunWith;
@@ -20,47 +21,44 @@ public class HookContextTest {
   {
     describe("Hook context", () -> {
       it("can never consider two hook contexts equal", () -> {
-        HookContext one = new HookContext(a -> {
-        },
+        HookContext one = new HookContext(emptyHook(),
             0, HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.ROOT);
-        HookContext two = new HookContext(a -> {
-        },
+        HookContext two = new HookContext(emptyHook(),
             0, HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.ROOT);
         assertThat(one.compareTo(two), not(is(0)));
       });
 
       it("considers the later created one to be less important", () -> {
-        HookContext one = new HookContext(a -> {
-        },
+        HookContext one = new HookContext(emptyHook(),
             0, HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.ROOT);
-        HookContext two = new HookContext(a -> {
-        },
+        HookContext two = new HookContext(emptyHook(),
             0, HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.ROOT);
         assertFirstIsMoreImportantThanSecond(one, two);
       });
 
       it("considers a higher level precedence to be more important"
           + " than a sequence number", () -> {
-            HookContext one = new HookContext(a -> {
-            },
+            HookContext one = new HookContext(emptyHook(),
                 0, HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.OUTER);
-            HookContext two = new HookContext(a -> {
-            },
+            HookContext two = new HookContext(emptyHook(),
                 0, HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.ROOT);
             assertFirstIsMoreImportantThanSecond(two, one);
           });
 
       it("considers a lower depth to be more important", () -> {
-        HookContext one = new HookContext(a -> {
-        },
+        HookContext one = new HookContext(emptyHook(),
             1, HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.ROOT);
-        HookContext two = new HookContext(a -> {
-        },
+        HookContext two = new HookContext(emptyHook(),
             0, HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.ROOT);
         assertFirstIsMoreImportantThanSecond(two, one);
       });
     });
 
+  }
+
+  private Hook emptyHook() {
+    return (description, notifier, block) -> {
+    };
   }
 
   private static void assertFirstIsMoreImportantThanSecond(HookContext first, HookContext second) {

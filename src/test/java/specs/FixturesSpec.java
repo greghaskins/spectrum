@@ -488,7 +488,7 @@ public class FixturesSpec {
           it("report each error", () -> {
             assertThat(result.get().getFailureCount(), is(2));
 
-            assertThat(failureMessages.get(), hasItem("java.lang.Exception: boom 1"));
+            assertThat(failureMessages.get(), hasItem("boom 1"));
             assertThat(failureMessages.get(), hasItem("boom 2"));
           });
 
