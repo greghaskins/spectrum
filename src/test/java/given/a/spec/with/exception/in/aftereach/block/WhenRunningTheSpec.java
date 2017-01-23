@@ -27,8 +27,8 @@ public class WhenRunningTheSpec {
   @Test
   public void theFailureExplainsWhatHappened() throws Exception {
     assertThat(this.result.getFailures().get(0),
-        is(failure("a passing test", RuntimeException.class,
-            "given.a.spec.with.exception.in.aftereach.block.Fixture$SomeException: kaboom")));
+        is(failure("a passing test", Fixture.SomeException.class,
+            "kaboom")));
   }
 
 }

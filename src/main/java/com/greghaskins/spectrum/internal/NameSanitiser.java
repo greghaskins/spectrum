@@ -21,6 +21,8 @@ public class NameSanitiser {
     String sanitised = name.replaceAll("\\(", "[")
         .replaceAll("\\)", "]");
 
+    sanitised = sanitised.replaceAll("\\.", "_");
+
     int suffix = 1;
     String deDuplicated = sanitised;
     while (this.namesUsed.contains(deDuplicated)) {

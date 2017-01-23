@@ -4,6 +4,13 @@ import static com.greghaskins.spectrum.Spectrum.compositeSpec;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 
+import com.greghaskins.spectrum.internal.parameterized.Example;
+import com.greghaskins.spectrum.internal.parameterized.ParameterizedDefinitionBlock;
+
+import java.util.Arrays;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+
 /**
  * A translation from Spectrum describe/it to Gherkin-like Feature/Scenario/Given/When/Then syntax
  * Note - any beforeEach and afterEach within a Scenario will still be executed between
@@ -81,7 +88,7 @@ public interface GherkinSyntax {
   }
 
   /**
-   * Syntactic sugar for an additional {@link #given} or {@link then} step. Must be used inside a
+   * Syntactic sugar for an additional {@link #given} or {@link #then} step. Must be used inside a
    * {@link #scenario}.
    *
    * @param behavior what we would like to describe as an and
@@ -93,5 +100,51 @@ public interface GherkinSyntax {
    */
   static void and(final String behavior, final Block block) {
     it("And " + behavior, block);
+  }
+
+  /**
+   * Scenario outline - composed of examples under a shared name. Example:
+   * <pre><code>
+   * scenarioOutline("Cuke eating - Gherkin style",
+        (start, eat, left) -&gt; {
+  
+         Variabl&lt;CukeEater&gt; me = new Variable&lt;&gt;();
+  
+         given("there are " + start + " cucumbers", () -&gt; {
+            me.set(new CukeEater(start));
+         });
+  
+         when("I eat " + eat + " cucumbers", () -&gt; {
+            me.get().eatCucumbers(eat);
+         });
+  
+         then("I should have " + left + " cucumbers", () -&gt; {
+            assertThat(me.get().remainingCucumbers(), is(left));
+         });
+      },
+  
+      withExamples(
+         example(12, 5, 7),
+         example(20, 5, 15))
+      );
+   * </code></pre>
+   * @param name name of scenario outline
+   * @param block a {@link ParameterizedDefinitionBlock} to execute that consumes the parameters
+   *              from the examples
+   * @param examples the examples to run through, built using
+   *                {@link ParamaterizedSyntax#withExamples(Example[])}
+   * @param <T> the type parameter, best derived implicitly from the examples
+   */
+  static <T extends ParameterizedDefinitionBlock<T>> void scenarioOutline(final String name,
+      final T block,
+      final Stream<Example<T>> examples) {
+
+    describe("Scenario outline: " + name, () -> {
+      describe("Examples:", () -> {
+        examples.forEach(example -> {
+          describe(example.toString(), () -> example.runDeclaration(block));
+        });
+      });
+    });
   }
 }
