@@ -453,6 +453,7 @@ Spectrum also supports:
 - Compatibility with existing JUnit tools; no configuration required
 - Mixing Spectrum tests and normal JUnit tests in the same project suite
 - RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
+- Bringing together modularised tests with dependency injection - see [IncludingSpecs.java](src/test/java/specs/IncludingSpecs.java)
 
 ### Non-Features
 

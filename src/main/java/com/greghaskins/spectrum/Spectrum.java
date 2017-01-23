@@ -65,6 +65,15 @@ public final class Spectrum extends Runner {
   }
 
   /**
+   * Include a test suite into the current one.
+   * @param testClass the class containing the Spectrum definitions
+   * @throws Throwable on error
+   */
+  public static void include(final Class<?> testClass) throws Throwable {
+    new ConstructorBlock(testClass).run();
+  }
+
+  /**
    * Declare a test suite that is made of interdependent children. The whole suite should pass
    * atomically and if it fails, any remaining children can stop running.
    *
