@@ -29,7 +29,7 @@ public class Example<T> {
         .map(o -> Optional.ofNullable(o)
             .map(Object::toString)
             .orElse("null"))
-        .collect(Collectors.joining("|", "|", "|"));
+        .collect(Collectors.joining(" | ", "| ", " |"));
   }
 
 }

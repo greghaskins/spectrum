@@ -5,10 +5,8 @@ import static com.greghaskins.spectrum.GherkinSyntax.given;
 import static com.greghaskins.spectrum.GherkinSyntax.scenarioOutline;
 import static com.greghaskins.spectrum.GherkinSyntax.then;
 import static com.greghaskins.spectrum.GherkinSyntax.when;
-import static com.greghaskins.spectrum.ParamaterizedSyntax.describeParameterized;
 import static com.greghaskins.spectrum.ParamaterizedSyntax.example;
 import static com.greghaskins.spectrum.ParamaterizedSyntax.withExamples;
-import static com.greghaskins.spectrum.Spectrum.it;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -23,22 +21,6 @@ import org.junit.runner.RunWith;
 @RunWith(Spectrum.class)
 public class ParameterizedSpecs {
   {
-    describeParameterized("Cuke eating without gherkin",
-        (start, eat, left) -> {
-
-          it("eats cukes properly", () -> {
-            CukeEater me = new CukeEater(start);
-            me.eatCucumbers(eat);
-            assertThat(me.remainingCucumbers(), is(left));
-          });
-        },
-
-        withExamples(
-            example(12, 5, 7),
-            example(20, 5, 15))
-
-    );
-
     scenarioOutline("Cuke eating - Gherkin style",
         (start, eat, left) -> {
 

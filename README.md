@@ -354,7 +354,7 @@ withExamples(
 )
 ```
 
-This is how the syntax of both `describeParameterized` and `scenarioOutline` work. You provide a consuming block to take the values for each example and define specs with those values, and you provide the values as examples.
+This is how `scenarioOutline` works. You provide a consuming block to take the values for each example and define specs with those values, then you provide the values as examples.
 
 For examples of this in action, see [ParameterizedSpecs.java](src/test/java/specs/ParameterizedSpecs.java).
 
@@ -481,7 +481,7 @@ The Spectrum API is designed to be familiar to Jasmine and RSpec users, while re
 
 The main functions for defining a test are:
 
-- `describe` / `describeParamaterized`
+- `describe`
 - `it`
 - `beforeEach` / `afterEach`
 - `beforeAll` / `afterAll`

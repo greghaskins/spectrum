@@ -1,6 +1,5 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.ParamaterizedSyntax.describeParameterized;
 import static com.greghaskins.spectrum.ParamaterizedSyntax.example;
 import static com.greghaskins.spectrum.ParamaterizedSyntax.withExamples;
 import static com.greghaskins.spectrum.Spectrum.describe;
@@ -10,6 +9,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.util.stream.Stream;
+
+import com.greghaskins.spectrum.internal.parameterized.Example;
 import org.junit.runner.RunWith;
 
 /**
@@ -99,6 +101,20 @@ public class ParameterizedVariants {
           withExamples(
               example(1, 2, "A", "B", false, false, 3, "AB"),
               example(1, 1, "A", "A", true, true, 2, "AA")));
+    });
+  }
+
+  // TODO - replace with any native parameterization - this is present
+  // here since the tests for all the argument variants are easier to express more
+  // clearly in a more native Spectrum form
+  private static <T> void describeParameterized(final String name, final T block,
+      final Stream<Example<T>> examples) {
+    Spectrum.describe(name, () -> {
+      Spectrum.context("Examples:", () -> {
+        examples.forEach(example -> {
+          Spectrum.describe(example.toString(), () -> example.runDeclaration(block));
+        });
+      });
     });
   }
 }
