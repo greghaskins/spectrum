@@ -26,29 +26,32 @@ public class JUnitRuleExample {
   }
 
   {
-    final Set<File> filesSeen = new HashSet<>();
-    describe("A parent spec", () -> {
+    final Set<File> ruleProvidedFoldersSeen = new HashSet<>();
+    describe("A spec with a rule mix-in", () -> {
       Supplier<TempFolderRuleMixin> tempFolderRuleMixin = junitMixin(TempFolderRuleMixin.class);
 
-      it("has access to the folder at suite level", () -> {
-        assertNotNull(tempFolderRuleMixin.get().tempFolderRule.getRoot());
-        filesSeen.add(tempFolderRuleMixin.get().tempFolderRule.getRoot());
+      it("has access to the rule-provided object at the top level", () -> {
+        checkCanUseTempFolderAndRecordWhatItWas(ruleProvidedFoldersSeen, tempFolderRuleMixin);
       });
 
       describe("with a nested set of specs", () -> {
-        it("has access to the folder at nested level", () -> {
-          assertNotNull(tempFolderRuleMixin.get().tempFolderRule.getRoot());
-          filesSeen.add(tempFolderRuleMixin.get().tempFolderRule.getRoot());
+        it("can access the rule-provided object within the nested spec", () -> {
+          checkCanUseTempFolderAndRecordWhatItWas(ruleProvidedFoldersSeen, tempFolderRuleMixin);
         });
-        it("has access to the folder with different value ", () -> {
-          assertNotNull(tempFolderRuleMixin.get().tempFolderRule.getRoot());
-          filesSeen.add(tempFolderRuleMixin.get().tempFolderRule.getRoot());
+        it("can access the rule-provided object over and over", () -> {
+          checkCanUseTempFolderAndRecordWhatItWas(ruleProvidedFoldersSeen, tempFolderRuleMixin);
         });
       });
 
-      it("has seen several different folders", () -> {
-        assertThat(filesSeen.size(), is(3));
+      it("has received a different instance of the rule-provided object each time", () -> {
+        assertThat(ruleProvidedFoldersSeen.size(), is(3));
       });
     });
+  }
+
+  private void checkCanUseTempFolderAndRecordWhatItWas(Set<File> filesSeen,
+      Supplier<TempFolderRuleMixin> tempFolderRuleMixin) {
+    assertNotNull(tempFolderRuleMixin.get().tempFolderRule.getRoot());
+    filesSeen.add(tempFolderRuleMixin.get().tempFolderRule.getRoot());
   }
 }
