@@ -7,6 +7,10 @@ Spectrum
 
 [Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/) and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
 
+## Note: under active development
+
+The latest released version is [1.0.0](https://github.com/greghaskins/spectrum/releases/tag/1.0.0). Please see the [README for 1.0.0](https://github.com/greghaskins/spectrum/tree/1.0.0) for details about the stable version. The content below applies to the latest development version on the `master` branch. If you'd like to help, we're glad to have it; please see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 
 ## Example
 
