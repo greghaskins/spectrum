@@ -123,7 +123,8 @@ public interface ParamaterizedSyntax {
    */
   static <T0, T1, T2, T3, T4, T5> Example<SixArgBlock<T0, T1, T2, T3, T4, T5>> example(T0 arg0, T1 arg1,
       T2 arg2, T3 arg3, T4 arg4, T5 arg5) {
-    return new Example<>(block -> block.run(arg0, arg1, arg2, arg3, arg4, arg5), arg0, arg1, arg2, arg3, arg4, arg5);
+    return new Example<>(block -> block.run(arg0, arg1, arg2, arg3, arg4, arg5), arg0, arg1, arg2, arg3,
+        arg4, arg5);
   }
 
   /**

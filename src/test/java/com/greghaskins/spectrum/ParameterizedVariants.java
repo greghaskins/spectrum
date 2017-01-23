@@ -9,10 +9,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import java.util.stream.Stream;
-
 import com.greghaskins.spectrum.internal.parameterized.Example;
+
 import org.junit.runner.RunWith;
+
+import java.util.stream.Stream;
 
 /**
  * Exercises all arg-variants of
