@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 /**
  * Implements a BDD-style test runner, similar to RSpec and Jasmine. It uses JUnit's standard
  * reporting mechanisms ({@link org.junit.runner.Description}), but provides a completely different
- * way of writing tests. Annotate you class with {@code @RunWith(Spectrum.class)}, and use the
+ * way of writing tests. Annotate your class with {@code @RunWith(Spectrum.class)}, and use the
  * static methods to declare your specs.
  *
  * @see #describe
@@ -203,14 +203,14 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Call this from within a Spec to make the spec as ignored/pending.
+   * Call this from within a Spec to mark the spec as ignored/pending.
    */
   public static void pending() {
     throw new AssumptionViolatedException("pending");
   }
 
   /**
-   * Call this from within a Spec to make the spec as ignored/pending.
+   * Call this from within a Spec to mark the spec as ignored/pending.
    *
    * @param message the annotation of the pending
    */
@@ -250,14 +250,15 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Declare a {@link Block} to be run after each spec in the current suite.
+   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run
+   * after each spec in the current suite.
    *
    * <p>
    * Use this to perform teardown or cleanup actions that are common across specs in this suite. If
    * multiple {@code afterEach} blocks are declared, they will run in declaration order.
    * </p>
    *
-   * @param block {@link Block} to run once after each spec
+   * @param block {@link com.greghaskins.spectrum.Block Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
     addHook(new HookContext(after(block), getDepth(),
@@ -265,7 +266,8 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Declare a {@link Block} to be run once before all the specs in the current suite begin.
+   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run once
+   * before all the specs in the current suite begin.
    *
    * <p>
    * Use {@code beforeAll} and {@link #afterAll(com.greghaskins.spectrum.Block) afterAll} blocks
@@ -331,7 +333,7 @@ public final class Spectrum extends Runner {
    * @param <T> The type of value
    *
    * @param supplier {@link com.greghaskins.spectrum.ThrowingSupplier} function that either
-   *        generates the value, or throws a `Throwable`
+   *        generates the value, or throws a {@link Throwable}
    * @return supplier which is refreshed for each spec's context
    */
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {

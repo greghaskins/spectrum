@@ -6,8 +6,9 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 
 /**
- * A base class for supplying hooks to use. Override before or after. Return the singleton
- * value from the before method.
+ * A base class for {@link SupplyingHook hooks that supply a value}.
+ *
+ * <p>Override {@link #before} or {@link #after}. Return the singleton value from the before method.
  * You can use this to write any plugin which needs to make a value visible to the specs.
  * This is not the only way to achieve that - you can also build from {@link SupplyingHook}
  * but this captures the template for a complex hook.

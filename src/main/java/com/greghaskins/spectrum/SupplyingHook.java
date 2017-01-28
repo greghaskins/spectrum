@@ -3,7 +3,7 @@ package com.greghaskins.spectrum;
 import java.util.function.Supplier;
 
 /**
- * For when adding a hook that supplies a value within running itself. The hook will consume
+ * A hook that supplies a value within a running test. The hook will consume
  * a block, which is to be run within the hook's setup/teardown. That block will access
  * the hook object as a supplier, which will provide an object of T. The T object should also
  * be destroyed by the hook's teardown.
