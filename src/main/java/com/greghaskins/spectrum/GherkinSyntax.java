@@ -7,8 +7,6 @@ import static com.greghaskins.spectrum.Spectrum.it;
 import com.greghaskins.spectrum.internal.parameterized.Example;
 import com.greghaskins.spectrum.internal.parameterized.ParameterizedDefinitionBlock;
 
-import java.util.Arrays;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
