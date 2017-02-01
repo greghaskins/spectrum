@@ -70,7 +70,7 @@ class Suite implements Parent, Child {
     return addSuite(name, Suite::defaultChildRunner);
   }
 
-  Suite addSuite(final String name, final ChildRunner childRunner) {
+  private Suite addSuite(final String name, final ChildRunner childRunner) {
     final Suite suite =
         new Suite(Description.createSuiteDescription(sanitise(name)), this, childRunner,
             this.tagging.clone());

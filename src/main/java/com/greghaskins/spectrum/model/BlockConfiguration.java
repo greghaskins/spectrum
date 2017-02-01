@@ -125,7 +125,7 @@ public class BlockConfiguration {
    * @param why the reason for ignoring
    * @return this for fluent use
    */
-  public BlockConfiguration ignore(final String why) {
+  private BlockConfiguration ignore(final String why) {
     return ignore();
   }
 
@@ -147,7 +147,7 @@ public class BlockConfiguration {
    * @param tags the tags of the block
    * @return this for fluent use
    */
-  public BlockConfiguration tags(String... tags) {
+  private BlockConfiguration tags(String... tags) {
     Arrays.stream(tags).forEach(this.hasTags::add);
 
     return this;

@@ -197,7 +197,7 @@ public class RuleContext<T> implements Supplier<T> {
    * Does the object provided actually have any rules.
    * @return true if there are rules
    */
-  public boolean hasAnyJUnitAnnotations() {
+  boolean hasAnyJUnitAnnotations() {
     return getClassRules().size() > 0 || hasAnyTestOrMethodRules();
   }
 

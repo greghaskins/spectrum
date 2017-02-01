@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class Example<T> {
 
-  final String description;
+  private final String description;
   private Consumer<T> blockRunner;
 
   public Example(Consumer<T> blockRunner, Object... arguments) {
