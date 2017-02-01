@@ -88,11 +88,10 @@ public class RuleContext<T> implements Supplier<T> {
         withMethodRules(base, getMethodRules(currentTestObject)), description);
   }
 
-  @SuppressWarnings("unchecked")
   private void constructTestObject() throws Throwable {
-    ConstructorBlock constructor = new ConstructorBlock(ruleClass);
+    ConstructorBlock<T> constructor = new ConstructorBlock<>(ruleClass);
     constructor.run();
-    currentTestObject = (T) constructor.get();
+    currentTestObject = constructor.get();
   }
 
   private Statement withMethodRules(final Statement base, final List<MethodRule> methodRules) {
