@@ -236,7 +236,7 @@ public final class Spectrum extends Runner {
    * @return a supplier of the rules object
    */
   public static <T> Supplier<T> junitMixin(final Class<T> rulesClass) {
-    return Rules.applyRules(rulesClass);
+    return Rules.applyRules(rulesClass, Spectrum::addHook);
   }
 
   /**
@@ -438,7 +438,7 @@ public final class Spectrum extends Runner {
 
     return () -> {
       constructTestClass.run();
-      Rules.applyRules(constructTestClass.get());
+      Rules.applyRules(constructTestClass.get(), Spectrum::addHook);
     };
   }
 
