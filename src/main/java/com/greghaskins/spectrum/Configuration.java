@@ -1,5 +1,7 @@
 package com.greghaskins.spectrum;
 
+import com.greghaskins.spectrum.internal.Suite;
+
 /**
  * Allows the injection of suite configuration during test definition. A wrapper for the
  * suite which exposes configurables.

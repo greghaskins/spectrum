@@ -1,8 +1,4 @@
-package com.greghaskins.spectrum;
-
-import com.greghaskins.spectrum.internal.Child;
-import com.greghaskins.spectrum.internal.NotifyingBlock;
-import com.greghaskins.spectrum.internal.Parent;
+package com.greghaskins.spectrum.internal;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
