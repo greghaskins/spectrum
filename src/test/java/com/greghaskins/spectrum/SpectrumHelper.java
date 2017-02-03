@@ -38,7 +38,7 @@ public class SpectrumHelper {
 
   /**
    * Allows a listener to listen to a run.
-   * @param specClass the class to execute via Spectrm
+   * @param specClass the class to execute via Spectrum
    * @param listener the listener to use
    * @param <T> type of listener
    * @return the listener for fluent usage

@@ -7,8 +7,6 @@ import static com.greghaskins.spectrum.Spectrum.it;
 import com.greghaskins.spectrum.internal.parameterized.Example;
 import com.greghaskins.spectrum.internal.parameterized.ParameterizedDefinitionBlock;
 
-import java.util.Arrays;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -17,6 +15,7 @@ import java.util.stream.Stream;
  * given/when/then steps which may not make sense in many situations.
  */
 public interface GherkinSyntax {
+
   /**
    * Describes a feature of the system. A feature may have many scenarios.
    *
@@ -108,7 +107,7 @@ public interface GherkinSyntax {
    * scenarioOutline("Cuke eating - Gherkin style",
         (start, eat, left) -&gt; {
   
-         Variabl&lt;CukeEater&gt; me = new Variable&lt;&gt;();
+         Variable&lt;CukeEater&gt; me = new Variable&lt;&gt;();
   
          given("there are " + start + " cucumbers", () -&gt; {
             me.set(new CukeEater(start));
@@ -132,7 +131,7 @@ public interface GherkinSyntax {
    * @param block a {@link ParameterizedDefinitionBlock} to execute that consumes the parameters
    *              from the examples
    * @param examples the examples to run through, built using
-   *                {@link ParamaterizedSyntax#withExamples(Example[])}
+   *                {@link ParameterizedSyntax#withExamples(Example[])}
    * @param <T> the type parameter, best derived implicitly from the examples
    */
   static <T extends ParameterizedDefinitionBlock<T>> void scenarioOutline(final String name,

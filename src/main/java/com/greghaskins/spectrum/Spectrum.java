@@ -90,7 +90,7 @@ public final class Spectrum extends Runner {
    */
   public static void describe(final String context, final com.greghaskins.spectrum.Block block) {
     final Suite suite = getCurrentSuiteBeingDeclared().addSuite(context);
-    suite.applyPreConditions(block);
+    suite.applyPreconditions(block);
     beginDefinition(suite, block);
   }
 
@@ -103,7 +103,6 @@ public final class Spectrum extends Runner {
    *        behavior
    *
    * @see #describe(String, com.greghaskins.spectrum.Block)
-   *
    */
   public static void fdescribe(final String context, final com.greghaskins.spectrum.Block block) {
     describe(context, with(focus(), block));

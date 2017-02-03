@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * Common syntax for parameterization.
  */
-public interface ParamaterizedSyntax {
+public interface ParameterizedSyntax {
   /**
    * Construct examples. Used to convert from individual objects created with
    * {@link #example(Object)} type methods into a type-implicit stream. You should try to lay out
@@ -36,7 +36,7 @@ public interface ParamaterizedSyntax {
   /**
    * Single value example.
    * @param arg the parameter
-   * @param <T> the type of argumenteter
+   * @param <T> the type of argument
    * @return single value example
    */
   static <T> Example<OneArgBlock<T>> example(T arg) {

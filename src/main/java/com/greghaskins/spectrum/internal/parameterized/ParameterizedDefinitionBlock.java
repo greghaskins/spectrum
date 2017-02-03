@@ -1,8 +1,10 @@
 package com.greghaskins.spectrum.internal.parameterized;
 
+import com.greghaskins.spectrum.ParameterizedSyntax;
+
 /**
  * The common interface of a parameterized definition block. This provides type safety
- * to the {@link com.greghaskins.spectrum.ParamaterizedSyntax} which takes argument
+ * to the {@link ParameterizedSyntax} which takes argument
  * blocks as an input. It looks similar to Java 8's Consumer.
  */
 public interface ParameterizedDefinitionBlock<T> {

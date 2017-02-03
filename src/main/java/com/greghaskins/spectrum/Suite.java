@@ -31,7 +31,7 @@ class Suite implements Parent, Child {
   private boolean ignored;
 
   private final TaggingFilterCriteria tagging;
-  private BlockConfiguration preconditions = BlockConfiguration.Factory.defaultPreConditions();
+  private BlockConfiguration preconditions = BlockConfiguration.Factory.defaultPreconditions();
   private NameSanitiser nameSanitiser = new NameSanitiser();
 
   /**
@@ -108,7 +108,7 @@ class Suite implements Parent, Child {
     ConfiguredBlock configuredBlock =
         ConfiguredBlock.with(this.preconditions.forChild(), block);
 
-    return new Spec(specDescription, specBlockInContext, this).applyPreConditions(configuredBlock,
+    return new Spec(specDescription, specBlockInContext, this).applyPreconditions(configuredBlock,
         this.tagging);
   }
 
@@ -159,9 +159,9 @@ class Suite implements Parent, Child {
     this.tagging.exclude(tags);
   }
 
-  void applyPreConditions(Block block) {
+  void applyPreconditions(Block block) {
     this.preconditions = Child.findApplicablePreconditions(block);
-    applyPreConditions(block, this.tagging);
+    applyPreconditions(block, this.tagging);
   }
 
   @Override
