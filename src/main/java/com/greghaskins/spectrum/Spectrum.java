@@ -7,6 +7,7 @@ import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 
 import com.greghaskins.spectrum.internal.LetHook;
+import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.junit.Rules;
 import com.greghaskins.spectrum.model.ConstructorBlock;
 import com.greghaskins.spectrum.model.HookContext;
@@ -57,6 +58,7 @@ public final class Spectrum extends Runner {
 
   /**
    * Supplier that is allowed to throw.
+   * 
    * @param <T> type of object to supply
    * @deprecated since 1.0.1 - use {@link com.greghaskins.spectrum.ThrowingSupplier} instead
    */
@@ -125,6 +127,7 @@ public final class Spectrum extends Runner {
 
   /**
    * Define a test context.
+   * 
    * @param context the description of the context
    * @param block the block to execute
    */
@@ -134,6 +137,7 @@ public final class Spectrum extends Runner {
 
   /**
    * Define a focused test context. See {@link #fdescribe(String, com.greghaskins.spectrum.Block)}.
+   * 
    * @param context the description of the context
    * @param block the block to execute
    */
@@ -142,8 +146,8 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Define an ignored test context. See
-   * {@link #xdescribe(String, com.greghaskins.spectrum.Block)}.
+   * Define an ignored test context. See {@link #xdescribe(String, com.greghaskins.spectrum.Block)}.
+   * 
    * @param context the description of the context
    * @param block the block to execute
    */
@@ -223,8 +227,9 @@ public final class Spectrum extends Runner {
 
 
   /**
-   * Uses the given class as a mix-in for JUnit rules to be applied.
-   * These rules will cascade down and be applied at the level of specs or atomic specs.
+   * Uses the given class as a mix-in for JUnit rules to be applied. These rules will cascade down
+   * and be applied at the level of specs or atomic specs.
+   * 
    * @param rulesClass type of object to create and apply rules to for each spec.
    * @param <T> type of the object
    * @return a supplier of the rules object
@@ -249,8 +254,8 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run
-   * after each spec in the current suite.
+   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run after each spec in the current
+   * suite.
    *
    * <p>
    * Use this to perform teardown or cleanup actions that are common across specs in this suite. If
@@ -265,8 +270,8 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run once
-   * before all the specs in the current suite begin.
+   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run once before all the specs in
+   * the current suite begin.
    *
    * <p>
    * Use {@code beforeAll} and {@link #afterAll(com.greghaskins.spectrum.Block) afterAll} blocks
@@ -346,9 +351,10 @@ public final class Spectrum extends Runner {
 
   /**
    * Insert a hook into the current level of definition.
+   * 
    * @param hook to insert
    * @param appliesTo the {@link com.greghaskins.spectrum.model.HookContext.AppliesTo} indicating
-   *                  where the hook is run
+   *        where the hook is run
    * @param precedence the importance of the hook compared to others
    */
   public static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,
@@ -362,8 +368,8 @@ public final class Spectrum extends Runner {
 
   /**
    * Will throw an exception if this method happens to be called while Spectrum is still defining
-   * tests, rather than executing them. Useful to see if a hook is being accidentally used
-   * during definition.
+   * tests, rather than executing them. Useful to see if a hook is being accidentally used during
+   * definition.
    */
   public static void assertSpectrumInTestMode() {
     if (getCurrentSuiteBeingDeclared() != null) {
@@ -419,10 +425,11 @@ public final class Spectrum extends Runner {
 
   /**
    * Links the test class construction to JUnit rules implementation.
+   * 
    * @param testClass type of the test object
-   * @return a block which when executed will perform test definition against Spectrum
-   *         and also hooks JUnit rule implementation to the definition based on any
-   *         "@Rule" annotations on the members - see {@link Rules}
+   * @return a block which when executed will perform test definition against Spectrum and also
+   *         hooks JUnit rule implementation to the definition based on any "@Rule" annotations on
+   *         the members - see {@link Rules}
    */
   private static <T> com.greghaskins.spectrum.Block createTestClassDefinitionBlock(
       final Class<T> testClass) {
