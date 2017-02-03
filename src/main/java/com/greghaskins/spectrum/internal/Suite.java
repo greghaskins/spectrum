@@ -156,7 +156,7 @@ public class Suite implements Parent, Child {
   }
 
   public void applyPreconditions(Block block) {
-    this.preconditions = Child.findApplicablePreconditions(block);
+    this.preconditions = ConfiguredBlock.findApplicablePreconditions(block);
     applyPreconditions(block, this.tagging);
   }
 

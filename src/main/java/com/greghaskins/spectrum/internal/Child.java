@@ -46,7 +46,7 @@ public interface Child {
    */
   default Child applyPreconditions(final Block block,
       final TaggingFilterCriteria taggingFilterCriteria) {
-    findApplicablePreconditions(block).applyTo(this, taggingFilterCriteria);
+    ConfiguredBlock.findApplicablePreconditions(block).applyTo(this, taggingFilterCriteria);
 
     return this;
   }
