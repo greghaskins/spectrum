@@ -3,6 +3,7 @@ package com.greghaskins.spectrum.model;
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.internal.Child;
 import com.greghaskins.spectrum.internal.ConfiguredBlock;
+import com.greghaskins.spectrum.internal.TaggingFilterCriteria;
 
 import java.util.Arrays;
 import java.util.HashSet;

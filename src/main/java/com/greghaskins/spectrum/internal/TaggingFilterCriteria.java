@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum.model;
+package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Configuration;
 
@@ -49,7 +49,7 @@ public class TaggingFilterCriteria {
     return copy;
   }
 
-  boolean isAllowedToRun(Collection<String> tags) {
+  public boolean isAllowedToRun(Collection<String> tags) {
     return !isExcluded(tags) && compliesWithRequired(tags);
   }
 

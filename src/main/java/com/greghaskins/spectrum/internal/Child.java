@@ -4,7 +4,6 @@ import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.defaultP
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.model.BlockConfiguration;
-import com.greghaskins.spectrum.model.TaggingFilterCriteria;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
