@@ -1,6 +1,8 @@
 package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.internal.hooks.HookContext;
+import com.greghaskins.spectrum.internal.hooks.Hooks;
 import com.greghaskins.spectrum.model.BlockConfiguration;
 
 import org.junit.runner.Description;

@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.hooks;
 
 import com.greghaskins.spectrum.ThrowingSupplier;
 

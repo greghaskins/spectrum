@@ -1,7 +1,7 @@
 package com.greghaskins.spectrum.internal.junit;
 
-import com.greghaskins.spectrum.internal.Hook;
-import com.greghaskins.spectrum.internal.HookContext;
+import com.greghaskins.spectrum.internal.hooks.Hook;
+import com.greghaskins.spectrum.internal.hooks.HookContext;
 
 import java.util.function.Supplier;
 
