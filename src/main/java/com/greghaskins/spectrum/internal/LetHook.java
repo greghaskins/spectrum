@@ -1,6 +1,5 @@
 package com.greghaskins.spectrum.internal;
 
-import com.greghaskins.spectrum.AbstractSupplyingHook;
 import com.greghaskins.spectrum.ThrowingSupplier;
 
 /**
