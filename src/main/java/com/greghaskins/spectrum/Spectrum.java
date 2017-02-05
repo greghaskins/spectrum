@@ -6,13 +6,13 @@ import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 
+import com.greghaskins.spectrum.internal.ConstructorBlock;
 import com.greghaskins.spectrum.internal.Hook;
 import com.greghaskins.spectrum.internal.HookContext;
+import com.greghaskins.spectrum.internal.IdempotentBlock;
 import com.greghaskins.spectrum.internal.LetHook;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.junit.Rules;
-import com.greghaskins.spectrum.model.ConstructorBlock;
-import com.greghaskins.spectrum.model.IdempotentBlock;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
