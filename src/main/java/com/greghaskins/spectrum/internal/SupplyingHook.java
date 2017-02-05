@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.internal;
 
 import java.util.function.Supplier;
 

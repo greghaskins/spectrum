@@ -1,4 +1,7 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.internal;
+
+import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.ThrowingConsumer;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;

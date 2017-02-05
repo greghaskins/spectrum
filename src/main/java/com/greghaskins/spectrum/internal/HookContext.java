@@ -1,10 +1,8 @@
-package com.greghaskins.spectrum.model;
+package com.greghaskins.spectrum.internal;
 
-import static com.greghaskins.spectrum.model.HookContext.AppliesTo.ATOMIC_ONLY;
-import static com.greghaskins.spectrum.model.HookContext.AppliesTo.EACH_CHILD;
-import static com.greghaskins.spectrum.model.HookContext.AppliesTo.ONCE;
-
-import com.greghaskins.spectrum.Hook;
+import static com.greghaskins.spectrum.internal.HookContext.AppliesTo.ATOMIC_ONLY;
+import static com.greghaskins.spectrum.internal.HookContext.AppliesTo.EACH_CHILD;
+import static com.greghaskins.spectrum.internal.HookContext.AppliesTo.ONCE;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

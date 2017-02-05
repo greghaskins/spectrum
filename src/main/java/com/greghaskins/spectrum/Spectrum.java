@@ -6,11 +6,12 @@ import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 
+import com.greghaskins.spectrum.internal.Hook;
+import com.greghaskins.spectrum.internal.HookContext;
 import com.greghaskins.spectrum.internal.LetHook;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.junit.Rules;
 import com.greghaskins.spectrum.model.ConstructorBlock;
-import com.greghaskins.spectrum.model.HookContext;
 import com.greghaskins.spectrum.model.IdempotentBlock;
 
 import org.junit.AssumptionViolatedException;
@@ -250,8 +251,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(before(block), getDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL));
+    addHook(new HookContext(before(block), getDepth(), HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.LOCAL));
   }
 
   /**
@@ -266,8 +267,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(after(block), getDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
+    addHook(new HookContext(after(block), getDepth(), HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
   /**
@@ -311,8 +312,8 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(Hook.from(consumer), getDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
+    addHook(new HookContext(Hook.from(consumer), getDepth(), HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
   /**
@@ -323,8 +324,8 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(Hook.from(consumer), getDepth(),
-        HookContext.AppliesTo.ONCE, HookContext.Precedence.OUTER));
+    addHook(new HookContext(Hook.from(consumer), getDepth(), HookContext.AppliesTo.ONCE,
+        HookContext.Precedence.OUTER));
   }
 
   /**
@@ -354,11 +355,11 @@ public final class Spectrum extends Runner {
    * Insert a hook into the current level of definition.
    * 
    * @param hook to insert
-   * @param appliesTo the {@link com.greghaskins.spectrum.model.HookContext.AppliesTo} indicating
+   * @param appliesTo the {@link com.greghaskins.spectrum.internal.HookContext.AppliesTo} indicating
    *        where the hook is run
    * @param precedence the importance of the hook compared to others
    */
-  public static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,
+  private static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,
       final HookContext.Precedence precedence) {
     addHook(new HookContext(hook, getDepth(), appliesTo, precedence));
   }
