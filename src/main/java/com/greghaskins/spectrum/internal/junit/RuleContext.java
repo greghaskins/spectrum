@@ -4,7 +4,7 @@ import static com.greghaskins.spectrum.internal.junit.StubJUnitFrameworkMethod.s
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.internal.ConstructorBlock;
-import com.greghaskins.spectrum.internal.Hook;
+import com.greghaskins.spectrum.internal.hooks.Hook;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

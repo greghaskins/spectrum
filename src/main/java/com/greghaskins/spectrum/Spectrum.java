@@ -1,17 +1,17 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.internal.AfterHook.after;
-import static com.greghaskins.spectrum.internal.BeforeHook.before;
 import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
+import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
+import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 
 import com.greghaskins.spectrum.internal.ConstructorBlock;
-import com.greghaskins.spectrum.internal.Hook;
-import com.greghaskins.spectrum.internal.HookContext;
 import com.greghaskins.spectrum.internal.IdempotentBlock;
-import com.greghaskins.spectrum.internal.LetHook;
 import com.greghaskins.spectrum.internal.Suite;
+import com.greghaskins.spectrum.internal.hooks.Hook;
+import com.greghaskins.spectrum.internal.hooks.HookContext;
+import com.greghaskins.spectrum.internal.hooks.LetHook;
 import com.greghaskins.spectrum.internal.junit.Rules;
 
 import org.junit.AssumptionViolatedException;
@@ -354,7 +354,7 @@ public final class Spectrum extends Runner {
    * Insert a hook into the current level of definition.
    * 
    * @param hook to insert
-   * @param appliesTo the {@link com.greghaskins.spectrum.internal.HookContext.AppliesTo} indicating
+   * @param appliesTo the {@link com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo} indicating
    *        where the hook is run
    * @param precedence the importance of the hook compared to others
    */

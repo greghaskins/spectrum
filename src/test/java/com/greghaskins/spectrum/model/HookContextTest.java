@@ -8,8 +8,8 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
 import com.greghaskins.spectrum.Spectrum;
-import com.greghaskins.spectrum.internal.Hook;
-import com.greghaskins.spectrum.internal.HookContext;
+import com.greghaskins.spectrum.internal.hooks.Hook;
+import com.greghaskins.spectrum.internal.hooks.HookContext;
 
 import org.junit.runner.RunWith;
 
