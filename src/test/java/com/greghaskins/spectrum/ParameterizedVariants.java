@@ -1,7 +1,7 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.ParamaterizedSyntax.example;
-import static com.greghaskins.spectrum.ParamaterizedSyntax.withExamples;
+import static com.greghaskins.spectrum.ParameterizedSyntax.example;
+import static com.greghaskins.spectrum.ParameterizedSyntax.withExamples;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static org.hamcrest.core.Is.is;

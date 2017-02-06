@@ -4,18 +4,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Santises names within a Suite. To stop a name being duplicated or
+ * Sanitises names within a Suite. To stop a name being duplicated or
  * containing characters that upset test runners.
  */
 public class NameSanitiser {
   private Set<String> namesUsed = new HashSet<>();
 
   /**
-   * Given a name, deduplicate it and filter out any bad characters.
+   * Deduplicate the given {@code name} and filter out any bad characters.
+   *
+   * <p>Note: this function has side effects - sanitising a name will cause it to be remembered for future
+   * deduplication purposes.
+   *
    * @param name the spec name
-   * @return a name which is non-duplicate within this sanitiser and which has known
-   *        bad characters removed. Note: this function has side effects - sanitising
-   *        a name will cause it to be remembered for future deduplication purposes.
+   * @return a name unique to this sanitiser which has known bad characters removed.
    */
   public String sanitise(final String name) {
     String sanitised = name.replaceAll("\\(", "[")

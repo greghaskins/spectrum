@@ -9,13 +9,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Pre conditions and configurations that apply to a {@link ConfiguredBlock}.
+ * Preconditions and configurations that apply to a {@link ConfiguredBlock}.
  */
 public class BlockConfiguration {
   /**
    * Contains factory methods for creating {@link BlockConfiguration} objects so you can include
    * them in {@link ConfiguredBlock#with(BlockConfiguration, Block)}. The
-   * {@link BlockConfiguration} object has fluent setters so you can add more properties.
+   * {@code BlockConfiguration} object has fluent setters so you can add more properties.
    * This is an interface since it has nothing but static methods.
    */
   public interface Factory {
@@ -63,7 +63,7 @@ public class BlockConfiguration {
       return new BlockConfiguration().focus();
     }
 
-    static BlockConfiguration defaultPreConditions() {
+    static BlockConfiguration defaultPreconditions() {
       return new BlockConfiguration();
     }
   }

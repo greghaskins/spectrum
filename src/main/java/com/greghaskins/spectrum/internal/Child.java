@@ -1,6 +1,6 @@
 package com.greghaskins.spectrum.internal;
 
-import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.defaultPreConditions;
+import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.defaultPreconditions;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.model.BlockConfiguration;
@@ -44,7 +44,7 @@ public interface Child {
    *                     This is used to determine what filters apply to the block
    * @return the child itself for fluent calling
    */
-  default Child applyPreConditions(final Block block,
+  default Child applyPreconditions(final Block block,
       final TaggingFilterCriteria taggingFilterCriteria) {
     findApplicablePreconditions(block).applyTo(this, taggingFilterCriteria);
 
@@ -61,7 +61,7 @@ public interface Child {
     if (block instanceof ConfiguredBlock) {
       return ((ConfiguredBlock) block).getPreconditions();
     } else {
-      return defaultPreConditions();
+      return defaultPreconditions();
     }
   }
 }

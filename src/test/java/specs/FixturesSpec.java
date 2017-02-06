@@ -356,7 +356,7 @@ public class FixturesSpec {
       describe("when a spec explodes", () -> {
 
         beforeEach(() -> SpectrumHelper.run(() -> {
-          describe("context desecription", () -> {
+          describe("context description", () -> {
 
             afterAll(() -> {
               calls.get().add("afterAll");

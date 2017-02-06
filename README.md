@@ -226,8 +226,8 @@ describe("Ignored specs", () -> {
 ```
 #### Ignoring Specs Spectrum style
 
-Spectrum allows you to specify pre-conditions on a block. These preconditions can include tagging.
-The `with(PreConditions,Block)` function is used to annotate a block with the preconditions. As ignoring is a common case, there is also an `ignore` function you can
+Spectrum allows you to specify preconditions on a block. These preconditions can include tagging.
+The `with(Preconditions,Block)` function is used to annotate a block with the preconditions. As ignoring is a common case, there is also an `ignore` function you can
 wrap around a block which has the same effect as using `with(ignore(), ...)`.
 For ignoring or focusing specs, the syntax is:
 
@@ -559,7 +559,7 @@ Regular JUnit runners work quite differently to Spectrum. While it is possible t
 
 ## Supported Features
 
-The Spectrum API is designed to be familiar to Jasmine and RSpec users, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Specturm should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)
+The Spectrum API is designed to be familiar to Jasmine and RSpec users, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Spectrum should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)
 
 The main functions for defining a test are:
 

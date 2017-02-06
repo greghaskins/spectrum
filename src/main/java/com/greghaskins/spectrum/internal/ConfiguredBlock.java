@@ -4,15 +4,14 @@ import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.model.BlockConfiguration;
 
 /**
- * A block with pre conditions set on it.
+ * A block with preconditions set on it.
  */
 public class ConfiguredBlock implements Block {
   private final BlockConfiguration blockConfiguration;
   private final Block innerBlock;
 
   /**
-   * Surround a {@link Block} with the {@link #with(BlockConfiguration, Block)} statement
-   * to add preconditions and metadata to it.
+   * Surround a {@link Block} with the {@code with} statement to add preconditions and metadata to it.
    * E.g. <code>with(tags("foo"), () -&gt; {})</code>
    * @param blockConfiguration the precondition object - see the factory methods in
    *        {@link BlockConfiguration}
@@ -58,8 +57,8 @@ public class ConfiguredBlock implements Block {
   }
 
   /**
-   * Get the pre conditions that apply to the block.
-   * @return the preconditons on the block
+   * Get the preconditions that apply to the block.
+   * @return the preconditions on the block
    */
   BlockConfiguration getPreconditions() {
     return blockConfiguration;

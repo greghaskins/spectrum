@@ -5,8 +5,8 @@ import static com.greghaskins.spectrum.GherkinSyntax.given;
 import static com.greghaskins.spectrum.GherkinSyntax.scenarioOutline;
 import static com.greghaskins.spectrum.GherkinSyntax.then;
 import static com.greghaskins.spectrum.GherkinSyntax.when;
-import static com.greghaskins.spectrum.ParamaterizedSyntax.example;
-import static com.greghaskins.spectrum.ParamaterizedSyntax.withExamples;
+import static com.greghaskins.spectrum.ParameterizedSyntax.example;
+import static com.greghaskins.spectrum.ParameterizedSyntax.withExamples;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
