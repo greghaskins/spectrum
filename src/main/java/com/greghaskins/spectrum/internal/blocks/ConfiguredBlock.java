@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.blocks;
 
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.defaultPreConditions;
 

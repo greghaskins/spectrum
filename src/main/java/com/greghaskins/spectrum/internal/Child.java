@@ -1,6 +1,7 @@
 package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.internal.blocks.ConfiguredBlock;
 import com.greghaskins.spectrum.model.BlockConfiguration;
 
 import org.junit.runner.Description;

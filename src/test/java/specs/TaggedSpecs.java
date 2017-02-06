@@ -5,7 +5,7 @@ import static com.greghaskins.spectrum.Spectrum.configure;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
+import static com.greghaskins.spectrum.internal.blocks.ConfiguredBlock.with;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.tags;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;

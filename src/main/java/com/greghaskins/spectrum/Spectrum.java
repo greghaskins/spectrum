@@ -1,14 +1,14 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
+import static com.greghaskins.spectrum.internal.blocks.ConfiguredBlock.with;
 import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 
-import com.greghaskins.spectrum.internal.ConstructorBlock;
-import com.greghaskins.spectrum.internal.IdempotentBlock;
 import com.greghaskins.spectrum.internal.Suite;
+import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
+import com.greghaskins.spectrum.internal.blocks.IdempotentBlock;
 import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext;
 import com.greghaskins.spectrum.internal.hooks.LetHook;
