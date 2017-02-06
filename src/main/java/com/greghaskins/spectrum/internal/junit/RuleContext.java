@@ -3,7 +3,7 @@ package com.greghaskins.spectrum.internal.junit;
 import static com.greghaskins.spectrum.internal.junit.StubJUnitFrameworkMethod.stubFrameworkMethod;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.internal.ConstructorBlock;
+import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
 import com.greghaskins.spectrum.internal.hooks.Hook;
 
 import org.junit.AfterClass;
