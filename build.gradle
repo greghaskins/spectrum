@@ -18,6 +18,7 @@ dependencies {
   testCompile group: 'org.springframework', name:'spring-test', version: '4.3.4.RELEASE'
   testCompile group: 'org.springframework', name:'spring-core', version: '4.3.4.RELEASE'
   testCompile group: 'org.springframework', name:'spring-context', version: '4.3.4.RELEASE'
+  testCompile group: 'de.schauderhaft.degraph', name: 'degraph-check', version: '0.1.4'
 }
 
 compileJava { sourceCompatibility = 1.8 }
