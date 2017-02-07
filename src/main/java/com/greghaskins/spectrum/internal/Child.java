@@ -3,6 +3,7 @@ package com.greghaskins.spectrum.internal;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.defaultPreconditions;
 
 import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.model.BlockConfiguration;
 
 import org.junit.runner.Description;
@@ -38,7 +39,7 @@ public interface Child {
    * Gets the object to be filtered appropriately with its preconditions.
    * @param block the block that will be executed by the child - this may be of
    *              type {@link ConfiguredBlock} if declared with
-   *              {@link ConfiguredBlock#with(BlockConfiguration, Block)}
+   *              {@link Spectrum#with(BlockConfiguration, Block)}
    * @param taggingFilterCriteria the tagging state in the parent of this suite or spec.
    *                     This is used to determine what filters apply to the block
    * @return the child itself for fluent calling

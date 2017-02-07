@@ -1,6 +1,7 @@
 package com.greghaskins.spectrum.model;
 
 import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.internal.Child;
 import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.TaggingFilterCriteria;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class BlockConfiguration {
   /**
    * Contains factory methods for creating {@link BlockConfiguration} objects so you can include
-   * them in {@link ConfiguredBlock#with(BlockConfiguration, Block)}. The
+   * them in {@link Spectrum#with(BlockConfiguration, Block)}. The
    * {@code BlockConfiguration} object has fluent setters so you can add more properties.
    * This is an interface since it has nothing but static methods.
    */
@@ -24,7 +25,7 @@ public class BlockConfiguration {
      * Ignore the suite or spec.
      *
      * @return a precondition that will ignore the block within a
-     *         {@link ConfiguredBlock#with(BlockConfiguration, Block)}
+     *         {@link Spectrum#with(BlockConfiguration, Block)}
      */
     static BlockConfiguration ignore() {
       return new BlockConfiguration().ignore();
@@ -35,7 +36,7 @@ public class BlockConfiguration {
      *
      * @param why reason for ignoring
      * @return a precondition that will ignore the block within a
-     *         {@link ConfiguredBlock#with(BlockConfiguration, Block)}
+     *         {@link Spectrum#with(BlockConfiguration, Block)}
      */
     static BlockConfiguration ignore(final String why) {
       return new BlockConfiguration().ignore(why);
@@ -43,12 +44,12 @@ public class BlockConfiguration {
 
     /**
      * Tags the suite or spec that is being built using
-     * {@link ConfiguredBlock#with(BlockConfiguration, Block)}. Dependent on the current selection
+     * {@link Spectrum#with(BlockConfiguration, Block)}. Dependent on the current selection
      * of tags, this may lead to the item being ignored during this execution.
      *
      * @param tags tags that relate to the suite or spec
      * @return a precondition that has these tags set
-     *         {@link ConfiguredBlock#with(BlockConfiguration, Block)}
+     *         {@link Spectrum#with(BlockConfiguration, Block)}
      */
     static BlockConfiguration tags(final String... tags) {
       return new BlockConfiguration().tags(tags);
@@ -58,7 +59,7 @@ public class BlockConfiguration {
      * Tags the suite or spec to be focused.
      *
      * @return a precondition that will focus the suite or spec around the
-     *         {@link ConfiguredBlock#with(BlockConfiguration, Block)}
+     *         {@link Spectrum#with(BlockConfiguration, Block)}
      */
     static BlockConfiguration focus() {
       return new BlockConfiguration().focus();

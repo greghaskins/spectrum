@@ -29,25 +29,6 @@ public class ConfiguredBlock implements Block {
   }
 
   /**
-   * Mark a block as ignored by surrounding it with the ignore method.
-   * @param block the block to ignore
-   * @return a PreconditionBlock - preignored
-   */
-  public static ConfiguredBlock ignore(final Block block) {
-    return with(BlockConfiguration.Factory.ignore(), block);
-  }
-
-  /**
-   * Mark a block as ignored by surrounding it with the ignore method.
-   * @param why why is this block being ignored
-   * @param block the block to ignore
-   * @return a PreconditionBlock - preignored
-   */
-  public static ConfiguredBlock ignore(final String why, final Block block) {
-    return with(BlockConfiguration.Factory.ignore(why), block);
-  }
-
-  /**
    * Construct a new precondition block to wrap a block.
    * @param innerBlock the block to wrap
    */

@@ -1,11 +1,10 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
 import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
-import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 
+import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
 import com.greghaskins.spectrum.internal.blocks.IdempotentBlock;
@@ -13,6 +12,7 @@ import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext;
 import com.greghaskins.spectrum.internal.hooks.LetHook;
 import com.greghaskins.spectrum.internal.junit.Rules;
+import com.greghaskins.spectrum.model.BlockConfiguration;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
@@ -123,7 +123,7 @@ public final class Spectrum extends Runner {
    *
    */
   public static void xdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    describe(context, with(ignore(), block));
+    describe(context, with(BlockConfiguration.Factory.ignore(), block));
   }
 
   /**
@@ -351,11 +351,48 @@ public final class Spectrum extends Runner {
   }
 
   /**
+   * Surround a {@link Block} with the {@code with} statement to add preconditions and metadata to
+   * it. E.g. <code>with(tags("foo"), () -&gt; {})</code>
+   * 
+   * @param blockConfiguration the precondition object - see the factory methods in
+   *        {@link BlockConfiguration}
+   * @param block the enclosed block
+   * @return a wrapped block with the given configuration
+   */
+  public static com.greghaskins.spectrum.Block with(final BlockConfiguration blockConfiguration,
+      final com.greghaskins.spectrum.Block block) {
+
+    return ConfiguredBlock.with(blockConfiguration, block);
+  }
+
+  /**
+   * Mark a block as ignored by surrounding it with the ignore method.
+   * 
+   * @param why explanation of why this block is being ignored
+   * @param block the block to ignore
+   * @return a wrapped block which will be ignored
+   */
+  public static com.greghaskins.spectrum.Block ignore(final String why,
+      final com.greghaskins.spectrum.Block block) {
+    return with(BlockConfiguration.Factory.ignore(why), block);
+  }
+
+  /**
+   * Mark a block as ignored by surrounding it with the ignore method.
+   * 
+   * @param block the block to ignore
+   * @return a wrapped block which will be ignored
+   */
+  public static com.greghaskins.spectrum.Block ignore(final com.greghaskins.spectrum.Block block) {
+    return with(BlockConfiguration.Factory.ignore(), block);
+  }
+
+  /**
    * Insert a hook into the current level of definition.
    * 
    * @param hook to insert
-   * @param appliesTo the {@link com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo} indicating
-   *        where the hook is run
+   * @param appliesTo the {@link com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo}
+   *        indicating where the hook is run
    * @param precedence the importance of the hook compared to others
    */
   private static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,

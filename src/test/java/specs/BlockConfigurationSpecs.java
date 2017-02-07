@@ -1,10 +1,10 @@
 package specs;
 
 import static com.greghaskins.spectrum.Spectrum.describe;
+import static com.greghaskins.spectrum.Spectrum.ignore;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.internal.ConfiguredBlock.ignore;
-import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
+import static com.greghaskins.spectrum.Spectrum.with;
 import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
