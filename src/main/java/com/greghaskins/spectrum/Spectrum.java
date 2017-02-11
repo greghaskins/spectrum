@@ -2,7 +2,6 @@ package com.greghaskins.spectrum;
 
 import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
-import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
 
 import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.Suite;
@@ -12,7 +11,6 @@ import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext;
 import com.greghaskins.spectrum.internal.hooks.LetHook;
 import com.greghaskins.spectrum.internal.junit.Rules;
-import com.greghaskins.spectrum.model.BlockConfiguration;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
@@ -123,7 +121,7 @@ public final class Spectrum extends Runner {
    *
    */
   public static void xdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    describe(context, with(BlockConfiguration.Factory.ignore(), block));
+    describe(context, with(ignore(), block));
   }
 
   /**
@@ -354,15 +352,20 @@ public final class Spectrum extends Runner {
    * Surround a {@link Block} with the {@code with} statement to add preconditions and metadata to
    * it. E.g. <code>with(tags("foo"), () -&gt; {})</code>
    * 
-   * @param blockConfiguration the precondition object - see the factory methods in
-   *        {@link BlockConfiguration}
+   * @param configuration the chainable block configuration
    * @param block the enclosed block
    * @return a wrapped block with the given configuration
+   * 
+   * @see #ignore(String)
+   * @see #ignore()
+   * @see #focus()
+   * @see #tags(String...)
+   * 
    */
-  public static com.greghaskins.spectrum.Block with(final BlockConfiguration blockConfiguration,
+  public static com.greghaskins.spectrum.Block with(final BlockConfigurationChain configuration,
       final com.greghaskins.spectrum.Block block) {
 
-    return ConfiguredBlock.with(blockConfiguration, block);
+    return ConfiguredBlock.with(configuration.getBlockConfiguration(), block);
   }
 
   /**
@@ -374,7 +377,7 @@ public final class Spectrum extends Runner {
    */
   public static com.greghaskins.spectrum.Block ignore(final String why,
       final com.greghaskins.spectrum.Block block) {
-    return with(BlockConfiguration.Factory.ignore(why), block);
+    return with(ignore(why), block);
   }
 
   /**
@@ -384,7 +387,46 @@ public final class Spectrum extends Runner {
    * @return a wrapped block which will be ignored
    */
   public static com.greghaskins.spectrum.Block ignore(final com.greghaskins.spectrum.Block block) {
-    return with(BlockConfiguration.Factory.ignore(), block);
+    return with(ignore(), block);
+  }
+
+  /**
+   * Ignore the suite or spec.
+   *
+   * @return a chainable configuration that will ignore the block within a {@link #with}
+   */
+  public static BlockConfigurationChain ignore() {
+    return new BlockConfigurationChain().ignore();
+  }
+
+  /**
+   * Ignore the suite or spec.
+   *
+   * @param reason why this block is ignored
+   * @return a chainable configuration that will ignore the block within a {@link #with}
+   */
+  public static BlockConfigurationChain ignore(final String reason) {
+    return new BlockConfigurationChain().ignore(reason);
+  }
+
+  /**
+   * Tags the suite or spec that is being declared with the given strings. Depending on the current
+   * filter criteria, this may lead to the item being ignored during test execution.
+   *
+   * @param tags tags that relate to the suite or spec
+   * @return a chainable configuration that has these tags set for the block in {@link #with}
+   */
+  public static BlockConfigurationChain tags(final String... tags) {
+    return new BlockConfigurationChain().tags(tags);
+  }
+
+  /**
+   * Marks the suite or spec to be focused.
+   *
+   * @return a chainable configuration that will focus the suite or spec in the {@link #with}
+   */
+  public static BlockConfigurationChain focus() {
+    return new BlockConfigurationChain().focus();
   }
 
   /**

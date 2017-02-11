@@ -1,7 +1,6 @@
 package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.model.BlockConfiguration;
 
 /**
  * A block with preconditions set on it.
@@ -60,7 +59,7 @@ public class ConfiguredBlock implements Block {
     if (block instanceof ConfiguredBlock) {
       return ((ConfiguredBlock) block).getPreconditions();
     } else {
-      return BlockConfiguration.Factory.defaultPreconditions();
+      return BlockConfiguration.defaultConfiguration();
     }
   }
 }

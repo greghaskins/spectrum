@@ -4,7 +4,6 @@ import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.internal.blocks.NotifyingBlock;
 import com.greghaskins.spectrum.internal.hooks.HookContext;
 import com.greghaskins.spectrum.internal.hooks.Hooks;
-import com.greghaskins.spectrum.model.BlockConfiguration;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -27,7 +26,7 @@ public class Suite implements Parent, Child {
   private boolean ignored;
 
   private final TaggingFilterCriteria tagging;
-  private BlockConfiguration preconditions = BlockConfiguration.Factory.defaultPreconditions();
+  private BlockConfiguration preconditions = BlockConfiguration.defaultConfiguration();
   private NameSanitiser nameSanitiser = new NameSanitiser();
 
   /**

@@ -5,7 +5,6 @@ import static com.greghaskins.spectrum.Spectrum.ignore;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
 import static com.greghaskins.spectrum.Spectrum.with;
-import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -19,7 +18,7 @@ import java.util.function.Supplier;
 
 /**
  * Demonstrate how to focus and ignore specs using
- * {@link com.greghaskins.spectrum.model.BlockConfiguration}.
+ * {@link com.greghaskins.spectrum.internal.BlockConfiguration}.
  */
 @RunWith(Spectrum.class)
 public class BlockConfigurationSpecs {
