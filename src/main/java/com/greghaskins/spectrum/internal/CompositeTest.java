@@ -1,9 +1,4 @@
-package com.greghaskins.spectrum;
-
-import com.greghaskins.spectrum.internal.Child;
-import com.greghaskins.spectrum.internal.FailureDetectingRunListener;
-import com.greghaskins.spectrum.internal.Parent;
-import com.greghaskins.spectrum.model.TaggingFilterCriteria;
+package com.greghaskins.spectrum.internal;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;

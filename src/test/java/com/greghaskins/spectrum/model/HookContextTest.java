@@ -7,8 +7,9 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
-import com.greghaskins.spectrum.Hook;
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.internal.hooks.Hook;
+import com.greghaskins.spectrum.internal.hooks.HookContext;
 
 import org.junit.runner.RunWith;
 

@@ -1,7 +1,6 @@
 package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.model.BlockConfiguration;
 
 /**
  * A block with preconditions set on it.
@@ -21,30 +20,11 @@ public class ConfiguredBlock implements Block {
   public static ConfiguredBlock with(final BlockConfiguration blockConfiguration,
       final Block block) {
 
-    BlockConfiguration existingBlockConfiguration = Child.findApplicablePreconditions(block);
+    BlockConfiguration existingBlockConfiguration = findApplicablePreconditions(block);
     BlockConfiguration mergedBlockConfiguration =
         BlockConfiguration.merge(existingBlockConfiguration, blockConfiguration);
 
     return new ConfiguredBlock(mergedBlockConfiguration, block);
-  }
-
-  /**
-   * Mark a block as ignored by surrounding it with the ignore method.
-   * @param block the block to ignore
-   * @return a PreconditionBlock - preignored
-   */
-  public static ConfiguredBlock ignore(final Block block) {
-    return with(BlockConfiguration.Factory.ignore(), block);
-  }
-
-  /**
-   * Mark a block as ignored by surrounding it with the ignore method.
-   * @param why why is this block being ignored
-   * @param block the block to ignore
-   * @return a PreconditionBlock - preignored
-   */
-  public static ConfiguredBlock ignore(final String why, final Block block) {
-    return with(BlockConfiguration.Factory.ignore(why), block);
   }
 
   /**
@@ -61,11 +41,25 @@ public class ConfiguredBlock implements Block {
    * @return the preconditions on the block
    */
   BlockConfiguration getPreconditions() {
-    return blockConfiguration;
+    return this.blockConfiguration;
   }
 
   @Override
   public void run() throws Throwable {
-    innerBlock.run();
+    this.innerBlock.run();
+  }
+
+  /**
+   * Provide the precondition object for this child's block, which are
+   * either in the block itself, or provided as a default.
+   * @param block the block which may have preconditions
+   * @return a non null preconditions object to use
+   */
+  public static BlockConfiguration findApplicablePreconditions(final Block block) {
+    if (block instanceof ConfiguredBlock) {
+      return ((ConfiguredBlock) block).getPreconditions();
+    } else {
+      return BlockConfiguration.defaultConfiguration();
+    }
   }
 }

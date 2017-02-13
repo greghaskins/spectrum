@@ -1,16 +1,16 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.internal.AfterHook.after;
-import static com.greghaskins.spectrum.internal.BeforeHook.before;
-import static com.greghaskins.spectrum.internal.ConfiguredBlock.with;
-import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.focus;
-import static com.greghaskins.spectrum.model.BlockConfiguration.Factory.ignore;
+import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
+import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 
-import com.greghaskins.spectrum.internal.LetHook;
+import com.greghaskins.spectrum.internal.ConfiguredBlock;
+import com.greghaskins.spectrum.internal.Suite;
+import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
+import com.greghaskins.spectrum.internal.blocks.IdempotentBlock;
+import com.greghaskins.spectrum.internal.hooks.Hook;
+import com.greghaskins.spectrum.internal.hooks.HookContext;
+import com.greghaskins.spectrum.internal.hooks.LetHook;
 import com.greghaskins.spectrum.internal.junit.Rules;
-import com.greghaskins.spectrum.model.ConstructorBlock;
-import com.greghaskins.spectrum.model.HookContext;
-import com.greghaskins.spectrum.model.IdempotentBlock;
 
 import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
@@ -40,7 +40,7 @@ public final class Spectrum extends Runner {
    * A generic code block with a {@link #run()} method to perform any action. Usually defined by a
    * lambda function.
    *
-   * @deprecated since 1.0.1 - use {@link com.greghaskins.spectrum.Block} instead
+   * @deprecated since 1.1.0 - use {@link com.greghaskins.spectrum.Block} instead
    */
   @Deprecated
   @FunctionalInterface
@@ -57,8 +57,9 @@ public final class Spectrum extends Runner {
 
   /**
    * Supplier that is allowed to throw.
+   * 
    * @param <T> type of object to supply
-   * @deprecated since 1.0.1 - use {@link com.greghaskins.spectrum.ThrowingSupplier} instead
+   * @deprecated since 1.1.0 - use {@link com.greghaskins.spectrum.ThrowingSupplier} instead
    */
   @Deprecated
   @FunctionalInterface
@@ -125,6 +126,7 @@ public final class Spectrum extends Runner {
 
   /**
    * Define a test context.
+   * 
    * @param context the description of the context
    * @param block the block to execute
    */
@@ -134,6 +136,7 @@ public final class Spectrum extends Runner {
 
   /**
    * Define a focused test context. See {@link #fdescribe(String, com.greghaskins.spectrum.Block)}.
+   * 
    * @param context the description of the context
    * @param block the block to execute
    */
@@ -142,8 +145,8 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Define an ignored test context. See
-   * {@link #xdescribe(String, com.greghaskins.spectrum.Block)}.
+   * Define an ignored test context. See {@link #xdescribe(String, com.greghaskins.spectrum.Block)}.
+   * 
    * @param context the description of the context
    * @param block the block to execute
    */
@@ -223,14 +226,15 @@ public final class Spectrum extends Runner {
 
 
   /**
-   * Uses the given class as a mix-in for JUnit rules to be applied.
-   * These rules will cascade down and be applied at the level of specs or atomic specs.
+   * Uses the given class as a mix-in for JUnit rules to be applied. These rules will cascade down
+   * and be applied at the level of specs or atomic specs.
+   * 
    * @param rulesClass type of object to create and apply rules to for each spec.
    * @param <T> type of the object
    * @return a supplier of the rules object
    */
   public static <T> Supplier<T> junitMixin(final Class<T> rulesClass) {
-    return Rules.applyRules(rulesClass);
+    return Rules.applyRules(rulesClass, Spectrum::addHook);
   }
 
   /**
@@ -244,13 +248,13 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(before(block), getDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL));
+    addHook(new HookContext(before(block), getDepth(), HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.LOCAL));
   }
 
   /**
-   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run
-   * after each spec in the current suite.
+   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run after each spec in the current
+   * suite.
    *
    * <p>
    * Use this to perform teardown or cleanup actions that are common across specs in this suite. If
@@ -260,13 +264,13 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(after(block), getDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
+    addHook(new HookContext(after(block), getDepth(), HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
   /**
-   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run once
-   * before all the specs in the current suite begin.
+   * Declare a {@link com.greghaskins.spectrum.Block Block} to be run once before all the specs in
+   * the current suite begin.
    *
    * <p>
    * Use {@code beforeAll} and {@link #afterAll(com.greghaskins.spectrum.Block) afterAll} blocks
@@ -305,8 +309,8 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(Hook.from(consumer), getDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
+    addHook(new HookContext(Hook.from(consumer), getDepth(), HookContext.AppliesTo.ATOMIC_ONLY,
+        HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
 
   /**
@@ -317,8 +321,8 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(Hook.from(consumer), getDepth(),
-        HookContext.AppliesTo.ONCE, HookContext.Precedence.OUTER));
+    addHook(new HookContext(Hook.from(consumer), getDepth(), HookContext.AppliesTo.ONCE,
+        HookContext.Precedence.OUTER));
   }
 
   /**
@@ -345,13 +349,95 @@ public final class Spectrum extends Runner {
   }
 
   /**
+   * Surround a {@link Block} with the {@code with} statement to add preconditions and metadata to
+   * it. E.g. <code>with(tags("foo"), () -&gt; {})</code>
+   * 
+   * @param configuration the chainable block configuration
+   * @param block the enclosed block
+   * @return a wrapped block with the given configuration
+   * 
+   * @see #ignore(String)
+   * @see #ignore()
+   * @see #focus()
+   * @see #tags(String...)
+   * 
+   */
+  public static com.greghaskins.spectrum.Block with(final BlockConfigurationChain configuration,
+      final com.greghaskins.spectrum.Block block) {
+
+    return ConfiguredBlock.with(configuration.getBlockConfiguration(), block);
+  }
+
+  /**
+   * Mark a block as ignored by surrounding it with the ignore method.
+   * 
+   * @param why explanation of why this block is being ignored
+   * @param block the block to ignore
+   * @return a wrapped block which will be ignored
+   */
+  public static com.greghaskins.spectrum.Block ignore(final String why,
+      final com.greghaskins.spectrum.Block block) {
+    return with(ignore(why), block);
+  }
+
+  /**
+   * Mark a block as ignored by surrounding it with the ignore method.
+   * 
+   * @param block the block to ignore
+   * @return a wrapped block which will be ignored
+   */
+  public static com.greghaskins.spectrum.Block ignore(final com.greghaskins.spectrum.Block block) {
+    return with(ignore(), block);
+  }
+
+  /**
+   * Ignore the suite or spec.
+   *
+   * @return a chainable configuration that will ignore the block within a {@link #with}
+   */
+  public static BlockConfigurationChain ignore() {
+    return new BlockConfigurationChain().ignore();
+  }
+
+  /**
+   * Ignore the suite or spec.
+   *
+   * @param reason why this block is ignored
+   * @return a chainable configuration that will ignore the block within a {@link #with}
+   */
+  public static BlockConfigurationChain ignore(final String reason) {
+    return new BlockConfigurationChain().ignore(reason);
+  }
+
+  /**
+   * Tags the suite or spec that is being declared with the given strings. Depending on the current
+   * filter criteria, this may lead to the item being ignored during test execution.
+   *
+   * @param tags tags that relate to the suite or spec
+   * @return a chainable configuration that has these tags set for the block in {@link #with}
+   */
+  public static BlockConfigurationChain tags(final String... tags) {
+    return new BlockConfigurationChain().tags(tags);
+  }
+
+  /**
+   * Marks the suite or spec to be focused.
+   *
+   * @return a chainable configuration that will focus the suite or spec in the {@link #with}
+   */
+  public static BlockConfigurationChain focus() {
+    return new BlockConfigurationChain().focus();
+  }
+
+  /**
    * Insert a hook into the current level of definition.
+   * 
    * @param hook to insert
-   * @param appliesTo the {@link com.greghaskins.spectrum.model.HookContext.AppliesTo} indicating
-   *                  where the hook is run
+   * @param appliesTo the {@link com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo}
+   *        indicating where the hook is run
    * @param precedence the importance of the hook compared to others
    */
-  public static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,
+  private static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,
       final HookContext.Precedence precedence) {
     addHook(new HookContext(hook, getDepth(), appliesTo, precedence));
   }
@@ -362,8 +448,8 @@ public final class Spectrum extends Runner {
 
   /**
    * Will throw an exception if this method happens to be called while Spectrum is still defining
-   * tests, rather than executing them. Useful to see if a hook is being accidentally used
-   * during definition.
+   * tests, rather than executing them. Useful to see if a hook is being accidentally used during
+   * definition.
    */
   public static void assertSpectrumInTestMode() {
     if (getCurrentSuiteBeingDeclared() != null) {
@@ -419,10 +505,11 @@ public final class Spectrum extends Runner {
 
   /**
    * Links the test class construction to JUnit rules implementation.
+   * 
    * @param testClass type of the test object
-   * @return a block which when executed will perform test definition against Spectrum
-   *         and also hooks JUnit rule implementation to the definition based on any
-   *         "@Rule" annotations on the members - see {@link Rules}
+   * @return a block which when executed will perform test definition against Spectrum and also
+   *         hooks JUnit rule implementation to the definition based on any "@Rule" annotations on
+   *         the members - see {@link Rules}
    */
   private static <T> com.greghaskins.spectrum.Block createTestClassDefinitionBlock(
       final Class<T> testClass) {
@@ -430,7 +517,7 @@ public final class Spectrum extends Runner {
 
     return () -> {
       constructTestClass.run();
-      Rules.applyRules(constructTestClass.get());
+      Rules.applyRules(constructTestClass.get(), Spectrum::addHook);
     };
   }
 

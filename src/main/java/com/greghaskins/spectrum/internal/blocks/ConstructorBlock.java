@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum.model;
+package com.greghaskins.spectrum.internal.blocks;
 
 import com.greghaskins.spectrum.Block;
 

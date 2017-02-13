@@ -1,6 +1,6 @@
 package com.greghaskins.spectrum.internal;
 
-import com.greghaskins.spectrum.model.Hooks;
+import com.greghaskins.spectrum.internal.hooks.Hooks;
 
 public interface Parent {
 

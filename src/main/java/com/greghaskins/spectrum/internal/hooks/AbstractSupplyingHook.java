@@ -1,6 +1,9 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.internal.hooks;
 
 import static com.greghaskins.spectrum.Spectrum.assertSpectrumInTestMode;
+
+import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.Variable;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;

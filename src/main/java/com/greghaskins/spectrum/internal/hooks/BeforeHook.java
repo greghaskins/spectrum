@@ -1,7 +1,6 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.hooks;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.Hook;
 
 /**
  * A hook that will run before something.

@@ -1,14 +1,9 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.internal;
 
-import com.greghaskins.spectrum.internal.Child;
-import com.greghaskins.spectrum.internal.ConfiguredBlock;
-import com.greghaskins.spectrum.internal.NameSanitiser;
-import com.greghaskins.spectrum.internal.NotifyingBlock;
-import com.greghaskins.spectrum.internal.Parent;
-import com.greghaskins.spectrum.model.BlockConfiguration;
-import com.greghaskins.spectrum.model.HookContext;
-import com.greghaskins.spectrum.model.Hooks;
-import com.greghaskins.spectrum.model.TaggingFilterCriteria;
+import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.internal.blocks.NotifyingBlock;
+import com.greghaskins.spectrum.internal.hooks.HookContext;
+import com.greghaskins.spectrum.internal.hooks.Hooks;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -18,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class Suite implements Parent, Child {
+public class Suite implements Parent, Child {
   private Hooks hooks = new Hooks();
 
   protected final List<Child> children = new ArrayList<>();
@@ -31,7 +26,7 @@ class Suite implements Parent, Child {
   private boolean ignored;
 
   private final TaggingFilterCriteria tagging;
-  private BlockConfiguration preconditions = BlockConfiguration.Factory.defaultPreconditions();
+  private BlockConfiguration preconditions = BlockConfiguration.defaultConfiguration();
   private NameSanitiser nameSanitiser = new NameSanitiser();
 
   /**
@@ -42,7 +37,7 @@ class Suite implements Parent, Child {
     void runChildren(final Suite suite, final RunNotifier notifier);
   }
 
-  static Suite rootSuite(final Description description) {
+  public static Suite rootSuite(final Description description) {
     return new Suite(description, Parent.NONE, Suite::defaultChildRunner,
         new TaggingFilterCriteria());
   }
@@ -66,11 +61,11 @@ class Suite implements Parent, Child {
     this.tagging = taggingFilterCriteria;
   }
 
-  Suite addSuite(final String name) {
+  public Suite addSuite(final String name) {
     return addSuite(name, Suite::defaultChildRunner);
   }
 
-  Suite addSuite(final String name, final ChildRunner childRunner) {
+  private Suite addSuite(final String name, final ChildRunner childRunner) {
     final Suite suite =
         new Suite(Description.createSuiteDescription(sanitise(name)), this, childRunner,
             this.tagging.clone());
@@ -84,7 +79,7 @@ class Suite implements Parent, Child {
     return suite;
   }
 
-  Suite addCompositeSuite(final String name) {
+  public Suite addCompositeSuite(final String name) {
     final Suite suite =
         new CompositeTest(Description.createSuiteDescription(sanitise(name)), this,
             this.tagging.clone());
@@ -92,7 +87,7 @@ class Suite implements Parent, Child {
     return addedToThis(suite);
   }
 
-  Child addSpec(final String name, final Block block) {
+  public Child addSpec(final String name, final Block block) {
     final Child spec = createSpec(name, block);
     addChild(spec);
 
@@ -117,17 +112,17 @@ class Suite implements Parent, Child {
   }
 
   /**
-  * Adds a hook to be the first one executed before the block.
-  * This is the default. Hooks should be executed in the order they
-  * are declared in the test.
-  * @param hook to add
-  */
-  void addHook(final HookContext hook) {
+   * Adds a hook to be the first one executed before the block. This is the default. Hooks should be
+   * executed in the order they are declared in the test.
+   *
+   * @param hook to add
+   */
+  public void addHook(final HookContext hook) {
     this.hooks.add(hook);
   }
 
   private Hooks getHooksFor(final Child child) {
-    Hooks allHooks = parent.getInheritableHooks().plus(hooks);
+    Hooks allHooks = this.parent.getInheritableHooks().plus(this.hooks);
 
     return child.isAtomic() ? allHooks.forAtomic() : allHooks.forNonAtomic();
   }
@@ -138,7 +133,7 @@ class Suite implements Parent, Child {
     // all other hooks would be executed at suite level only - either for
     // each child of the suite, or once
 
-    return parent.getInheritableHooks().plus(hooks.forAtomic());
+    return this.parent.getInheritableHooks().plus(this.hooks.forAtomic());
   }
 
   /**
@@ -146,7 +141,7 @@ class Suite implements Parent, Child {
    *
    * @param tags required tags - suites must have at least one of these if any are specified
    */
-  void includeTags(final String... tags) {
+  public void includeTags(final String... tags) {
     this.tagging.include(tags);
   }
 
@@ -155,12 +150,12 @@ class Suite implements Parent, Child {
    *
    * @param tags excluded tags - suites and specs must not have any of these if any are specified
    */
-  void excludeTags(final String... tags) {
+  public void excludeTags(final String... tags) {
     this.tagging.exclude(tags);
   }
 
-  void applyPreconditions(Block block) {
-    this.preconditions = Child.findApplicablePreconditions(block);
+  public void applyPreconditions(Block block) {
+    this.preconditions = ConfiguredBlock.findApplicablePreconditions(block);
     applyPreconditions(block, this.tagging);
   }
 
@@ -203,8 +198,8 @@ class Suite implements Parent, Child {
     if (isEffectivelyIgnored()) {
       runChildren(notifier);
     } else {
-      hooks.once().sorted()
-          .runAround(description, notifier, () -> runChildren(notifier));
+      this.hooks.once().sorted()
+          .runAround(this.description, notifier, () -> runChildren(notifier));
     }
   }
 
@@ -219,7 +214,7 @@ class Suite implements Parent, Child {
     } else if (childIsNotInFocus(child)) {
       notifier.fireTestIgnored(child.getDescription());
     } else {
-      hooks.forThisLevel().sorted().runAround(child.getDescription(), notifier,
+      this.hooks.forThisLevel().sorted().runAround(child.getDescription(), notifier,
           () -> runChildWithHooks(child, notifier));
     }
   }
@@ -246,7 +241,7 @@ class Suite implements Parent, Child {
     return this.children.stream().mapToInt(Child::testCount).sum();
   }
 
-  void removeAllChildren() {
+  public void removeAllChildren() {
     this.children.clear();
   }
 
@@ -255,16 +250,16 @@ class Suite implements Parent, Child {
   }
 
   private String sanitise(final String name) {
-    return nameSanitiser.sanitise(name);
+    return this.nameSanitiser.sanitise(name);
   }
 
   @Override
   public boolean isEffectivelyIgnored() {
-    return ignored || !hasANonIgnoredChild();
+    return this.ignored || !hasANonIgnoredChild();
   }
 
   private boolean hasANonIgnoredChild() {
-    return children.stream()
+    return this.children.stream()
         .filter(child -> !child.isEffectivelyIgnored())
         .findFirst()
         .isPresent();

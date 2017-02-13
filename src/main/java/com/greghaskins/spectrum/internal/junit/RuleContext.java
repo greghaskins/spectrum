@@ -3,8 +3,8 @@ package com.greghaskins.spectrum.internal.junit;
 import static com.greghaskins.spectrum.internal.junit.StubJUnitFrameworkMethod.stubFrameworkMethod;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.Hook;
-import com.greghaskins.spectrum.model.ConstructorBlock;
+import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
+import com.greghaskins.spectrum.internal.hooks.Hook;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -88,11 +88,10 @@ public class RuleContext<T> implements Supplier<T> {
         withMethodRules(base, getMethodRules(currentTestObject)), description);
   }
 
-  @SuppressWarnings("unchecked")
   private void constructTestObject() throws Throwable {
-    ConstructorBlock constructor = new ConstructorBlock(ruleClass);
+    ConstructorBlock<T> constructor = new ConstructorBlock<>(ruleClass);
     constructor.run();
-    currentTestObject = (T) constructor.get();
+    currentTestObject = constructor.get();
   }
 
   private Statement withMethodRules(final Statement base, final List<MethodRule> methodRules) {
@@ -198,7 +197,7 @@ public class RuleContext<T> implements Supplier<T> {
    * Does the object provided actually have any rules.
    * @return true if there are rules
    */
-  public boolean hasAnyJUnitAnnotations() {
+  boolean hasAnyJUnitAnnotations() {
     return getClassRules().size() > 0 || hasAnyTestOrMethodRules();
   }
 

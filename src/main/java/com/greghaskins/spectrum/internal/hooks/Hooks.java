@@ -1,11 +1,10 @@
-package com.greghaskins.spectrum.model;
+package com.greghaskins.spectrum.internal.hooks;
 
-import static com.greghaskins.spectrum.internal.NotifyingBlock.wrapWithReporting;
+import static com.greghaskins.spectrum.internal.blocks.NotifyingBlock.wrapWithReporting;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.Hook;
 import com.greghaskins.spectrum.Variable;
-import com.greghaskins.spectrum.internal.NotifyingBlock;
+import com.greghaskins.spectrum.internal.blocks.NotifyingBlock;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
