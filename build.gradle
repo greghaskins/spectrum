@@ -89,6 +89,28 @@ checkstyleTest {
   finalizedBy verifyCheckstyleWarningsTask('strictCheckstyleTest', 'test.xml')
 }
 
+def pomConfig = {
+    licenses {
+        license {
+            name 'MIT License'
+            url 'http://www.opensource.org/licenses/mit-license.php'
+            distribution 'repo'
+        }
+    }
+    developers {
+        developer {
+            id 'greghaskins'
+            name 'Gregory Haskins'
+            email 'greg@greghaskins.com'
+            organization 'SpectrumBDD'
+            organizationUrl 'https://github.com/spectrumbdd/'
+        }
+    }
+}
+
+def description = 'A colorful BDD-style test runner for Java'
+def url = 'https://github.com/greghaskins/spectrum'
+
 publishing {
   publications {
     bintrayPublication(MavenPublication) {
@@ -99,6 +121,22 @@ publishing {
 
       artifact sourcesJar
       artifact javadocJar
+
+      pom.withXml {
+        def root = asNode()
+        root.appendNode('description', description)
+        root.appendNode('name', 'Spectrum')
+        root.appendNode('url', url)
+
+        // Make sure compile dependencies don't get marked as "runtime"
+        root.dependencies.'*'.findAll() {
+          it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+            dep.name == it.artifactId.text()
+          }
+        }.each { it.scope*.value = 'compile'}
+
+        root.children().last() + pomConfig
+      }
     }
   }
 }
@@ -107,13 +145,14 @@ bintray {
   user = System.getenv('BINTRAY_USER')
   key = System.getenv('BINTRAY_KEY')
   publish = true
+  dryRun = true
   publications = ['bintrayPublication']
   pkg {
     repo = 'maven'
     name = 'Spectrum'
     licenses = ['MIT']
-    desc = 'A colorful BDD-style test runner for Java'
-    websiteUrl = 'https://github.com/greghaskins/spectrum'
+    desc = description
+    websiteUrl = url
     issueTrackerUrl = 'https://github.com/greghaskins/spectrum/issues'
     vcsUrl = 'https://github.com/greghaskins/spectrum.git'
     labels = [
@@ -129,6 +168,12 @@ bintray {
     version {
       name = project.version
       released = new Date()
+      mavenCentralSync {
+        sync = false
+        user = System.getenv('SONATYPE_USER')
+        password = System.getenv('SONATYPE_PASSWORD')
+        close = '1'
+      }
     }
   }
 }
