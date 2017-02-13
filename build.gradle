@@ -125,6 +125,14 @@ publishing {
         root.appendNode('description', description)
         root.appendNode('name', 'Spectrum')
         root.appendNode('url', url)
+
+        // Make sure compile dependencies don't get marked as "runtime"
+        root.dependencies.'*'.findAll() {
+          it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+            dep.name == it.artifactId.text()
+          }
+        }.each { it.scope*.value = 'compile'}
+
         root.children().last() + pomConfig
       }
     }
