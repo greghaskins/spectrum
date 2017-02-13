@@ -13,3 +13,7 @@ coverage:
         target: 100%
         threshold: 0%
         base: auto
+comment:
+  layout: "header, diff, tree"
+  behavior: once
+  require_changes: true
