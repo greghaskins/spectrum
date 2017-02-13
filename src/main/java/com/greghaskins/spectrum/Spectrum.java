@@ -40,7 +40,7 @@ public final class Spectrum extends Runner {
    * A generic code block with a {@link #run()} method to perform any action. Usually defined by a
    * lambda function.
    *
-   * @deprecated since 1.0.1 - use {@link com.greghaskins.spectrum.Block} instead
+   * @deprecated since 1.1.0 - use {@link com.greghaskins.spectrum.Block} instead
    */
   @Deprecated
   @FunctionalInterface
@@ -59,7 +59,7 @@ public final class Spectrum extends Runner {
    * Supplier that is allowed to throw.
    * 
    * @param <T> type of object to supply
-   * @deprecated since 1.0.1 - use {@link com.greghaskins.spectrum.ThrowingSupplier} instead
+   * @deprecated since 1.1.0 - use {@link com.greghaskins.spectrum.ThrowingSupplier} instead
    */
   @Deprecated
   @FunctionalInterface
