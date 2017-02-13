@@ -8,7 +8,7 @@ script:
   - echo "Checking to make sure all changes are checked in..."
   - test -z "$(git status --porcelain)"
 after_success:
-  - " ./gradlew coveralls"
+  - "bash <(curl -s https://codecov.io/bash)"
 deploy:
   provider: script
   script: "./gradlew bintrayUpload"
