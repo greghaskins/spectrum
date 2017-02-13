@@ -1,12 +1,11 @@
 sudo: false
 language: java
-
 jdk:
-  - oraclejdk8
+- oraclejdk8
 script:
-  - ./gradlew check
-  - echo "Checking to make sure all changes are checked in..."
-  - test -z "$(git status --porcelain)"
+- "./gradlew check"
+- echo "Checking to make sure all changes are checked in..."
+- test -z "$(git status --porcelain)"
 after_success:
   - " ./gradlew coveralls"
 deploy:
@@ -16,5 +15,7 @@ deploy:
     tags: true
 env:
   global:
-    - secure: "Ai47GDG9Hv60mIIVqgQbG9CLzftKnAg1J3h762byEk0tMUNNEfbnBHEiiX5YTduT93RF/zvvME9rn+ycvjFA5Q/KGQNLfQHdGMaAP+lfLQeT8FsiomV9QMGDjDYnF1KGXztZHGB3TOPs6KMwSAiO15QXoRQ+8p89UFphVKy1fmU="
-    - secure: "CpKsnXu69uVUOUI9v4NiqpN3TR+/uWeCWjTvblrJDvZPuI/JWFKl/z2MyrgWmwDHi6G3Q0EGHSt+Y9f42jeH0IyGLJLrTc2W1SbjKkYscQGRLIH33MKVO0o30ltUWYnoySBOxs/8LM8MIKhrwtypzu0ewQoAvmteO9Za4RVkKAk="
+  - secure: Ai47GDG9Hv60mIIVqgQbG9CLzftKnAg1J3h762byEk0tMUNNEfbnBHEiiX5YTduT93RF/zvvME9rn+ycvjFA5Q/KGQNLfQHdGMaAP+lfLQeT8FsiomV9QMGDjDYnF1KGXztZHGB3TOPs6KMwSAiO15QXoRQ+8p89UFphVKy1fmU=
+  - secure: CpKsnXu69uVUOUI9v4NiqpN3TR+/uWeCWjTvblrJDvZPuI/JWFKl/z2MyrgWmwDHi6G3Q0EGHSt+Y9f42jeH0IyGLJLrTc2W1SbjKkYscQGRLIH33MKVO0o30ltUWYnoySBOxs/8LM8MIKhrwtypzu0ewQoAvmteO9Za4RVkKAk=
+  - secure: cJj9AefRTM04WSxJoin4t+tg4acY+fFY1itnMvo62KuEbQBCqqMBgkFwFpOMYglP3hiqRQfA5iHeKqhlR8nm/t9UkM5IsDQHfllnhWo2gnsScAl1P0779GgmO4y4fRRGjqi05aoeXBrzBNFKsf5oqer6VGpIhOV8/v/I+WWV/aY=
+  - secure: IkYKuVUHcBapiKs+9+nmVTvo32Owu6HrtwSTxOXY2xujih8T/ACbq9W+GkacuW1POAgBOlEEe/LZtsB3gm0jfFi6mJhEIM8fni+5ubD8L36ePUM3Q0IQ7smN33VrY6FrGgJYSu8gVk5RElytN0SyG6eoqJdf08fVvAW2/NWzl9E=
