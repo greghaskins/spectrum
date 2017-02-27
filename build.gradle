@@ -150,7 +150,7 @@ bintray {
   user = System.getenv('BINTRAY_USER')
   key = System.getenv('BINTRAY_KEY')
   publish = true
-  dryRun = true
+  dryRun = System.getenv("CI") == null
   publications = ['bintrayPublication']
   pkg {
     repo = 'maven'
