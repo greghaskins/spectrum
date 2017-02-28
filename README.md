@@ -598,7 +598,7 @@ Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/
 
 ### Gradle
 
-Add the Spectrum dependency for your tests:
+Add the Spectrum dependency to your `testCompile` configuration in `build.gradle`:
 
 ```groovy
 dependencies {
