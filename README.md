@@ -9,7 +9,7 @@ Spectrum
 
 ## Note: under active development
 
-The latest released version is [1.0.0](https://github.com/greghaskins/spectrum/releases/tag/1.0.0). Please see the [README for 1.0.0](https://github.com/greghaskins/spectrum/tree/1.0.0) for details about the stable version. The content below applies to the latest development version on the `master` branch. If you'd like to help, we're glad to have it; please see [CONTRIBUTING.md](./CONTRIBUTING.md).
+The latest released version is [1.0.2](https://github.com/greghaskins/spectrum/releases/tag/1.0.2). Please see the [README for 1.0.2](https://github.com/greghaskins/spectrum/tree/1.0.2) for details about the stable version. The content below applies to the latest development version on the `master` branch. If you'd like to help, we're glad to have it; please see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 
 ## Example
@@ -598,37 +598,17 @@ Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/
 
 ### Gradle
 
-Make sure you have the jCenter repository in your [init script](https://docs.gradle.org/current/userguide/init_scripts.html) or project `build.gradle`:
-
-```groovy
-repositories {
-    jcenter()
-}
-```
-
-Then add the Spectrum dependency for your tests:
+Add the Spectrum dependency for your tests:
 
 ```groovy
 dependencies {
-  testCompile 'com.greghaskins:spectrum:1.0.0'
+  testCompile 'com.greghaskins:spectrum:1.0.2'
 }
-
 ```
 
 ### Maven
 
-Make sure you have the jCenter repository in your global `settings.xml` or project `pom.xml`:
-
-```xml
-<repositories>
-    <repository>
-        <id>jcenter</id>
-        <url>http://jcenter.bintray.com</url>
-    </repository>
-</repositories>
-```
-
-Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
+Add Spectrum as a dependency with `test` scope in your `pom.xml`:
 
 ```xml
 <project>
@@ -636,7 +616,7 @@ Then add Spectrum as a dependency with `test` scope in your `pom.xml`:
     <dependency>
       <groupId>com.greghaskins</groupId>
       <artifactId>spectrum</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
