@@ -3,6 +3,7 @@ package specs;
 import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.configure;
 import static com.greghaskins.spectrum.Spectrum.describe;
+import static com.greghaskins.spectrum.Spectrum.ignore;
 import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.Spectrum.let;
 import static com.greghaskins.spectrum.Spectrum.tags;
@@ -40,6 +41,11 @@ public class TaggedSpecs {
         it("runs completely when its tag is in the includes list", () -> {
           final Result result = SpectrumHelper.run(getSuiteWithTagsIncluded());
           assertThat(result.getIgnoreCount(), is(0));
+        });
+
+        it("is ignored because though its tag is in the includes list it is ALSO ignored", () -> {
+          final Result result = SpectrumHelper.run(getIgnoredSuiteWithTagsIncluded());
+          assertThat(result.getIgnoreCount(), is(1));
         });
 
         it("does not run when it's missing from the includes", () -> {
@@ -219,6 +225,22 @@ public class TaggedSpecs {
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that runs", () -> {
+            assertTrue(true);
+          });
+        }));
+      }
+    }
+
+    return Tagged.class;
+  }
+
+  private static Class<?> getIgnoredSuiteWithTagsIncluded() {
+    class Tagged {
+      {
+        configure().includeTags("someTag");
+
+        describe("A suite", with(tags("someTag").and(ignore()), () -> {
+          it("has an ignored spec that runs", () -> {
             assertTrue(true);
           });
         }));

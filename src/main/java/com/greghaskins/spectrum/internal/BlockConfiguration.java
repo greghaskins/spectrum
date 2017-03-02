@@ -1,37 +1,33 @@
 package com.greghaskins.spectrum.internal;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Configurations that apply to a {@link ConfiguredBlock}.
  */
 public class BlockConfiguration {
-
-
-  private boolean isIgnored = false;
-  private boolean isFocused = false;
-  private final Set<String> hasTags = new HashSet<>();
-
   /**
    * Combine provided precondition objects together.
-   * 
+   *
    * @param conditions to combine
    * @return a combination of all preconditions as a new object
    */
   static BlockConfiguration merge(BlockConfiguration... conditions) {
     BlockConfiguration merged = new BlockConfiguration();
-    Arrays.stream(conditions).forEach((condition) -> {
-      merged.hasTags.addAll(condition.hasTags);
-      merged.isIgnored |= condition.isIgnored;
-      merged.isFocused |= condition.isFocused;
-    });
+    Arrays.stream(conditions).forEach(merged::mergeWith);
 
     return merged;
   }
 
-  private BlockConfiguration() {}
+  /**
+   * Configurations stored by type of configurable.
+   */
+  private Map<Class, BlockConfigurable<?>> configurations = new HashMap<>();
 
   /**
    * Children should inherit tags and ignore status, but not focus.
@@ -40,45 +36,37 @@ public class BlockConfiguration {
    */
   BlockConfiguration forChild() {
     BlockConfiguration conditions = new BlockConfiguration();
-    conditions.hasTags.addAll(this.hasTags);
-    conditions.isIgnored = this.isIgnored;
+    configurations.values()
+        .stream()
+        .filter(BlockConfigurable::inheritedByChild)
+        .forEach(conditions::add);
 
     return conditions;
   }
 
   /**
-   * Fluent setter of the ignored status.
-   *
-   * @return this for fluent use
+   * Add a configurable to the configuration.
+   * @param configurable to add
    */
-  public BlockConfiguration ignore() {
-    this.isIgnored = true;
-
-    return this;
+  public void add(BlockConfigurable<?> configurable) {
+    // merge this configurable into what we already have
+    Class<?> configurableClass = configurable.getClass();
+    configurations.put(configurableClass, configurable.merge(configurations.get(configurableClass)));
   }
 
-  /**
-   * Fluent setter of the focused status.
-   *
-   * @return this for fluent use
-   */
-  public BlockConfiguration focus() {
-    this.isFocused = true;
-
-    return this;
+  private void mergeWith(BlockConfiguration other) {
+    other.configurations
+        .values()
+        .forEach(this::add);
   }
 
-  /**
-   * Add tags to the block - this will control execution in selective running. The tags may lead to
-   * the block being ignored.
-   *
-   * @param tags the tags of the block
-   * @return this for fluent use
-   */
-  public BlockConfiguration tags(String... tags) {
-    Arrays.stream(tags).forEach(this.hasTags::add);
+  private BlockConfiguration() {
+    // there must be default tagging of blank for tagging to work
+    add(new BlockTagging());
+  }
 
-    return this;
+  public static BlockConfiguration defaultConfiguration() {
+    return new BlockConfiguration();
   }
 
   /**
@@ -87,20 +75,11 @@ public class BlockConfiguration {
    * @param child to be pre-processed according to the preconditions.
    * @param state the tagging state within which the child is operating
    */
-  void applyTo(final Child child, final TaggingFilterCriteria state) {
-    // the order of precedence = tags, focus, ignored
-    // the assumption being that tags are a general purpose override
-    // and focus is only ever added as an override
-    if (!state.isAllowedToRun(this.hasTags)) {
-      child.ignore();
-    } else if (this.isFocused) {
-      child.focus();
-    } else if (this.isIgnored) {
-      child.ignore();
-    }
+  public void applyTo(final Child child, final TaggingFilterCriteria state) {
+    configurations.values().forEach(configurable -> configurable.applyTo(child, state));
   }
 
-  public static BlockConfiguration defaultConfiguration() {
-    return new BlockConfiguration();
+  public Stream<BlockConfigurable<?>> getConfigurables() {
+    return configurations.values().stream();
   }
 }
