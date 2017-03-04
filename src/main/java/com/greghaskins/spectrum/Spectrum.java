@@ -3,6 +3,9 @@ package com.greghaskins.spectrum;
 import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 
+import com.greghaskins.spectrum.internal.BlockFocused;
+import com.greghaskins.spectrum.internal.BlockIgnore;
+import com.greghaskins.spectrum.internal.BlockTagging;
 import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
@@ -349,8 +352,11 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Surround a {@link Block} with the {@code with} statement to add preconditions and metadata to
-   * it. E.g. <code>with(tags("foo"), () -&gt; {})</code>
+   * Surround a {@link com.greghaskins.spectrum.Block} with the {@code with} statement to add
+   * preconditions and metadata to it. E.g. <code>with(tags("foo"), () -&gt; {})</code>.<br>
+   * Note: preconditions and metadata can be chained using the
+   * {@link BlockConfigurationChain#and(BlockConfigurationChain)} method.
+   * E.g. <code>with(tags("foo").and(ignore()), () -&gt; {})</code>
    * 
    * @param configuration the chainable block configuration
    * @param block the enclosed block
@@ -396,7 +402,7 @@ public final class Spectrum extends Runner {
    * @return a chainable configuration that will ignore the block within a {@link #with}
    */
   public static BlockConfigurationChain ignore() {
-    return new BlockConfigurationChain().ignore();
+    return new BlockConfigurationChain().with(new BlockIgnore());
   }
 
   /**
@@ -406,7 +412,7 @@ public final class Spectrum extends Runner {
    * @return a chainable configuration that will ignore the block within a {@link #with}
    */
   public static BlockConfigurationChain ignore(final String reason) {
-    return new BlockConfigurationChain().ignore(reason);
+    return new BlockConfigurationChain().with(new BlockIgnore(reason));
   }
 
   /**
@@ -417,7 +423,7 @@ public final class Spectrum extends Runner {
    * @return a chainable configuration that has these tags set for the block in {@link #with}
    */
   public static BlockConfigurationChain tags(final String... tags) {
-    return new BlockConfigurationChain().tags(tags);
+    return new BlockConfigurationChain().with(new BlockTagging(tags));
   }
 
   /**
@@ -426,7 +432,7 @@ public final class Spectrum extends Runner {
    * @return a chainable configuration that will focus the suite or spec in the {@link #with}
    */
   public static BlockConfigurationChain focus() {
-    return new BlockConfigurationChain().focus();
+    return new BlockConfigurationChain().with(new BlockFocused());
   }
 
   /**
