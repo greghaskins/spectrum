@@ -15,9 +15,11 @@ import java.util.stream.Stream;
  * e.g.<pre>with(ignore().and(tags("a","b","c")).and(tags("d","e","f"), () -&gt; {...})</pre><br>
  * See also: {@link Spectrum#with(BlockConfigurationChain, Block)}
  */
-public class BlockConfigurationChain {
+public final class BlockConfigurationChain {
 
   private BlockConfiguration blockConfiguration = BlockConfiguration.defaultConfiguration();
+
+  BlockConfigurationChain() {}
 
   /**
    * Fluent call to add a configurable to the configuration.
