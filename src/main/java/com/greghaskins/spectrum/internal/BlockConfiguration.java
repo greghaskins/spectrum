@@ -2,9 +2,7 @@ package com.greghaskins.spectrum.internal;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -27,7 +25,7 @@ public class BlockConfiguration {
   /**
    * Configurations stored by type of configurable.
    */
-  private Map<Class, BlockConfigurable<?>> configurations = new HashMap<>();
+  private Map<Class<?>, BlockConfigurable<?>> configurations = new HashMap<>();
 
   /**
    * Children should inherit tags and ignore status, but not focus.

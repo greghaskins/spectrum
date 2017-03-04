@@ -29,6 +29,7 @@ public interface ParameterizedSyntax {
    * @return a new stream of examples for parameterized tests to use
    */
   @SafeVarargs
+  @SuppressWarnings("varargs")
   static <T> Stream<Example<T>> withExamples(Example<T>... examples) {
     return Arrays.stream(examples);
   }

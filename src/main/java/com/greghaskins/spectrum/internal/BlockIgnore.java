@@ -4,6 +4,7 @@ package com.greghaskins.spectrum.internal;
  * A configurable that does ignoring.
  */
 public class BlockIgnore implements BlockConfigurable<BlockIgnore> {
+  @SuppressWarnings("unused")
   private String reason;
 
   public BlockIgnore() {}
