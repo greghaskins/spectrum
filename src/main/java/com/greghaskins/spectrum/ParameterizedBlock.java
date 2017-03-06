@@ -1,11 +1,11 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.dsl.gherkin.ParameterizedSyntax;
+import com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax;
 
 /**
- * The common interface of a parameterized definition block. This provides type safety
- * to the {@link ParameterizedSyntax} which takes argument
- * blocks as an input. It looks similar to Java 8's Consumer.
+ * The common interface of a parameterized definition block. This provides type safety, for example,
+ * to {@link GherkinSyntax#scenarioOutline} which takes argument blocks as an input. It looks
+ * similar to Java 8's Consumer.
  */
 public interface ParameterizedBlock {
 
