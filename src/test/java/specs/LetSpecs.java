@@ -1,9 +1,9 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.afterEach;
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.let;
+import static com.greghaskins.spectrum.dsl.spec.Spec.afterEach;
+import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.it;
+import static com.greghaskins.spectrum.dsl.spec.Spec.let;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -103,9 +103,8 @@ public class LetSpecs {
         it("describes the error", () -> {
           final Failure failure = result.get().getFailures().get(0);
           assertThat(failure.getException(), instanceOf(IllegalStateException.class));
-          assertThat(failure.getMessage(),
-              is("Cannot use this statement in a suite declaration. "
-                  + "It may only be used in the context of a running spec."));
+          assertThat(failure.getMessage(), is("Cannot use this statement in a suite declaration. "
+              + "It may only be used in the context of a running spec."));
         });
 
       });

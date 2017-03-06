@@ -1,12 +1,12 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.afterAll;
-import static com.greghaskins.spectrum.Spectrum.afterEach;
-import static com.greghaskins.spectrum.Spectrum.beforeAll;
-import static com.greghaskins.spectrum.Spectrum.beforeEach;
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.let;
+import static com.greghaskins.spectrum.dsl.spec.Spec.afterAll;
+import static com.greghaskins.spectrum.dsl.spec.Spec.afterEach;
+import static com.greghaskins.spectrum.dsl.spec.Spec.beforeAll;
+import static com.greghaskins.spectrum.dsl.spec.Spec.beforeEach;
+import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.it;
+import static com.greghaskins.spectrum.dsl.spec.Spec.let;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -479,11 +479,8 @@ public class FixturesSpec {
             });
           }));
 
-          final Supplier<List<String>> failureMessages = let(() -> result.get()
-              .getFailures()
-              .stream()
-              .map((failure) -> failure.getMessage())
-              .collect(Collectors.toList()));
+          final Supplier<List<String>> failureMessages = let(() -> result.get().getFailures()
+              .stream().map((failure) -> failure.getMessage()).collect(Collectors.toList()));
 
           it("report each error", () -> {
             assertThat(result.get().getFailureCount(), is(2));
@@ -501,10 +498,7 @@ public class FixturesSpec {
     describe("Fixtures with multiple errors", () -> {
 
       final Function<Supplier<Result>, ThrowingSupplier<List<String>>> getFailureMessages =
-          (result) -> () -> result.get()
-              .getFailures()
-              .stream()
-              .map(Failure::getMessage)
+          (result) -> () -> result.get().getFailures().stream().map(Failure::getMessage)
               .collect(Collectors.toList());
 
       describe("in beforeEach and afterEach", () -> {
@@ -553,10 +547,7 @@ public class FixturesSpec {
 
         it("should report all errors individually", () -> {
           assertThat(failureMessages.get(),
-              contains(
-                  "boom beforeEach 1",
-                  "boom afterEach 2",
-                  "boom afterEach 1"));
+              contains("boom beforeEach 1", "boom afterEach 2", "boom afterEach 1"));
         });
 
         it("should report all exceptions as failures", () -> {
@@ -630,10 +621,7 @@ public class FixturesSpec {
 
         it("should report all errors individually", () -> {
           assertThat(failureMessages.get(),
-              contains(
-                  "boom beforeAll 1",
-                  "boom afterAll 2",
-                  "boom afterAll 1"));
+              contains("boom beforeAll 1", "boom afterAll 2", "boom afterAll 1"));
         });
 
         it("should report all exceptions as failures", () -> {

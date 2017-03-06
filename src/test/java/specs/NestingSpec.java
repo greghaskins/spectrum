@@ -1,7 +1,7 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.it;
 import static matchers.IsFailure.failure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;

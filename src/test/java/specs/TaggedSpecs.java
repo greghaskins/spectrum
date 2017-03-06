@@ -1,13 +1,13 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.beforeEach;
 import static com.greghaskins.spectrum.Spectrum.configure;
-import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.ignore;
-import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.let;
 import static com.greghaskins.spectrum.Spectrum.tags;
 import static com.greghaskins.spectrum.Spectrum.with;
+import static com.greghaskins.spectrum.dsl.spec.Spec.beforeEach;
+import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.it;
+import static com.greghaskins.spectrum.dsl.spec.Spec.let;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -140,9 +140,7 @@ public class TaggedSpecs {
 
         Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
 
-          configure()
-              .includeTags("foo", "bar")
-              .excludeTags("baz", "qux");
+          configure().includeTags("foo", "bar").excludeTags("baz", "qux");
 
           it("should not run untagged specs", () -> {
             Assert.fail();

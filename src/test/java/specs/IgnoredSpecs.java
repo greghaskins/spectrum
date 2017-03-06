@@ -1,13 +1,13 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.fdescribe;
-import static com.greghaskins.spectrum.Spectrum.fit;
-import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.Spectrum.pending;
-import static com.greghaskins.spectrum.Spectrum.xdescribe;
-import static com.greghaskins.spectrum.Spectrum.xit;
+import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.fdescribe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.fit;
+import static com.greghaskins.spectrum.dsl.spec.Spec.it;
+import static com.greghaskins.spectrum.dsl.spec.Spec.let;
+import static com.greghaskins.spectrum.dsl.spec.Spec.pending;
+import static com.greghaskins.spectrum.dsl.spec.Spec.xdescribe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.xit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 

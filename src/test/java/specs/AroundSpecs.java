@@ -1,15 +1,15 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.afterAll;
-import static com.greghaskins.spectrum.Spectrum.afterEach;
-import static com.greghaskins.spectrum.Spectrum.aroundAll;
-import static com.greghaskins.spectrum.Spectrum.aroundEach;
-import static com.greghaskins.spectrum.Spectrum.beforeAll;
-import static com.greghaskins.spectrum.Spectrum.beforeEach;
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.Spectrum.xit;
+import static com.greghaskins.spectrum.dsl.spec.Spec.afterAll;
+import static com.greghaskins.spectrum.dsl.spec.Spec.afterEach;
+import static com.greghaskins.spectrum.dsl.spec.Spec.aroundAll;
+import static com.greghaskins.spectrum.dsl.spec.Spec.aroundEach;
+import static com.greghaskins.spectrum.dsl.spec.Spec.beforeAll;
+import static com.greghaskins.spectrum.dsl.spec.Spec.beforeEach;
+import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.it;
+import static com.greghaskins.spectrum.dsl.spec.Spec.let;
+import static com.greghaskins.spectrum.dsl.spec.Spec.xit;
 import static matchers.IsFailure.failure;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;

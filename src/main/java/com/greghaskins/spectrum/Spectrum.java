@@ -1,8 +1,6 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
-import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
-
+import com.greghaskins.spectrum.dsl.spec.Spec;
 import com.greghaskins.spectrum.internal.BlockFocused;
 import com.greghaskins.spectrum.internal.BlockIgnore;
 import com.greghaskins.spectrum.internal.BlockTagging;
@@ -10,14 +8,8 @@ import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
-import com.greghaskins.spectrum.internal.blocks.IdempotentBlock;
-import com.greghaskins.spectrum.internal.hooks.Hook;
-import com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo;
-import com.greghaskins.spectrum.internal.hooks.HookContext.Precedence;
-import com.greghaskins.spectrum.internal.hooks.LetHook;
 import com.greghaskins.spectrum.internal.junit.Rules;
 
-import org.junit.AssumptionViolatedException;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
@@ -30,11 +22,11 @@ import java.util.function.Supplier;
  * way of writing tests. Annotate your class with {@code @RunWith(Spectrum.class)}, and use the
  * static methods to declare your specs.
  *
- * @see #describe
- * @see #it
- * @see #beforeEach
- * @see #afterEach
- * @see #let
+ * @see Spec#describe
+ * @see Spec#it
+ * @see Spec#beforeEach
+ * @see Spec#afterEach
+ * @see Spec#let
  *
  */
 public final class Spectrum extends Runner {
@@ -78,10 +70,7 @@ public final class Spectrum extends Runner {
    *        behavior
    */
   public static void describe(final String context, final com.greghaskins.spectrum.Block block) {
-    final Suite suite =
-        DeclarationState.instance().getCurrentSuiteBeingDeclared().addSuite(context);
-    suite.applyPreconditions(block);
-    DeclarationState.instance().beginDeclaration(suite, block);
+    Spec.describe(context, block);
   }
 
   /**
@@ -95,7 +84,7 @@ public final class Spectrum extends Runner {
    * @see #describe(String, com.greghaskins.spectrum.Block)
    */
   public static void fdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    describe(context, with(focus(), block));
+    Spec.fdescribe(context, block);
   }
 
   /**
@@ -110,37 +99,7 @@ public final class Spectrum extends Runner {
    *
    */
   public static void xdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    describe(context, with(ignore(), block));
-  }
-
-  /**
-   * Define a test context.
-   *
-   * @param context the description of the context
-   * @param block the block to execute
-   */
-  public static void context(final String context, final com.greghaskins.spectrum.Block block) {
-    describe(context, block);
-  }
-
-  /**
-   * Define a focused test context. See {@link #fdescribe(String, com.greghaskins.spectrum.Block)}.
-   *
-   * @param context the description of the context
-   * @param block the block to execute
-   */
-  public static void fcontext(final String context, final com.greghaskins.spectrum.Block block) {
-    fdescribe(context, block);
-  }
-
-  /**
-   * Define an ignored test context. See {@link #xdescribe(String, com.greghaskins.spectrum.Block)}.
-   *
-   * @param context the description of the context
-   * @param block the block to execute
-   */
-  public static void xcontext(final String context, final com.greghaskins.spectrum.Block block) {
-    xdescribe(context, block);
+    Spec.xdescribe(context, block);
   }
 
   /**
@@ -152,7 +111,7 @@ public final class Spectrum extends Runner {
    *        met.
    */
   public static void it(final String behavior, final com.greghaskins.spectrum.Block block) {
-    DeclarationState.instance().getCurrentSuiteBeingDeclared().addSpec(behavior, block);
+    Spec.it(behavior, block);
   }
 
   /**
@@ -163,7 +122,7 @@ public final class Spectrum extends Runner {
    * @see #xit(String, com.greghaskins.spectrum.Block)
    */
   public static void it(final String behavior) {
-    DeclarationState.instance().getCurrentSuiteBeingDeclared().addSpec(behavior, null).ignore();
+    Spec.it(behavior);
   }
 
   /**
@@ -177,7 +136,7 @@ public final class Spectrum extends Runner {
    * @see #it(String, com.greghaskins.spectrum.Block)
    */
   public static void fit(final String behavior, final com.greghaskins.spectrum.Block block) {
-    it(behavior, with(focus(), block));
+    Spec.fit(behavior, block);
   }
 
   /**
@@ -190,23 +149,7 @@ public final class Spectrum extends Runner {
    * @see #it(String, com.greghaskins.spectrum.Block)
    */
   public static void xit(final String behavior, final com.greghaskins.spectrum.Block block) {
-    it(behavior);
-  }
-
-  /**
-   * Call this from within a Spec to mark the spec as ignored/pending.
-   */
-  public static void pending() {
-    throw new AssumptionViolatedException("pending");
-  }
-
-  /**
-   * Call this from within a Spec to mark the spec as ignored/pending.
-   *
-   * @param message the annotation of the pending
-   */
-  public static void pending(final String message) {
-    throw new AssumptionViolatedException(message);
+    Spec.xit(behavior, block);
   }
 
   public static Configuration configure() {
@@ -237,7 +180,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
-    DeclarationState.instance().addHook(before(block), AppliesTo.ATOMIC_ONLY, Precedence.LOCAL);
+    Spec.beforeEach(block);
   }
 
   /**
@@ -252,8 +195,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
-    DeclarationState.instance().addHook(after(block), AppliesTo.ATOMIC_ONLY,
-        Precedence.GUARANTEED_CLEAN_UP_LOCAL);
+    Spec.afterEach(block);
   }
 
   /**
@@ -268,8 +210,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before all specs in this suite
    */
   public static void beforeAll(final com.greghaskins.spectrum.Block block) {
-    DeclarationState.instance().addHook(before(new IdempotentBlock(block)), AppliesTo.EACH_CHILD,
-        Precedence.SET_UP);
+    Spec.beforeAll(block);
   }
 
   /**
@@ -284,33 +225,9 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once after all specs in this suite
    */
   public static void afterAll(final com.greghaskins.spectrum.Block block) {
-    DeclarationState.instance().addHook(after(block), AppliesTo.ONCE,
-        Precedence.GUARANTEED_CLEAN_UP_GLOBAL);
+    Spec.afterAll(block);
   }
 
-
-  /**
-   * Declare a block of code that runs around each spec, partly before and partly after. You must
-   * call {@link com.greghaskins.spectrum.Block#run} inside this Consumer. This code is applied to
-   * every spec in the current suite.
-   *
-   * @param consumer to run each spec block
-   */
-  public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    DeclarationState.instance().addHook(Hook.from(consumer), AppliesTo.ATOMIC_ONLY,
-        Precedence.GUARANTEED_CLEAN_UP_LOCAL);
-  }
-
-  /**
-   * Declare a block of code that runs once around all specs, partly before and partly after specs
-   * are run. You must call {@link com.greghaskins.spectrum.Block#run} inside this Consumer. This
-   * code is applied once per suite, so be careful about shared state across specs.
-   *
-   * @param consumer to run each spec block
-   */
-  public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    DeclarationState.instance().addHook(Hook.from(consumer), AppliesTo.ONCE, Precedence.OUTER);
-  }
 
   /**
    * A value that will be fresh within each spec and cannot bleed across specs.
@@ -327,10 +244,7 @@ public final class Spectrum extends Runner {
    * @return supplier which is refreshed for each spec's context
    */
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
-    LetHook<T> letHook = new LetHook<>(supplier);
-    DeclarationState.instance().addHook(letHook, AppliesTo.ATOMIC_ONLY, Precedence.LOCAL);
-
-    return letHook;
+    return Spec.let(supplier);
   }
 
   /**

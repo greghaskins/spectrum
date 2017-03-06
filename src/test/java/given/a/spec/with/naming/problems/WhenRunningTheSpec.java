@@ -1,8 +1,8 @@
 package given.a.spec.with.naming.problems;
 
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.it;
 import static com.greghaskins.spectrum.SpectrumHelper.runWithListener;
+import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
+import static com.greghaskins.spectrum.dsl.spec.Spec.it;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
