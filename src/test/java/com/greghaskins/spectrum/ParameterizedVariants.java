@@ -1,23 +1,21 @@
 package com.greghaskins.spectrum;
 
-import static com.greghaskins.spectrum.ParameterizedSyntax.example;
-import static com.greghaskins.spectrum.ParameterizedSyntax.withExamples;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.dsl.gherkin.ParameterizedSyntax.example;
+import static com.greghaskins.spectrum.dsl.gherkin.ParameterizedSyntax.withExamples;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-import com.greghaskins.spectrum.internal.parameterized.Example;
+import com.greghaskins.spectrum.dsl.gherkin.Examples;
 
 import org.junit.runner.RunWith;
 
-import java.util.stream.Stream;
-
 /**
  * Exercises all arg-variants of
- * {@link com.greghaskins.spectrum.internal.parameterized.ParameterizedDefinitionBlock}.
+ * {@link com.greghaskins.spectrum.ParameterizedBlock}.
  */
 @RunWith(Spectrum.class)
 public class ParameterizedVariants {
@@ -58,7 +56,7 @@ public class ParameterizedVariants {
           assertEquals(stringArg, Integer.toString(intArg));
         });
         it("int matches double based on boolean", () -> {
-          assertThat((int) intArg == (int) doubleArg.doubleValue(), is(booleanArg));
+          assertThat(intArg == (int) doubleArg.doubleValue(), is(booleanArg));
         });
       },
           withExamples(
@@ -109,10 +107,10 @@ public class ParameterizedVariants {
   // here since the tests for all the argument variants are easier to express more
   // clearly in a more native Spectrum form
   private static <T> void describeParameterized(final String name, final T block,
-      final Stream<Example<T>> examples) {
+      final Examples<T> examples) {
     Spectrum.describe(name, () -> {
       Spectrum.context("Examples:", () -> {
-        examples.forEach(example -> {
+        examples.rows().forEach(example -> {
           Spectrum.describe(example.toString(), () -> example.runDeclaration(block));
         });
       });

@@ -1,20 +1,19 @@
-package com.greghaskins.spectrum;
+package com.greghaskins.spectrum.dsl.gherkin;
 
-import static com.greghaskins.spectrum.Spectrum.compositeSpec;
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
 
-import com.greghaskins.spectrum.internal.parameterized.Example;
-import com.greghaskins.spectrum.internal.parameterized.ParameterizedDefinitionBlock;
-
-import java.util.stream.Stream;
+import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.ParameterizedBlock;
+import com.greghaskins.spectrum.internal.GlobalDeclarationState;
+import com.greghaskins.spectrum.internal.Suite;
 
 /**
  * A translation from Spectrum describe/it to Gherkin-like Feature/Scenario/Given/When/Then syntax
  * Note - any beforeEach and afterEach within a Scenario will still be executed between
  * given/when/then steps which may not make sense in many situations.
  */
-public interface GherkinSyntax {
+public interface GherkinSyntax extends ParameterizedSyntax {
 
   /**
    * Describes a feature of the system. A feature may have many scenarios.
@@ -41,7 +40,9 @@ public interface GherkinSyntax {
    * @see #then
    */
   static void scenario(final String scenarioName, final Block block) {
-    compositeSpec("Scenario: " + scenarioName, block);
+    final Suite suite = GlobalDeclarationState.getCurrentSuiteBeingDeclared()
+        .addCompositeSuite("Scenario: " + scenarioName);
+    GlobalDeclarationState.beginDefinition(suite, block);
   }
 
   /**
@@ -128,19 +129,19 @@ public interface GherkinSyntax {
       );
    * </code></pre>
    * @param name name of scenario outline
-   * @param block a {@link ParameterizedDefinitionBlock} to execute that consumes the parameters
+   * @param block a {@link ParameterizedBlock} to execute that consumes the parameters
    *              from the examples
    * @param examples the examples to run through, built using
-   *                {@link ParameterizedSyntax#withExamples(Example[])}
+   *                {@link ParameterizedSyntax#withExamples(TableRow[])}
    * @param <T> the type parameter, best derived implicitly from the examples
    */
-  static <T extends ParameterizedDefinitionBlock<T>> void scenarioOutline(final String name,
+  static <T extends ParameterizedBlock> void scenarioOutline(final String name,
       final T block,
-      final Stream<Example<T>> examples) {
+      final Examples<T> examples) {
 
     describe("Scenario outline: " + name, () -> {
       describe("Examples:", () -> {
-        examples.forEach(example -> {
+        examples.rows().forEach(example -> {
           describe(example.toString(), () -> example.runDeclaration(block));
         });
       });

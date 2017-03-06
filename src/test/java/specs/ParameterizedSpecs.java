@@ -1,12 +1,12 @@
 package specs;
 
-import static com.greghaskins.spectrum.GherkinSyntax.and;
-import static com.greghaskins.spectrum.GherkinSyntax.given;
-import static com.greghaskins.spectrum.GherkinSyntax.scenarioOutline;
-import static com.greghaskins.spectrum.GherkinSyntax.then;
-import static com.greghaskins.spectrum.GherkinSyntax.when;
-import static com.greghaskins.spectrum.ParameterizedSyntax.example;
-import static com.greghaskins.spectrum.ParameterizedSyntax.withExamples;
+import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.and;
+import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.given;
+import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.scenarioOutline;
+import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.then;
+import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.when;
+import static com.greghaskins.spectrum.dsl.gherkin.ParameterizedSyntax.example;
+import static com.greghaskins.spectrum.dsl.gherkin.ParameterizedSyntax.withExamples;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
