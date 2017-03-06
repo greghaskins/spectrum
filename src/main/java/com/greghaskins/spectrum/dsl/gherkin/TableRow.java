@@ -15,7 +15,7 @@ public class TableRow<T> {
     this.description = describe(arguments);
   }
 
-  public void runDeclaration(T block) {
+  void runDeclaration(T block) {
     this.blockRunner.accept(block);
   }
 

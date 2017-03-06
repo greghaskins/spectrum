@@ -2,14 +2,13 @@ package com.greghaskins.spectrum;
 
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.scenarioOutline;
 import static com.greghaskins.spectrum.dsl.gherkin.ParameterizedSyntax.example;
 import static com.greghaskins.spectrum.dsl.gherkin.ParameterizedSyntax.withExamples;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-
-import com.greghaskins.spectrum.dsl.gherkin.Examples;
 
 import org.junit.runner.RunWith;
 
@@ -21,7 +20,7 @@ import org.junit.runner.RunWith;
 public class ParameterizedVariants {
   {
     describe("parameterized definition block arguments", () -> {
-      describeParameterized("one arg", (arg) -> {
+      scenarioOutline("one arg", (arg) -> {
         it("can read the argument", () -> {
           assertNotNull(arg);
         });
@@ -30,7 +29,7 @@ public class ParameterizedVariants {
               example("one"),
               example("two")));
 
-      describeParameterized("two args", (intArg, stringArg) -> {
+      scenarioOutline("two args", (intArg, stringArg) -> {
         it("arguments are correct", () -> {
           assertEquals(stringArg, Integer.toString(intArg));
         });
@@ -39,7 +38,7 @@ public class ParameterizedVariants {
               example(1, "1"),
               example(2, "2")));
 
-      describeParameterized("three args", (intArg, stringArg, doubleArg) -> {
+      scenarioOutline("three args", (intArg, stringArg, doubleArg) -> {
         it("int matches string", () -> {
           assertEquals(stringArg, Integer.toString(intArg));
         });
@@ -51,7 +50,7 @@ public class ParameterizedVariants {
               example(1, "1", 1.0d),
               example(2, "2", 2.0d)));
 
-      describeParameterized("four args", (intArg, stringArg, doubleArg, booleanArg) -> {
+      scenarioOutline("four args", (intArg, stringArg, doubleArg, booleanArg) -> {
         it("int matches string", () -> {
           assertEquals(stringArg, Integer.toString(intArg));
         });
@@ -63,7 +62,7 @@ public class ParameterizedVariants {
               example(1, "1", 1.0d, true),
               example(2, "2", 3.0d, false)));
 
-      describeParameterized("five args", (a1, a2, a3, a4, a5) -> {
+      scenarioOutline("five args", (a1, a2, a3, a4, a5) -> {
         it("arguments add up", () -> {
           assertThat("" + a1 + a2 + a3 + a4, is(a5));
         });
@@ -72,7 +71,7 @@ public class ParameterizedVariants {
               example(1, "2", 3, "4", "1234"),
               example(2, "3", 4, "5", "2345")));
 
-      describeParameterized("six args", (a1, a2, a3, a4, a5, a6) -> {
+      scenarioOutline("six args", (a1, a2, a3, a4, a5, a6) -> {
         it("arguments add up", () -> {
           assertThat("" + (a1 + a2) + a3 + a4 + a5, is(a6));
         });
@@ -81,7 +80,7 @@ public class ParameterizedVariants {
               example(0, 1, "2", 3, "4", "1234"),
               example(1, 1, "3", 4, "5", "2345")));
 
-      describeParameterized("seven args", (a1, a2, a3, a4, a5, a6, a7) -> {
+      scenarioOutline("seven args", (a1, a2, a3, a4, a5, a6, a7) -> {
         it("arguments add up", () -> {
           assertThat(a1 + a2 + a3 + a4 + a5 + a6, is(a7));
         });
@@ -89,7 +88,7 @@ public class ParameterizedVariants {
           withExamples(
               example("A", "B", "C", "D", "E", "F", "ABCDEF")));
 
-      describeParameterized("eight args", (a1, a2, a3, a4, a5, a6, a7, a8) -> {
+      scenarioOutline("eight args", (a1, a2, a3, a4, a5, a6, a7, a8) -> {
         it("arguments add up", () -> {
           assertThat(a1 == a2, is(a5));
           assertThat(a3.equals(a4), is(a6));
@@ -100,20 +99,6 @@ public class ParameterizedVariants {
           withExamples(
               example(1, 2, "A", "B", false, false, 3, "AB"),
               example(1, 1, "A", "A", true, true, 2, "AA")));
-    });
-  }
-
-  // TODO - replace with any native parameterization - this is present
-  // here since the tests for all the argument variants are easier to express more
-  // clearly in a more native Spectrum form
-  private static <T> void describeParameterized(final String name, final T block,
-      final Examples<T> examples) {
-    Spectrum.describe(name, () -> {
-      Spectrum.context("Examples:", () -> {
-        examples.rows().forEach(example -> {
-          Spectrum.describe(example.toString(), () -> example.runDeclaration(block));
-        });
-      });
     });
   }
 }

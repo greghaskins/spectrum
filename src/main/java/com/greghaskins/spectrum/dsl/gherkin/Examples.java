@@ -7,11 +7,11 @@ public class Examples<T> {
 
   private Collection<TableRow<T>> examples;
 
-  public Examples(Collection<TableRow<T>> examples) {
+  Examples(Collection<TableRow<T>> examples) {
     this.examples = examples;
   }
 
-  public Stream<TableRow<T>> rows() {
+  Stream<TableRow<T>> rows() {
     return this.examples.stream();
   }
 
