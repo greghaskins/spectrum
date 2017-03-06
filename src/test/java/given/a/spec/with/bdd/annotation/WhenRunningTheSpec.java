@@ -1,10 +1,10 @@
 package given.a.spec.with.bdd.annotation;
 
-import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.feature;
-import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.given;
-import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.scenario;
-import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.then;
-import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.when;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.feature;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.given;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.scenario;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.then;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.when;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assume.assumeTrue;
 

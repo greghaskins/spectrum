@@ -2,9 +2,9 @@ package com.greghaskins.spectrum;
 
 import static com.greghaskins.spectrum.Spectrum.describe;
 import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.example;
-import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.scenarioOutline;
-import static com.greghaskins.spectrum.dsl.gherkin.GherkinSyntax.withExamples;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.example;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.scenarioOutline;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.withExamples;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

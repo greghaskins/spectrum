@@ -23,7 +23,7 @@ import java.util.Arrays;
  * Note - any beforeEach and afterEach within a Scenario will still be executed between
  * given/when/then steps which may not make sense in many situations.
  */
-public interface GherkinSyntax {
+public interface Gherkin {
 
   /**
    * Describes a feature of the system. A feature may have many scenarios.
@@ -146,7 +146,7 @@ public interface GherkinSyntax {
    * @param block a {@link ParameterizedBlock} to execute that consumes the parameters from the
    *        examples
    * @param examples the examples to run through, built using
-   *        {@link GherkinSyntax#withExamples(TableRow[])}
+   *        {@link Gherkin#withExamples(TableRow[])}
    * @param <T> the type parameter, best derived implicitly from the examples
    */
   static <T extends ParameterizedBlock> void scenarioOutline(final String name, final T block,
