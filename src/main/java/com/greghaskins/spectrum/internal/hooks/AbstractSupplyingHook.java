@@ -1,9 +1,8 @@
 package com.greghaskins.spectrum.internal.hooks;
 
-import static com.greghaskins.spectrum.Spectrum.assertSpectrumInTestMode;
-
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.Variable;
+import com.greghaskins.spectrum.internal.DeclarationState;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
@@ -52,12 +51,24 @@ public abstract class AbstractSupplyingHook<T> extends Variable<T> implements Su
 
   @Override
   public T get() {
-    assertSpectrumInTestMode();
+    assertSpectrumIsRunningTestsNotDeclaringThem();
 
     return super.get();
   }
 
   private void clear() {
     set(null);
+  }
+
+  /**
+   * Will throw an exception if this method happens to be called while Spectrum is still defining
+   * tests, rather than executing them. Useful to see if a hook is being accidentally used during
+   * definition.
+   */
+  private static void assertSpectrumIsRunningTestsNotDeclaringThem() {
+    if (DeclarationState.instance().getCurrentSuiteBeingDeclared() != null) {
+      throw new IllegalStateException("Cannot use this statement in a suite declaration. "
+          + "It may only be used in the context of a running spec.");
+    }
   }
 }

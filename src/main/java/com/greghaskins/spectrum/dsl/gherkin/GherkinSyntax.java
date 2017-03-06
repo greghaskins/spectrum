@@ -5,7 +5,7 @@ import static com.greghaskins.spectrum.Spectrum.it;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.ParameterizedBlock;
-import com.greghaskins.spectrum.internal.GlobalDeclarationState;
+import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.Suite;
 
 /**
@@ -40,9 +40,9 @@ public interface GherkinSyntax extends ParameterizedSyntax {
    * @see #then
    */
   static void scenario(final String scenarioName, final Block block) {
-    final Suite suite = GlobalDeclarationState.getCurrentSuiteBeingDeclared()
+    final Suite suite = DeclarationState.instance().getCurrentSuiteBeingDeclared()
         .addCompositeSuite("Scenario: " + scenarioName);
-    GlobalDeclarationState.beginDefinition(suite, block);
+    DeclarationState.instance().beginDeclaration(suite, block);
   }
 
   /**

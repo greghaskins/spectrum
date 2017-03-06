@@ -7,7 +7,7 @@ import com.greghaskins.spectrum.internal.BlockFocused;
 import com.greghaskins.spectrum.internal.BlockIgnore;
 import com.greghaskins.spectrum.internal.BlockTagging;
 import com.greghaskins.spectrum.internal.ConfiguredBlock;
-import com.greghaskins.spectrum.internal.GlobalDeclarationState;
+import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
 import com.greghaskins.spectrum.internal.blocks.IdempotentBlock;
@@ -77,9 +77,10 @@ public final class Spectrum extends Runner {
    *        behavior
    */
   public static void describe(final String context, final com.greghaskins.spectrum.Block block) {
-    final Suite suite = GlobalDeclarationState.getCurrentSuiteBeingDeclared().addSuite(context);
+    final Suite suite =
+        DeclarationState.instance().getCurrentSuiteBeingDeclared().addSuite(context);
     suite.applyPreconditions(block);
-    GlobalDeclarationState.beginDefinition(suite, block);
+    DeclarationState.instance().beginDeclaration(suite, block);
   }
 
   /**
@@ -150,7 +151,7 @@ public final class Spectrum extends Runner {
    *        met.
    */
   public static void it(final String behavior, final com.greghaskins.spectrum.Block block) {
-    GlobalDeclarationState.getCurrentSuiteBeingDeclared().addSpec(behavior, block);
+    DeclarationState.instance().getCurrentSuiteBeingDeclared().addSpec(behavior, block);
   }
 
   /**
@@ -161,7 +162,7 @@ public final class Spectrum extends Runner {
    * @see #xit(String, com.greghaskins.spectrum.Block)
    */
   public static void it(final String behavior) {
-    GlobalDeclarationState.getCurrentSuiteBeingDeclared().addSpec(behavior, null).ignore();
+    DeclarationState.instance().getCurrentSuiteBeingDeclared().addSpec(behavior, null).ignore();
   }
 
   /**
@@ -208,7 +209,7 @@ public final class Spectrum extends Runner {
   }
 
   public static Configuration configure() {
-    return new Configuration(GlobalDeclarationState.getCurrentSuiteBeingDeclared());
+    return new Configuration(DeclarationState.instance().getCurrentSuiteBeingDeclared());
   }
 
 
@@ -235,7 +236,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(before(block), GlobalDeclarationState.getCurrentDepth(),
+    addHook(new HookContext(before(block), DeclarationState.instance().getCurrentDepth(),
         HookContext.AppliesTo.ATOMIC_ONLY,
         HookContext.Precedence.LOCAL));
   }
@@ -252,7 +253,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(after(block), GlobalDeclarationState.getCurrentDepth(),
+    addHook(new HookContext(after(block), DeclarationState.instance().getCurrentDepth(),
         HookContext.AppliesTo.ATOMIC_ONLY,
         HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
@@ -269,8 +270,9 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before all specs in this suite
    */
   public static void beforeAll(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(before(new IdempotentBlock(block)), GlobalDeclarationState.getCurrentDepth(),
-        HookContext.AppliesTo.EACH_CHILD, HookContext.Precedence.SET_UP));
+    addHook(
+        new HookContext(before(new IdempotentBlock(block)), DeclarationState.instance().getCurrentDepth(),
+            HookContext.AppliesTo.EACH_CHILD, HookContext.Precedence.SET_UP));
   }
 
   /**
@@ -285,7 +287,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once after all specs in this suite
    */
   public static void afterAll(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(after(block), GlobalDeclarationState.getCurrentDepth(),
+    addHook(new HookContext(after(block), DeclarationState.instance().getCurrentDepth(),
         HookContext.AppliesTo.ONCE,
         HookContext.Precedence.GUARANTEED_CLEAN_UP_GLOBAL));
   }
@@ -299,7 +301,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(Hook.from(consumer), GlobalDeclarationState.getCurrentDepth(),
+    addHook(new HookContext(Hook.from(consumer), DeclarationState.instance().getCurrentDepth(),
         HookContext.AppliesTo.ATOMIC_ONLY,
         HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
   }
@@ -312,7 +314,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(Hook.from(consumer), GlobalDeclarationState.getCurrentDepth(),
+    addHook(new HookContext(Hook.from(consumer), DeclarationState.instance().getCurrentDepth(),
         HookContext.AppliesTo.ONCE,
         HookContext.Precedence.OUTER));
   }
@@ -333,7 +335,7 @@ public final class Spectrum extends Runner {
    */
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
     LetHook<T> letHook = new LetHook<>(supplier);
-    HookContext hookContext = new HookContext(letHook, GlobalDeclarationState.getCurrentDepth(),
+    HookContext hookContext = new HookContext(letHook, DeclarationState.instance().getCurrentDepth(),
         HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL);
     addHook(hookContext);
 
@@ -434,23 +436,11 @@ public final class Spectrum extends Runner {
    */
   private static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,
       final HookContext.Precedence precedence) {
-    addHook(new HookContext(hook, GlobalDeclarationState.getCurrentDepth(), appliesTo, precedence));
+    addHook(new HookContext(hook, DeclarationState.instance().getCurrentDepth(), appliesTo, precedence));
   }
 
   private static void addHook(HookContext hook) {
-    GlobalDeclarationState.getCurrentSuiteBeingDeclared().addHook(hook);
-  }
-
-  /**
-   * Will throw an exception if this method happens to be called while Spectrum is still defining
-   * tests, rather than executing them. Useful to see if a hook is being accidentally used during
-   * definition.
-   */
-  public static void assertSpectrumInTestMode() {
-    if (GlobalDeclarationState.getCurrentSuiteBeingDeclared() != null) {
-      throw new IllegalStateException("Cannot use this statement in a suite declaration. "
-          + "It may only be used in the context of a running spec.");
-    }
+    DeclarationState.instance().getCurrentSuiteBeingDeclared().addHook(hook);
   }
 
   private final Suite rootSuite;
@@ -468,7 +458,7 @@ public final class Spectrum extends Runner {
 
   Spectrum(Description description, com.greghaskins.spectrum.Block definitionBlock) {
     this.rootSuite = Suite.rootSuite(description);
-    GlobalDeclarationState.beginDefinition(this.rootSuite, definitionBlock);
+    DeclarationState.instance().beginDeclaration(this.rootSuite, definitionBlock);
   }
 
   @Override
