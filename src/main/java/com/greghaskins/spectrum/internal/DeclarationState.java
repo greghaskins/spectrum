@@ -2,6 +2,10 @@ package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.internal.hooks.Hook;
+import com.greghaskins.spectrum.internal.hooks.HookContext;
+import com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo;
+import com.greghaskins.spectrum.internal.hooks.HookContext.Precedence;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -23,7 +27,7 @@ public final class DeclarationState {
     return suiteStack.peek();
   }
 
-  public int getCurrentDepth() {
+  private int getCurrentDepth() {
     return suiteStack.size();
   }
 
@@ -40,5 +44,14 @@ public final class DeclarationState {
     }
     suiteStack.pop();
   }
+
+  public void addHook(final Hook hook, final AppliesTo appliesTo, final Precedence precedence) {
+    addHook(new HookContext(hook, instance().getCurrentDepth(), appliesTo, precedence));
+  }
+
+  private void addHook(HookContext hook) {
+    getCurrentSuiteBeingDeclared().addHook(hook);
+  }
+
 
 }

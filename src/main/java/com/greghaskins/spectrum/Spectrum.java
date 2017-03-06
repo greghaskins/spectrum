@@ -12,7 +12,8 @@ import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
 import com.greghaskins.spectrum.internal.blocks.IdempotentBlock;
 import com.greghaskins.spectrum.internal.hooks.Hook;
-import com.greghaskins.spectrum.internal.hooks.HookContext;
+import com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo;
+import com.greghaskins.spectrum.internal.hooks.HookContext.Precedence;
 import com.greghaskins.spectrum.internal.hooks.LetHook;
 import com.greghaskins.spectrum.internal.junit.Rules;
 
@@ -214,15 +215,15 @@ public final class Spectrum extends Runner {
 
 
   /**
-   * Uses the given class as a mix-in for JUnit rules to be applied. These rules will cascade down and be
-   * applied at the level of specs or atomic specs.
+   * Uses the given class as a mix-in for JUnit rules to be applied. These rules will cascade down
+   * and be applied at the level of specs or atomic specs.
    *
    * @param rulesClass type of object to create and apply rules to for each spec.
    * @param <T> type of the object
    * @return a supplier of the rules object
    */
   public static <T> Supplier<T> junitMixin(final Class<T> rulesClass) {
-    return Rules.applyRules(rulesClass, Spectrum::addHook);
+    return Rules.applyRules(rulesClass, DeclarationState.instance()::addHook);
   }
 
   /**
@@ -236,9 +237,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(before(block), DeclarationState.instance().getCurrentDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY,
-        HookContext.Precedence.LOCAL));
+    DeclarationState.instance().addHook(before(block), AppliesTo.ATOMIC_ONLY, Precedence.LOCAL);
   }
 
   /**
@@ -253,9 +252,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(after(block), DeclarationState.instance().getCurrentDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY,
-        HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
+    DeclarationState.instance().addHook(after(block), AppliesTo.ATOMIC_ONLY,
+        Precedence.GUARANTEED_CLEAN_UP_LOCAL);
   }
 
   /**
@@ -270,9 +268,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before all specs in this suite
    */
   public static void beforeAll(final com.greghaskins.spectrum.Block block) {
-    addHook(
-        new HookContext(before(new IdempotentBlock(block)), DeclarationState.instance().getCurrentDepth(),
-            HookContext.AppliesTo.EACH_CHILD, HookContext.Precedence.SET_UP));
+    DeclarationState.instance().addHook(before(new IdempotentBlock(block)), AppliesTo.EACH_CHILD,
+        Precedence.SET_UP);
   }
 
   /**
@@ -287,9 +284,8 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once after all specs in this suite
    */
   public static void afterAll(final com.greghaskins.spectrum.Block block) {
-    addHook(new HookContext(after(block), DeclarationState.instance().getCurrentDepth(),
-        HookContext.AppliesTo.ONCE,
-        HookContext.Precedence.GUARANTEED_CLEAN_UP_GLOBAL));
+    DeclarationState.instance().addHook(after(block), AppliesTo.ONCE,
+        Precedence.GUARANTEED_CLEAN_UP_GLOBAL);
   }
 
 
@@ -301,9 +297,8 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundEach(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(Hook.from(consumer), DeclarationState.instance().getCurrentDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY,
-        HookContext.Precedence.GUARANTEED_CLEAN_UP_LOCAL));
+    DeclarationState.instance().addHook(Hook.from(consumer), AppliesTo.ATOMIC_ONLY,
+        Precedence.GUARANTEED_CLEAN_UP_LOCAL);
   }
 
   /**
@@ -314,9 +309,7 @@ public final class Spectrum extends Runner {
    * @param consumer to run each spec block
    */
   public static void aroundAll(ThrowingConsumer<com.greghaskins.spectrum.Block> consumer) {
-    addHook(new HookContext(Hook.from(consumer), DeclarationState.instance().getCurrentDepth(),
-        HookContext.AppliesTo.ONCE,
-        HookContext.Precedence.OUTER));
+    DeclarationState.instance().addHook(Hook.from(consumer), AppliesTo.ONCE, Precedence.OUTER);
   }
 
   /**
@@ -335,9 +328,7 @@ public final class Spectrum extends Runner {
    */
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
     LetHook<T> letHook = new LetHook<>(supplier);
-    HookContext hookContext = new HookContext(letHook, DeclarationState.instance().getCurrentDepth(),
-        HookContext.AppliesTo.ATOMIC_ONLY, HookContext.Precedence.LOCAL);
-    addHook(hookContext);
+    DeclarationState.instance().addHook(letHook, AppliesTo.ATOMIC_ONLY, Precedence.LOCAL);
 
     return letHook;
   }
@@ -426,23 +417,6 @@ public final class Spectrum extends Runner {
     return new BlockConfigurationChain().with(new BlockFocused());
   }
 
-  /**
-   * Insert a hook into the current level of definition.
-   *
-   * @param hook to insert
-   * @param appliesTo the {@link com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo} indicating
-   *        where the hook is run
-   * @param precedence the importance of the hook compared to others
-   */
-  private static void addHook(final Hook hook, final HookContext.AppliesTo appliesTo,
-      final HookContext.Precedence precedence) {
-    addHook(new HookContext(hook, DeclarationState.instance().getCurrentDepth(), appliesTo, precedence));
-  }
-
-  private static void addHook(HookContext hook) {
-    DeclarationState.instance().getCurrentSuiteBeingDeclared().addHook(hook);
-  }
-
   private final Suite rootSuite;
 
   /**
@@ -475,9 +449,9 @@ public final class Spectrum extends Runner {
    * Links the test class construction to JUnit rules implementation.
    *
    * @param testClass type of the test object
-   * @return a block which when executed will perform test definition against Spectrum and also hooks
-   *         JUnit rule implementation to the definition based on any "@Rule" annotations on the members -
-   *         see {@link Rules}
+   * @return a block which when executed will perform test definition against Spectrum and also
+   *         hooks JUnit rule implementation to the definition based on any "@Rule" annotations on
+   *         the members - see {@link Rules}
    */
   private static <T> com.greghaskins.spectrum.Block createTestClassDefinitionBlock(
       final Class<T> testClass) {
@@ -485,7 +459,7 @@ public final class Spectrum extends Runner {
 
     return () -> {
       constructTestClass.run();
-      Rules.applyRules(constructTestClass.get(), Spectrum::addHook);
+      Rules.applyRules(constructTestClass.get(), DeclarationState.instance()::addHook);
     };
   }
 }
