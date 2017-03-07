@@ -48,7 +48,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   from javadoc.destinationDir
 }
 
-artifacts { archives sourcesJar, javadocJar }
+task testJar(type: Jar) {
+    classifier = 'tests'
+    from sourceSets.test.output
+    from sourceSets.test.allSource
+}
+
+artifacts { archives sourcesJar, javadocJar, testJar }
 
 spotless {
   java {
@@ -130,6 +136,7 @@ publishing {
 
       artifact sourcesJar
       artifact javadocJar
+      artifact testJar
 
       pom.withXml {
         def root = asNode()
