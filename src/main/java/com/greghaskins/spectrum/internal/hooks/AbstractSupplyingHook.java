@@ -15,7 +15,7 @@ import org.junit.runner.notification.RunNotifier;
  * This is not the only way to achieve that - you can also build from {@link SupplyingHook}
  * but this captures the template for a complex hook.
  */
-public abstract class AbstractSupplyingHook<T> extends Variable<T> implements SupplyingHook<T> {
+abstract class AbstractSupplyingHook<T> extends Variable<T> implements SupplyingHook<T> {
   /**
    * Override this to supply behaviour for before the block is run.
    * @return the value that the singleton will store to supply
@@ -67,7 +67,7 @@ public abstract class AbstractSupplyingHook<T> extends Variable<T> implements Su
    */
   private static void assertSpectrumIsRunningTestsNotDeclaringThem() {
     if (DeclarationState.instance().getCurrentSuiteBeingDeclared() != null) {
-      throw new IllegalStateException("Cannot use this statement in a suite declaration. "
+      throw new IllegalStateException("Cannot use the value from let() in a suite declaration. "
           + "It may only be used in the context of a running spec.");
     }
   }
