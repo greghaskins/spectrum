@@ -1,9 +1,3 @@
-apply plugin: 'java'
-
-repositories {
-    jcenter()
-}
-
 configurations {
     regressionSuite
 }
