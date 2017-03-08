@@ -1,5 +1,7 @@
 package com.greghaskins.spectrum.internal;
 
+import com.greghaskins.spectrum.internal.configuration.TaggingFilterCriteria;
+
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 

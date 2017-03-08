@@ -1,13 +1,13 @@
 package com.greghaskins.spectrum;
 
 import com.greghaskins.spectrum.dsl.specification.Specification;
-import com.greghaskins.spectrum.internal.BlockFocused;
-import com.greghaskins.spectrum.internal.BlockIgnore;
-import com.greghaskins.spectrum.internal.BlockTagging;
-import com.greghaskins.spectrum.internal.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
+import com.greghaskins.spectrum.internal.configuration.BlockFocused;
+import com.greghaskins.spectrum.internal.configuration.BlockIgnore;
+import com.greghaskins.spectrum.internal.configuration.BlockTagging;
+import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.junit.Rules;
 
 import org.junit.runner.Description;

@@ -1,4 +1,6 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.configuration;
+
+import com.greghaskins.spectrum.internal.Child;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,7 +34,7 @@ public class BlockConfiguration {
    *
    * @return a new BlockConfiguration that would apply for a Child
    */
-  BlockConfiguration forChild() {
+  public BlockConfiguration forChild() {
     BlockConfiguration conditions = new BlockConfiguration();
     configurations.values()
         .stream()

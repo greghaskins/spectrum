@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.SpectrumHelper;
+import com.greghaskins.spectrum.internal.configuration.BlockConfiguration;
 
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
 
 /**
  * Demonstrate how to focus and ignore specs using
- * {@link com.greghaskins.spectrum.internal.BlockConfiguration}.
+ * {@link BlockConfiguration}.
  */
 @RunWith(Spectrum.class)
 public class BlockConfigurationSpecs {

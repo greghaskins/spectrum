@@ -1,12 +1,13 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.internal.BlockConfigurable;
-import com.greghaskins.spectrum.internal.BlockConfiguration;
+import com.greghaskins.spectrum.internal.configuration.BlockConfigurable;
+import com.greghaskins.spectrum.internal.configuration.BlockConfiguration;
+import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
 
 import java.util.stream.Stream;
 
 /**
- * Chainable configuration of a {@link com.greghaskins.spectrum.internal.ConfiguredBlock}.
+ * Chainable configuration of a {@link ConfiguredBlock}.
  * Use the factory methods in {@link Spectrum} like {@link Spectrum#ignore()},
  * {@link Spectrum#focus()} or {@link Spectrum#tags(String...)} to add configuration
  * to a block. The result will be a {@link BlockConfigurationChain}. To add configurations together

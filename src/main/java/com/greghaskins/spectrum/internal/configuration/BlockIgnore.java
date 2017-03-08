@@ -1,4 +1,6 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.configuration;
+
+import com.greghaskins.spectrum.internal.Child;
 
 /**
  * A configurable that does ignoring.
