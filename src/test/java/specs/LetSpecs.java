@@ -1,9 +1,9 @@
 package specs;
 
-import static com.greghaskins.spectrum.dsl.spec.Spec.afterEach;
-import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
-import static com.greghaskins.spectrum.dsl.spec.Spec.it;
-import static com.greghaskins.spectrum.dsl.spec.Spec.let;
+import static com.greghaskins.spectrum.dsl.specification.Specification.afterEach;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.let;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;

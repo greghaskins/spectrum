@@ -1,7 +1,7 @@
 package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.dsl.spec.Spec;
+import com.greghaskins.spectrum.dsl.specification.Specification;
 import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext;
 import com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo;
@@ -38,7 +38,7 @@ public final class DeclarationState {
       definitionBlock.run();
     } catch (final Throwable error) {
       suite.removeAllChildren();
-      Spec.it("encountered an error", () -> {
+      Specification.it("encountered an error", () -> {
         throw error;
       });
     }

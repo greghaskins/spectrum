@@ -1,7 +1,7 @@
 package specs;
 
-import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
-import static com.greghaskins.spectrum.dsl.spec.Spec.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 

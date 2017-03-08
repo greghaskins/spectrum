@@ -1,7 +1,7 @@
 package com.greghaskins.spectrum.dsl.gherkin;
 
-import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
-import static com.greghaskins.spectrum.dsl.spec.Spec.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.ParameterizedBlock;

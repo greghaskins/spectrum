@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum.dsl.spec;
+package com.greghaskins.spectrum.dsl.specification;
 
 import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
@@ -19,7 +19,7 @@ import org.junit.AssumptionViolatedException;
 
 import java.util.function.Supplier;
 
-public interface Spec {
+public interface Specification {
 
   /**
    * Declare a test suite that describes the expected behavior of the system in a given context.
@@ -220,14 +220,14 @@ public interface Spec {
   }
 
   /**
-   * Call this from within a Spec to mark the spec as ignored/pending.
+   * Call this from within a Specification to mark the spec as ignored/pending.
    */
   static void pending() {
     throw new AssumptionViolatedException("pending");
   }
 
   /**
-   * Call this from within a Spec to mark the spec as ignored/pending.
+   * Call this from within a Specification to mark the spec as ignored/pending.
    *
    * @param message the annotation of the pending
    */

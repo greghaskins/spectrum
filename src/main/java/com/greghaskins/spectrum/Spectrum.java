@@ -1,6 +1,6 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.dsl.spec.Spec;
+import com.greghaskins.spectrum.dsl.specification.Specification;
 import com.greghaskins.spectrum.internal.BlockFocused;
 import com.greghaskins.spectrum.internal.BlockIgnore;
 import com.greghaskins.spectrum.internal.BlockTagging;
@@ -22,11 +22,11 @@ import java.util.function.Supplier;
  * way of writing tests. Annotate your class with {@code @RunWith(Spectrum.class)}, and use the
  * static methods to declare your specs.
  *
- * @see Spec#describe
- * @see Spec#it
- * @see Spec#beforeEach
- * @see Spec#afterEach
- * @see Spec#let
+ * @see Specification#describe
+ * @see Specification#it
+ * @see Specification#beforeEach
+ * @see Specification#afterEach
+ * @see Specification#let
  *
  */
 public final class Spectrum extends Runner {
@@ -70,7 +70,7 @@ public final class Spectrum extends Runner {
    *        behavior
    */
   public static void describe(final String context, final com.greghaskins.spectrum.Block block) {
-    Spec.describe(context, block);
+    Specification.describe(context, block);
   }
 
   /**
@@ -84,7 +84,7 @@ public final class Spectrum extends Runner {
    * @see #describe(String, com.greghaskins.spectrum.Block)
    */
   public static void fdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    Spec.fdescribe(context, block);
+    Specification.fdescribe(context, block);
   }
 
   /**
@@ -99,7 +99,7 @@ public final class Spectrum extends Runner {
    *
    */
   public static void xdescribe(final String context, final com.greghaskins.spectrum.Block block) {
-    Spec.xdescribe(context, block);
+    Specification.xdescribe(context, block);
   }
 
   /**
@@ -111,7 +111,7 @@ public final class Spectrum extends Runner {
    *        met.
    */
   public static void it(final String behavior, final com.greghaskins.spectrum.Block block) {
-    Spec.it(behavior, block);
+    Specification.it(behavior, block);
   }
 
   /**
@@ -122,7 +122,7 @@ public final class Spectrum extends Runner {
    * @see #xit(String, com.greghaskins.spectrum.Block)
    */
   public static void it(final String behavior) {
-    Spec.it(behavior);
+    Specification.it(behavior);
   }
 
   /**
@@ -136,7 +136,7 @@ public final class Spectrum extends Runner {
    * @see #it(String, com.greghaskins.spectrum.Block)
    */
   public static void fit(final String behavior, final com.greghaskins.spectrum.Block block) {
-    Spec.fit(behavior, block);
+    Specification.fit(behavior, block);
   }
 
   /**
@@ -149,7 +149,7 @@ public final class Spectrum extends Runner {
    * @see #it(String, com.greghaskins.spectrum.Block)
    */
   public static void xit(final String behavior, final com.greghaskins.spectrum.Block block) {
-    Spec.xit(behavior, block);
+    Specification.xit(behavior, block);
   }
 
   public static Configuration configure() {
@@ -180,7 +180,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
-    Spec.beforeEach(block);
+    Specification.beforeEach(block);
   }
 
   /**
@@ -195,7 +195,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block Block} to run once after each spec
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
-    Spec.afterEach(block);
+    Specification.afterEach(block);
   }
 
   /**
@@ -210,7 +210,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once before all specs in this suite
    */
   public static void beforeAll(final com.greghaskins.spectrum.Block block) {
-    Spec.beforeAll(block);
+    Specification.beforeAll(block);
   }
 
   /**
@@ -225,7 +225,7 @@ public final class Spectrum extends Runner {
    * @param block {@link com.greghaskins.spectrum.Block} to run once after all specs in this suite
    */
   public static void afterAll(final com.greghaskins.spectrum.Block block) {
-    Spec.afterAll(block);
+    Specification.afterAll(block);
   }
 
 
@@ -244,7 +244,7 @@ public final class Spectrum extends Runner {
    * @return supplier which is refreshed for each spec's context
    */
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
-    return Spec.let(supplier);
+    return Specification.let(supplier);
   }
 
   /**

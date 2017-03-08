@@ -1,8 +1,8 @@
 package given.a.spec.with.exception.in.aftereach.block;
 
-import static com.greghaskins.spectrum.dsl.spec.Spec.afterEach;
-import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
-import static com.greghaskins.spectrum.dsl.spec.Spec.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.afterEach;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
 
 
 class Fixture {

@@ -1,9 +1,9 @@
 package specs;
 
-import static com.greghaskins.spectrum.dsl.spec.Spec.beforeEach;
-import static com.greghaskins.spectrum.dsl.spec.Spec.describe;
-import static com.greghaskins.spectrum.dsl.spec.Spec.it;
-import static com.greghaskins.spectrum.dsl.spec.Spec.pending;
+import static com.greghaskins.spectrum.dsl.specification.Specification.beforeEach;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.pending;
 import static org.junit.Assert.assertFalse;
 
 import com.greghaskins.spectrum.Spectrum;
