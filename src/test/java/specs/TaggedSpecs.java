@@ -1,9 +1,9 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.configure;
-import static com.greghaskins.spectrum.Spectrum.ignore;
-import static com.greghaskins.spectrum.Spectrum.tags;
-import static com.greghaskins.spectrum.Spectrum.with;
+import static com.greghaskins.spectrum.Configure.configure;
+import static com.greghaskins.spectrum.Configure.ignore;
+import static com.greghaskins.spectrum.Configure.tags;
+import static com.greghaskins.spectrum.Configure.with;
 import static com.greghaskins.spectrum.dsl.specification.Specification.beforeEach;
 import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
 import static com.greghaskins.spectrum.dsl.specification.Specification.it;

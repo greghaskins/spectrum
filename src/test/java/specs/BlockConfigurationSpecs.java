@@ -1,7 +1,7 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.ignore;
-import static com.greghaskins.spectrum.Spectrum.with;
+import static com.greghaskins.spectrum.Configure.ignore;
+import static com.greghaskins.spectrum.Configure.with;
 import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
 import static com.greghaskins.spectrum.dsl.specification.Specification.it;
 import static com.greghaskins.spectrum.dsl.specification.Specification.let;

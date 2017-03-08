@@ -4,7 +4,7 @@ import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.Configure;
 import com.greghaskins.spectrum.ThrowingConsumer;
 import com.greghaskins.spectrum.ThrowingSupplier;
 import com.greghaskins.spectrum.internal.DeclarationState;
@@ -45,7 +45,7 @@ public interface Specification {
    * @see #describe(String, Block)
    */
   static void fdescribe(final String context, final Block block) {
-    describe(context, Spectrum.with(Spectrum.focus(), block));
+    describe(context, Configure.with(Configure.focus(), block));
   }
 
   /**
@@ -59,7 +59,7 @@ public interface Specification {
    *
    */
   static void xdescribe(final String context, final Block block) {
-    describe(context, Spectrum.with(Spectrum.ignore(), block));
+    describe(context, Configure.with(Configure.ignore(), block));
   }
 
   /**
@@ -94,7 +94,7 @@ public interface Specification {
    * @see #it(String, Block)
    */
   static void fit(final String behavior, final Block block) {
-    it(behavior, Spectrum.with(Spectrum.focus(), block));
+    it(behavior, Configure.with(Configure.focus(), block));
   }
 
   /**
