@@ -21,7 +21,7 @@ public interface Configure {
    * <code>with(tags("foo").and(ignore()), () -&gt; {})</code>
    *
    * @param configuration the chainable block configuration
-   * @param block         the enclosed block
+   * @param block the enclosed block
    * @return a wrapped block with the given configuration
    * @see #ignore(String)
    * @see #ignore()
@@ -37,7 +37,7 @@ public interface Configure {
   /**
    * Mark a block as ignored by surrounding it with the ignore method.
    *
-   * @param why   explanation of why this block is being ignored
+   * @param why explanation of why this block is being ignored
    * @param block the block to ignore
    * @return a wrapped block which will be ignored
    */
@@ -96,11 +96,14 @@ public interface Configure {
   }
 
   /**
-   * Filter the tests in the current suite. See {@link #includeTags} and {@link #excludeTags}.
+   * Filter which tests in the current suite will run.
    *
    * <br><br>
    * {@code filterRun(includeTags("foo").and(excludeTags("bar")));}
+   *
    * @param configuration chainable filter configuration
+   * @see #includeTags(String...)
+   * @see #excludeTags(String...)
    */
   static void filterRun(FilterConfigurationChain configuration) {
     configuration.applyTo(DeclarationState.instance().getCurrentSuiteBeingDeclared());

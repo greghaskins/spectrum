@@ -6,7 +6,7 @@ import com.greghaskins.spectrum.internal.configuration.SuiteConfigurable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterConfigurationChain {
+public final class FilterConfigurationChain {
 
   private final List<SuiteConfigurable> configurables = new ArrayList<>();
 
