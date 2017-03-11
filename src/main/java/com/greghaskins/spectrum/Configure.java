@@ -1,18 +1,17 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.BlockConfigurationChain;
-import com.greghaskins.spectrum.Configuration;
 import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.configuration.BlockFocused;
 import com.greghaskins.spectrum.internal.configuration.BlockIgnore;
 import com.greghaskins.spectrum.internal.configuration.BlockTagging;
 import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
+import com.greghaskins.spectrum.internal.configuration.ExcludeTags;
+import com.greghaskins.spectrum.internal.configuration.IncludeTags;
 
 public interface Configure {
 
-  static Configuration configure() {
-    return new Configuration(DeclarationState.instance().getCurrentSuiteBeingDeclared());
-  }
+  String EXCLUDE_TAGS_PROPERTY = "spectrum.exclude.tags";
+  String INCLUDE_TAGS_PROPERTY = "spectrum.include.tags";
 
   /**
    * Surround a {@link com.greghaskins.spectrum.Block} with the {@code with} statement to add
@@ -22,14 +21,12 @@ public interface Configure {
    * <code>with(tags("foo").and(ignore()), () -&gt; {})</code>
    *
    * @param configuration the chainable block configuration
-   * @param block the enclosed block
+   * @param block         the enclosed block
    * @return a wrapped block with the given configuration
-   *
    * @see #ignore(String)
    * @see #ignore()
    * @see #focus()
    * @see #tags(String...)
-   *
    */
   static com.greghaskins.spectrum.Block with(final BlockConfigurationChain configuration,
       final com.greghaskins.spectrum.Block block) {
@@ -40,7 +37,7 @@ public interface Configure {
   /**
    * Mark a block as ignored by surrounding it with the ignore method.
    *
-   * @param why explanation of why this block is being ignored
+   * @param why   explanation of why this block is being ignored
    * @param block the block to ignore
    * @return a wrapped block which will be ignored
    */
@@ -97,4 +94,36 @@ public interface Configure {
   static BlockConfigurationChain focus() {
     return new BlockConfigurationChain().with(new BlockFocused());
   }
+
+  /**
+   * Filter the tests in the current suite. See {@link #includeTags} and {@link #excludeTags}.
+   *
+   * <br><br>
+   * {@code filterRun(includeTags("foo").and(excludeTags("bar")));}
+   * @param configuration chainable filter configuration
+   */
+  static void filterRun(FilterConfigurationChain configuration) {
+    configuration.applyTo(DeclarationState.instance().getCurrentSuiteBeingDeclared());
+  }
+
+  /**
+   * Set the test filter to require at least one of these tags for all following specs.
+   *
+   * @param tagsToInclude specs (or their parent suite) must have at least one of these
+   * @return FilterConfigurationChain instance for chaining further calls
+   */
+  static FilterConfigurationChain includeTags(String... tagsToInclude) {
+    return new FilterConfigurationChain(new IncludeTags(tagsToInclude));
+  }
+
+  /**
+   * Set the test filter to exclude any following specs that have one of these tags.
+   *
+   * @param tagsToExclude specs and their parent suite must not have any of these
+   * @return FilterConfigurationChain instance for chaining further calls
+   */
+  static FilterConfigurationChain excludeTags(String... tagsToExclude) {
+    return new FilterConfigurationChain(new ExcludeTags(tagsToExclude));
+  }
+
 }

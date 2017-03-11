@@ -1,6 +1,6 @@
 package com.greghaskins.spectrum.internal.configuration;
 
-import com.greghaskins.spectrum.Configuration;
+import com.greghaskins.spectrum.Configure;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,8 +18,8 @@ public class TaggingFilterCriteria {
   private static final String TAGS_SEPARATOR = ",";
 
   public TaggingFilterCriteria() {
-    include(fromSystemProperty(Configuration.INCLUDE_TAGS_PROPERTY));
-    exclude(fromSystemProperty(Configuration.EXCLUDE_TAGS_PROPERTY));
+    include(fromSystemProperty(Configure.INCLUDE_TAGS_PROPERTY));
+    exclude(fromSystemProperty(Configure.EXCLUDE_TAGS_PROPERTY));
   }
 
   public void include(String... tags) {
