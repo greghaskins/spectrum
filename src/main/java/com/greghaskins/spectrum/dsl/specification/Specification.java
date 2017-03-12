@@ -16,6 +16,7 @@ import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo;
 import com.greghaskins.spectrum.internal.hooks.HookContext.Precedence;
 import com.greghaskins.spectrum.internal.hooks.LetHook;
+import com.greghaskins.spectrum.internal.junit.Rules;
 
 import org.junit.AssumptionViolatedException;
 
@@ -254,4 +255,15 @@ public interface Specification {
     DeclarationState.instance().addHook(Hook.from(consumer), AppliesTo.ONCE, Precedence.OUTER);
   }
 
+  /**
+   * Uses the given class as a mix-in for JUnit rules to be applied. These rules will cascade down
+   * and be applied at the level of specs or atomic specs.
+   *
+   * @param classWithRules Class to create and apply rules to for each spec.
+   * @param <T>            type of the object
+   * @return a supplier of the rules object
+   */
+  static <T> Supplier<T> junitMixin(final Class<T> classWithRules) {
+    return Rules.applyRules(classWithRules, DeclarationState.instance()::addHook);
+  }
 }

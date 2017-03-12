@@ -152,18 +152,6 @@ public final class Spectrum extends Runner {
 
 
   /**
-   * Uses the given class as a mix-in for JUnit rules to be applied. These rules will cascade down
-   * and be applied at the level of specs or atomic specs.
-   *
-   * @param rulesClass type of object to create and apply rules to for each spec.
-   * @param <T>        type of the object
-   * @return a supplier of the rules object
-   */
-  public static <T> Supplier<T> junitMixin(final Class<T> rulesClass) {
-    return Rules.applyRules(rulesClass, DeclarationState.instance()::addHook);
-  }
-
-  /**
    * Declare a {@link com.greghaskins.spectrum.Block} to be run before each spec in the suite.
    *
    * <p>
