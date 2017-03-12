@@ -1,14 +1,14 @@
 package specs;
 
-import static com.greghaskins.spectrum.GherkinSyntax.and;
-import static com.greghaskins.spectrum.GherkinSyntax.given;
-import static com.greghaskins.spectrum.GherkinSyntax.scenarioOutline;
-import static com.greghaskins.spectrum.GherkinSyntax.then;
-import static com.greghaskins.spectrum.GherkinSyntax.when;
-import static com.greghaskins.spectrum.ParameterizedSyntax.example;
-import static com.greghaskins.spectrum.ParameterizedSyntax.withExamples;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.and;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.example;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.given;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.scenarioOutline;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.then;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.when;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.withExamples;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Variable;

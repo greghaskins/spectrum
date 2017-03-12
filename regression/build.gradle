@@ -1,0 +1,23 @@
+configurations {
+    regressionSuite
+}
+
+dependencies {
+    testCompile rootProject
+    testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
+
+    regressionSuite group: 'com.greghaskins', name: 'spectrum', version: '1.0.0', classifier: 'tests'
+}
+
+task extractTests(type: Sync) {
+    dependsOn configurations.regressionSuite
+    from {
+        configurations.regressionSuite.collect { zipTree(it) }
+    }
+    into "src/test/java"
+}
+
+compileTestJava {
+    dependsOn extractTests
+}

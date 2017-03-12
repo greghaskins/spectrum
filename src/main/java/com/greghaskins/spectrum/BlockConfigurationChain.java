@@ -1,23 +1,26 @@
 package com.greghaskins.spectrum;
 
-import com.greghaskins.spectrum.internal.BlockConfigurable;
-import com.greghaskins.spectrum.internal.BlockConfiguration;
+import com.greghaskins.spectrum.internal.configuration.BlockConfigurable;
+import com.greghaskins.spectrum.internal.configuration.BlockConfiguration;
+import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
 
 import java.util.stream.Stream;
 
 /**
- * Chainable configuration of a {@link com.greghaskins.spectrum.internal.ConfiguredBlock}.
- * Use the factory methods in {@link Spectrum} like {@link Spectrum#ignore()},
- * {@link Spectrum#focus()} or {@link Spectrum#tags(String...)} to add configuration
+ * Chainable configuration of a {@link ConfiguredBlock}.
+ * Use the factory methods in {@link Spectrum} like {@link Configure#ignore()},
+ * {@link Configure#focus()} or {@link Configure#tags(String...)} to add configuration
  * to a block. The result will be a {@link BlockConfigurationChain}. To add configurations together
  * you use {@link BlockConfigurationChain#and(BlockConfigurationChain)}. This is fluent
  * so ands can be chained together.<br><br>
  * e.g.<pre>with(ignore().and(tags("a","b","c")).and(tags("d","e","f"), () -&gt; {...})</pre><br>
- * See also: {@link Spectrum#with(BlockConfigurationChain, Block)}
+ * See also: {@link Configure#with(BlockConfigurationChain, Block)}
  */
-public class BlockConfigurationChain {
+public final class BlockConfigurationChain {
 
   private BlockConfiguration blockConfiguration = BlockConfiguration.defaultConfiguration();
+
+  BlockConfigurationChain() {}
 
   /**
    * Fluent call to add a configurable to the configuration.

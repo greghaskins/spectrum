@@ -1,7 +1,7 @@
 package given.a.spec.with.passing.and.failing.tests;
 
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
 
 import org.junit.Assert;
 

@@ -1,6 +1,6 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.configuration;
 
-import com.greghaskins.spectrum.Configuration;
+import com.greghaskins.spectrum.Configure;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,13 +13,14 @@ import java.util.stream.Stream;
  * Represents the state of tagging for Spectrum - what it presently means.
  */
 public class TaggingFilterCriteria {
+
   private Set<String> included = new HashSet<>();
   private Set<String> excluded = new HashSet<>();
   private static final String TAGS_SEPARATOR = ",";
 
   public TaggingFilterCriteria() {
-    include(fromSystemProperty(Configuration.INCLUDE_TAGS_PROPERTY));
-    exclude(fromSystemProperty(Configuration.EXCLUDE_TAGS_PROPERTY));
+    include(fromSystemProperty(Configure.INCLUDE_TAGS_PROPERTY));
+    exclude(fromSystemProperty(Configure.EXCLUDE_TAGS_PROPERTY));
   }
 
   public void include(String... tags) {
@@ -49,23 +50,17 @@ public class TaggingFilterCriteria {
     return copy;
   }
 
-  public boolean isAllowedToRun(Collection<String> tags) {
+  boolean isAllowedToRun(Collection<String> tags) {
     return !isExcluded(tags) && compliesWithRequired(tags);
   }
 
   private boolean isExcluded(Collection<String> tags) {
-    return tags.stream()
-        .filter(this.excluded::contains)
-        .findFirst()
-        .isPresent();
+    return tags.stream().anyMatch(this.excluded::contains);
   }
 
   private boolean compliesWithRequired(Collection<String> tags) {
     return this.included.isEmpty()
-        || tags.stream()
-            .filter(this.included::contains)
-            .findFirst()
-            .isPresent();
+        || tags.stream().anyMatch(this.included::contains);
   }
 
   private String[] fromSystemProperty(final String property) {

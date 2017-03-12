@@ -2,6 +2,9 @@ package com.greghaskins.spectrum.internal;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.internal.blocks.NotifyingBlock;
+import com.greghaskins.spectrum.internal.configuration.BlockConfiguration;
+import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
+import com.greghaskins.spectrum.internal.configuration.TaggingFilterCriteria;
 import com.greghaskins.spectrum.internal.hooks.HookContext;
 import com.greghaskins.spectrum.internal.hooks.Hooks;
 

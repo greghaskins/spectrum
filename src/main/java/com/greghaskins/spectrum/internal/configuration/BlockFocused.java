@@ -1,4 +1,6 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.configuration;
+
+import com.greghaskins.spectrum.internal.Child;
 
 /**
  * Created by friezea on 02/03/2017.

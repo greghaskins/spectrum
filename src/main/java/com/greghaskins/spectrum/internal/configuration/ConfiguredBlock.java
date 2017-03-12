@@ -1,4 +1,4 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.configuration;
 
 import com.greghaskins.spectrum.Block;
 

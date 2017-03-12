@@ -1,9 +1,12 @@
-package com.greghaskins.spectrum.internal;
+package com.greghaskins.spectrum.internal.configuration;
+
+import com.greghaskins.spectrum.internal.Child;
 
 /**
  * A configurable that does ignoring.
  */
 public class BlockIgnore implements BlockConfigurable<BlockIgnore> {
+  @SuppressWarnings("unused")
   private String reason;
 
   public BlockIgnore() {}

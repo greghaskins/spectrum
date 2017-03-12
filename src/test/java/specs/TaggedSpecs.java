@@ -1,20 +1,22 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.beforeEach;
-import static com.greghaskins.spectrum.Spectrum.configure;
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.ignore;
-import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.Spectrum.tags;
-import static com.greghaskins.spectrum.Spectrum.with;
+import static com.greghaskins.spectrum.Configure.excludeTags;
+import static com.greghaskins.spectrum.Configure.filterRun;
+import static com.greghaskins.spectrum.Configure.ignore;
+import static com.greghaskins.spectrum.Configure.includeTags;
+import static com.greghaskins.spectrum.Configure.tags;
+import static com.greghaskins.spectrum.Configure.with;
+import static com.greghaskins.spectrum.dsl.specification.Specification.beforeEach;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.let;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import com.greghaskins.spectrum.Configuration;
+import com.greghaskins.spectrum.Configure;
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.SpectrumHelper;
 
@@ -27,6 +29,7 @@ import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class TaggedSpecs {
+
   {
     describe("A suite with tagging", () -> {
       beforeEach(TaggedSpecs::clearSystemProperties);
@@ -73,7 +76,7 @@ public class TaggedSpecs {
           final ArrayList<String> specsRun = new ArrayList<>();
 
           SpectrumHelper.run(() -> {
-            configure().includeTags("foo");
+            filterRun(includeTags("foo"));
 
             it("should run spec 1", with(tags("foo"), () -> {
               specsRun.add("spec 1");
@@ -94,7 +97,7 @@ public class TaggedSpecs {
         it("applies tags recursively to child suites", () -> {
           final Result result = SpectrumHelper.run(() -> {
 
-            configure().excludeTags("someTag");
+            filterRun(excludeTags("someTag"));
 
             describe("A suite", () -> {
               describe("With a subsuite", with(tags("someTag"), () -> {
@@ -114,7 +117,7 @@ public class TaggedSpecs {
             () -> {
               final Result result = SpectrumHelper.run(() -> {
 
-                configure().excludeTags("someTag");
+                filterRun(excludeTags("someTag"));
 
                 describe("A suite", with(tags("someTag"), () -> {
                   it("has a spec that won't run", () -> {
@@ -122,7 +125,7 @@ public class TaggedSpecs {
                   });
                 }));
 
-                configure().excludeTags("");
+                filterRun(excludeTags(""));
 
                 describe("A suite", with(tags("someTag"), () -> {
                   it("has a spec that can run this time", () -> {
@@ -140,9 +143,7 @@ public class TaggedSpecs {
 
         Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {
 
-          configure()
-              .includeTags("foo", "bar")
-              .excludeTags("baz", "qux");
+          filterRun(includeTags("foo", "bar").and(excludeTags("baz", "qux")));
 
           it("should not run untagged specs", () -> {
             Assert.fail();
@@ -206,6 +207,7 @@ public class TaggedSpecs {
 
   private static Class<?> getSuiteWithTagsOnly() {
     class Tagged {
+
       {
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that runs", () -> {
@@ -220,8 +222,9 @@ public class TaggedSpecs {
 
   private static Class<?> getSuiteWithTagsIncluded() {
     class Tagged {
+
       {
-        configure().includeTags("someTag");
+        filterRun(includeTags("someTag"));
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that runs", () -> {
@@ -236,8 +239,9 @@ public class TaggedSpecs {
 
   private static Class<?> getIgnoredSuiteWithTagsIncluded() {
     class Tagged {
+
       {
-        configure().includeTags("someTag");
+        filterRun(includeTags("someTag"));
 
         describe("A suite", with(tags("someTag").and(ignore()), () -> {
           it("has an ignored spec that runs", () -> {
@@ -252,9 +256,10 @@ public class TaggedSpecs {
 
   private static Class<?> getSuiteWithTagsNotIncluded() {
     class Tagged {
+
       {
         // this stops "someTag" from being included by default
-        configure().includeTags("someOtherTag");
+        filterRun(includeTags("someOtherTag"));
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that won't run", () -> {
@@ -269,8 +274,9 @@ public class TaggedSpecs {
 
   private static Class<?> getSuiteWithTagsExcluded() {
     class Tagged {
+
       {
-        configure().excludeTags("someTag");
+        filterRun(excludeTags("someTag"));
 
         describe("A suite", with(tags("someTag"), () -> {
           it("has a spec that won't run", () -> {
@@ -285,8 +291,9 @@ public class TaggedSpecs {
 
   private static Class<?> getSuiteWithNoTagsThatShouldNotRunBecauseOfIncludeTags() {
     class Tagged {
+
       {
-        configure().includeTags("someTag");
+        filterRun(includeTags("someTag"));
 
         describe("An untagged suite in an 'includeTags' situation", () -> {
           it("has a spec that won't run", () -> {
@@ -301,8 +308,9 @@ public class TaggedSpecs {
 
   private static Class<?> getSuiteWithOneExcludedTaggedSpec() {
     class Tagged {
+
       {
-        configure().excludeTags("exclude me");
+        filterRun(excludeTags("exclude me"));
 
         describe("A plain suite", () -> {
           it("has a spec that runs fine", () -> {
@@ -320,26 +328,26 @@ public class TaggedSpecs {
   }
 
   private static Class<?> getSuiteWithTagsIncludedBySystemProperty() {
-    System.setProperty(Configuration.INCLUDE_TAGS_PROPERTY, "someTag");
+    System.setProperty(Configure.INCLUDE_TAGS_PROPERTY, "someTag");
 
     return getSuiteWithTagsOnly();
   }
 
   private static Class<?> getSuiteWithTagsNotIncludedBySystemProperty() {
-    System.setProperty(Configuration.INCLUDE_TAGS_PROPERTY, "someOtherTag");
+    System.setProperty(Configure.INCLUDE_TAGS_PROPERTY, "someOtherTag");
 
     return getSuiteWithTagsOnly();
   }
 
   private static Class<?> getSuiteWithTagsExcludedBySystemProperty() {
-    System.setProperty(Configuration.EXCLUDE_TAGS_PROPERTY, "someTag");
+    System.setProperty(Configure.EXCLUDE_TAGS_PROPERTY, "someTag");
 
     return getSuiteWithTagsOnly();
   }
 
   private static void clearSystemProperties() {
-    System.setProperty(Configuration.INCLUDE_TAGS_PROPERTY, "");
-    System.setProperty(Configuration.EXCLUDE_TAGS_PROPERTY, "");
+    System.setProperty(Configure.INCLUDE_TAGS_PROPERTY, "");
+    System.setProperty(Configure.EXCLUDE_TAGS_PROPERTY, "");
   }
 
 }

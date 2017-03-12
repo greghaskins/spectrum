@@ -1,15 +1,16 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.ignore;
-import static com.greghaskins.spectrum.Spectrum.it;
-import static com.greghaskins.spectrum.Spectrum.let;
-import static com.greghaskins.spectrum.Spectrum.with;
+import static com.greghaskins.spectrum.Configure.ignore;
+import static com.greghaskins.spectrum.Configure.with;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.let;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.SpectrumHelper;
+import com.greghaskins.spectrum.internal.configuration.BlockConfiguration;
 
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
@@ -18,7 +19,7 @@ import java.util.function.Supplier;
 
 /**
  * Demonstrate how to focus and ignore specs using
- * {@link com.greghaskins.spectrum.internal.BlockConfiguration}.
+ * {@link BlockConfiguration}.
  */
 @RunWith(Spectrum.class)
 public class BlockConfigurationSpecs {

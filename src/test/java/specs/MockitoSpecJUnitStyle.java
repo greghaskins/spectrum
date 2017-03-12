@@ -1,8 +1,8 @@
 package specs;
 
-import static com.greghaskins.spectrum.Spectrum.beforeEach;
-import static com.greghaskins.spectrum.Spectrum.describe;
-import static com.greghaskins.spectrum.Spectrum.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.beforeEach;
+import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
+import static com.greghaskins.spectrum.dsl.specification.Specification.it;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.dsl.specification.Specification;
 
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -22,7 +23,7 @@ import org.mockito.junit.MockitoRule;
  * Demonstration of how to mix metaphors and use Mockito with Spectrum via
  * class members. There is only one instance of the test objects
  * so {@link org.mockito.InjectMocks} may have unexpected behaviour in some
- * complex situations. If this doesn't work use {@link Spectrum#junitMixin(Class)}.
+ * complex situations. If this doesn't work use {@link Specification#junitMixin(Class)}.
  */
 @RunWith(Spectrum.class)
 public class MockitoSpecJUnitStyle {

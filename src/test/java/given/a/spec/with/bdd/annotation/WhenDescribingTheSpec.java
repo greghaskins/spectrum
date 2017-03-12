@@ -1,11 +1,11 @@
 package given.a.spec.with.bdd.annotation;
 
-import static com.greghaskins.spectrum.GherkinSyntax.and;
-import static com.greghaskins.spectrum.GherkinSyntax.feature;
-import static com.greghaskins.spectrum.GherkinSyntax.given;
-import static com.greghaskins.spectrum.GherkinSyntax.scenario;
-import static com.greghaskins.spectrum.GherkinSyntax.then;
-import static com.greghaskins.spectrum.GherkinSyntax.when;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.and;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.feature;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.given;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.scenario;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.then;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.when;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
