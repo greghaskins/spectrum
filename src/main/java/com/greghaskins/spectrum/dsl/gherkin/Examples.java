@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 public class Examples<T> {
 
-  private Collection<TableRow<T>> examples;
+  private final Collection<TableRow<T>> examples;
 
   Examples(Collection<TableRow<T>> examples) {
     this.examples = examples;

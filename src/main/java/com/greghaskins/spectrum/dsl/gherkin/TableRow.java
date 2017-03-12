@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class TableRow<T> {
 
   private final String description;
-  private Consumer<T> blockRunner;
+  private final Consumer<T> blockRunner;
 
   TableRow(Consumer<T> blockRunner, Object... arguments) {
     this.blockRunner = blockRunner;
@@ -21,7 +21,7 @@ public class TableRow<T> {
 
   @Override
   public String toString() {
-    return description;
+    return this.description;
   }
 
   private static String describe(Object[] objects) {

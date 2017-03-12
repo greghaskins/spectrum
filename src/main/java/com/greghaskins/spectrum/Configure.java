@@ -14,7 +14,7 @@ public interface Configure {
   String INCLUDE_TAGS_PROPERTY = "spectrum.include.tags";
 
   /**
-   * Surround a {@link com.greghaskins.spectrum.Block} with the {@code with} statement to add
+   * Surround a {@link Block} with the {@code with} statement to add
    * preconditions and metadata to it. E.g. <code>with(tags("foo"), () -&gt; {})</code>.<br>
    * Note: preconditions and metadata can be chained using the
    * {@link BlockConfigurationChain#and(BlockConfigurationChain)} method. E.g.
@@ -28,9 +28,7 @@ public interface Configure {
    * @see #focus()
    * @see #tags(String...)
    */
-  static com.greghaskins.spectrum.Block with(final BlockConfigurationChain configuration,
-      final com.greghaskins.spectrum.Block block) {
-
+  static Block with(final BlockConfigurationChain configuration, final Block block) {
     return ConfiguredBlock.with(configuration.getBlockConfiguration(), block);
   }
 
@@ -41,8 +39,7 @@ public interface Configure {
    * @param block the block to ignore
    * @return a wrapped block which will be ignored
    */
-  static com.greghaskins.spectrum.Block ignore(final String why,
-      final com.greghaskins.spectrum.Block block) {
+  static Block ignore(final String why, final Block block) {
     return with(ignore(why), block);
   }
 
@@ -52,7 +49,7 @@ public interface Configure {
    * @param block the block to ignore
    * @return a wrapped block which will be ignored
    */
-  static com.greghaskins.spectrum.Block ignore(final com.greghaskins.spectrum.Block block) {
+  static Block ignore(final Block block) {
     return with(ignore(), block);
   }
 

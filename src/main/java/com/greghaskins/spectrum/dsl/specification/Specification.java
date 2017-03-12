@@ -1,10 +1,12 @@
 package com.greghaskins.spectrum.dsl.specification;
 
+import static com.greghaskins.spectrum.Configure.focus;
+import static com.greghaskins.spectrum.Configure.ignore;
+import static com.greghaskins.spectrum.Configure.with;
 import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.Configure;
 import com.greghaskins.spectrum.ThrowingConsumer;
 import com.greghaskins.spectrum.ThrowingSupplier;
 import com.greghaskins.spectrum.internal.DeclarationState;
@@ -25,12 +27,13 @@ public interface Specification {
    * Declare a test suite that describes the expected behavior of the system in a given context.
    *
    * @param context Description of the context for this suite
-   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
-   *        each expected behavior
+   * @param block   {@link Block} with one or more calls to {@link #it(String, Block) it} that
+   *                define each expected behavior
    */
   static void describe(final String context, final Block block) {
-    final Suite suite =
-        DeclarationState.instance().getCurrentSuiteBeingDeclared().addSuite(context);
+    final Suite suite = DeclarationState.instance()
+        .getCurrentSuiteBeingDeclared()
+        .addSuite(context);
     suite.applyPreconditions(block);
     DeclarationState.instance().beginDeclaration(suite, block);
   }
@@ -39,35 +42,32 @@ public interface Specification {
    * Focus on this specific suite, while ignoring others.
    *
    * @param context Description of the context for this suite
-   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
-   *        each expected behavior
-   *
+   * @param block   {@link Block} with one or more calls to {@link #it(String, Block) it} that
+   *                define each expected behavior
    * @see #describe(String, Block)
    */
   static void fdescribe(final String context, final Block block) {
-    describe(context, Configure.with(Configure.focus(), block));
+    describe(context, with(focus(), block));
   }
 
   /**
    * Ignore the specific suite.
    *
    * @param context Description of the context for this suite
-   * @param block {@link Block} with one or more calls to {@link #it(String, Block) it} that define
-   *        each expected behavior
-   *
+   * @param block   {@link Block} with one or more calls to {@link #it(String, Block) it} that
+   *                define each expected behavior
    * @see #describe(String, Block)
-   *
    */
   static void xdescribe(final String context, final Block block) {
-    describe(context, Configure.with(Configure.ignore(), block));
+    describe(context, with(ignore(), block));
   }
 
   /**
    * Declare a spec, or test, for an expected behavior of the system in this suite context.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link Block} that verifies the system behaves as expected and throws a
-   *        {@link java.lang.Throwable Throwable} if that expectation is not met.
+   * @param block    {@link Block} that verifies the system behaves as expected and throws a {@link
+   *                 java.lang.Throwable Throwable} if that expectation is not met.
    */
   static void it(final String behavior, final Block block) {
     DeclarationState.instance().getCurrentSuiteBeingDeclared().addSpec(behavior, block);
@@ -77,7 +77,6 @@ public interface Specification {
    * Declare a pending spec (without a block) that will be ignored.
    *
    * @param behavior Description of the expected behavior
-   *
    * @see #xit(String, Block)
    */
   static void it(final String behavior) {
@@ -88,21 +87,19 @@ public interface Specification {
    * Focus on this specific spec, while ignoring others.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link Block} that verifies the system behaves as expected and throws a
-   *        {@link java.lang.Throwable Throwable} if that expectation is not met.
-   *
+   * @param block    {@link Block} that verifies the system behaves as expected and throws a {@link
+   *                 java.lang.Throwable Throwable} if that expectation is not met.
    * @see #it(String, Block)
    */
   static void fit(final String behavior, final Block block) {
-    it(behavior, Configure.with(Configure.focus(), block));
+    it(behavior, with(focus(), block));
   }
 
   /**
    * Mark a spec as ignored so that it will be skipped.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link Block} that will not run, since this spec is ignored.
-   *
+   * @param block    {@link Block} that will not run, since this spec is ignored.
    * @see #it(String, Block)
    */
   static void xit(final String behavior, final Block block) {
@@ -176,10 +173,9 @@ public interface Specification {
    * time it is used.
    * </p>
    *
-   * @param <T> The type of value
-   *
+   * @param <T>      The type of value
    * @param supplier {@link ThrowingSupplier} function that either generates the value, or throws a
-   *        {@link Throwable}
+   *                 {@link Throwable}
    * @return supplier which is refreshed for each spec's context
    */
   static <T> Supplier<T> let(final ThrowingSupplier<T> supplier) {
@@ -190,37 +186,37 @@ public interface Specification {
   }
 
   /**
-   * Define a test context.
+   * Define a test context. Alias for {@link #describe}.
    *
    * @param context the description of the context
-   * @param block the block to execute
+   * @param block   the block to execute
    */
   static void context(final String context, final Block block) {
     describe(context, block);
   }
 
   /**
-   * Define a focused test context. See {@link fdescribe}.
+   * Define a focused test context. Alias for {@link #fdescribe}.
    *
    * @param context the description of the context
-   * @param block the block to execute
+   * @param block   the block to execute
    */
   static void fcontext(final String context, final Block block) {
     fdescribe(context, block);
   }
 
   /**
-   * Define an ignored test context. See {@link xdescribe}.
+   * Define an ignored test context. Alias for {@link #xdescribe}.
    *
    * @param context the description of the context
-   * @param block the block to execute
+   * @param block   the block to execute
    */
   static void xcontext(final String context, final Block block) {
     xdescribe(context, block);
   }
 
   /**
-   * Call this from within a Specification to mark the spec as ignored/pending.
+   * Call this from within a Spec block to mark the spec as ignored/pending.
    */
   static void pending() {
     throw new AssumptionViolatedException("pending");

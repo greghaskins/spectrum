@@ -23,7 +23,6 @@ import java.util.function.Supplier;
  * @see Specification#beforeEach
  * @see Specification#afterEach
  * @see Specification#let
- *
  */
 public final class Spectrum extends Runner {
 
@@ -36,6 +35,7 @@ public final class Spectrum extends Runner {
   @Deprecated
   @FunctionalInterface
   public interface Block extends com.greghaskins.spectrum.Block {
+
     /**
      * Execute the code block, raising any {@code Throwable} that may occur.
      *
@@ -55,15 +55,17 @@ public final class Spectrum extends Runner {
   @Deprecated
   @FunctionalInterface
   public interface ThrowingSupplier<T> extends com.greghaskins.spectrum.ThrowingSupplier<T> {
+
   }
 
   /**
    * Declare a test suite that describes the expected behavior of the system in a given context.
    *
    * @param context Description of the context for this suite
-   * @param block {@link com.greghaskins.spectrum.Block} with one or more calls to
-   *        {@link #it(String, com.greghaskins.spectrum.Block) it} that define each expected
-   *        behavior
+   * @param block   {@link com.greghaskins.spectrum.Block} with one or more calls to {@link
+   *                #it(String, com.greghaskins.spectrum.Block) it} that define each expected
+   *                behavior
+   * @see Specification#describe
    */
   public static void describe(final String context, final com.greghaskins.spectrum.Block block) {
     Specification.describe(context, block);
@@ -73,11 +75,11 @@ public final class Spectrum extends Runner {
    * Focus on this specific suite, while ignoring others.
    *
    * @param context Description of the context for this suite
-   * @param block {@link com.greghaskins.spectrum.Block} with one or more calls to
-   *        {@link #it(String, com.greghaskins.spectrum.Block) it} that define each expected
-   *        behavior
-   *
+   * @param block   {@link com.greghaskins.spectrum.Block} with one or more calls to {@link
+   *                #it(String, com.greghaskins.spectrum.Block) it} that define each expected
+   *                behavior
    * @see #describe(String, com.greghaskins.spectrum.Block)
+   * @see Specification#fdescribe
    */
   public static void fdescribe(final String context, final com.greghaskins.spectrum.Block block) {
     Specification.fdescribe(context, block);
@@ -87,12 +89,11 @@ public final class Spectrum extends Runner {
    * Ignore the specific suite.
    *
    * @param context Description of the context for this suite
-   * @param block {@link com.greghaskins.spectrum.Block} with one or more calls to
-   *        {@link #it(String, com.greghaskins.spectrum.Block) it} that define each expected
-   *        behavior
-   *
+   * @param block   {@link com.greghaskins.spectrum.Block} with one or more calls to {@link
+   *                #it(String, com.greghaskins.spectrum.Block) it} that define each expected
+   *                behavior
    * @see #describe(String, com.greghaskins.spectrum.Block)
-   *
+   * @see Specification#xdescribe
    */
   public static void xdescribe(final String context, final com.greghaskins.spectrum.Block block) {
     Specification.xdescribe(context, block);
@@ -102,9 +103,10 @@ public final class Spectrum extends Runner {
    * Declare a spec, or test, for an expected behavior of the system in this suite context.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link com.greghaskins.spectrum.Block} that verifies the system behaves as
-   *        expected and throws a {@link java.lang.Throwable Throwable} if that expectation is not
-   *        met.
+   * @param block    {@link com.greghaskins.spectrum.Block} that verifies the system behaves as
+   *                 expected and throws a {@link java.lang.Throwable Throwable} if that expectation
+   *                 is not met.
+   * @see Specification#it
    */
   public static void it(final String behavior, final com.greghaskins.spectrum.Block block) {
     Specification.it(behavior, block);
@@ -114,8 +116,8 @@ public final class Spectrum extends Runner {
    * Declare a pending spec (without a block) that will be ignored.
    *
    * @param behavior Description of the expected behavior
-   *
    * @see #xit(String, com.greghaskins.spectrum.Block)
+   * @see Specification#it(String)
    */
   public static void it(final String behavior) {
     Specification.it(behavior);
@@ -125,11 +127,11 @@ public final class Spectrum extends Runner {
    * Focus on this specific spec, while ignoring others.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link com.greghaskins.spectrum.Block} that verifies the system behaves as
-   *        expected and throws a {@link java.lang.Throwable Throwable} if that expectation is not
-   *        met.
-   *
+   * @param block    {@link com.greghaskins.spectrum.Block} that verifies the system behaves as
+   *                 expected and throws a {@link java.lang.Throwable Throwable} if that expectation
+   *                 is not met.
    * @see #it(String, com.greghaskins.spectrum.Block)
+   * @see Specification#fit
    */
   public static void fit(final String behavior, final com.greghaskins.spectrum.Block block) {
     Specification.fit(behavior, block);
@@ -139,10 +141,10 @@ public final class Spectrum extends Runner {
    * Mark a spec as ignored so that it will be skipped.
    *
    * @param behavior Description of the expected behavior
-   * @param block {@link com.greghaskins.spectrum.Block} that will not run, since this spec is
-   *        ignored.
-   *
+   * @param block    {@link com.greghaskins.spectrum.Block} that will not run, since this spec is
+   *                 ignored.
    * @see #it(String, com.greghaskins.spectrum.Block)
+   * @see Specification#xit
    */
   public static void xit(final String behavior, final com.greghaskins.spectrum.Block block) {
     Specification.xit(behavior, block);
@@ -154,7 +156,7 @@ public final class Spectrum extends Runner {
    * and be applied at the level of specs or atomic specs.
    *
    * @param rulesClass type of object to create and apply rules to for each spec.
-   * @param <T> type of the object
+   * @param <T>        type of the object
    * @return a supplier of the rules object
    */
   public static <T> Supplier<T> junitMixin(final Class<T> rulesClass) {
@@ -170,6 +172,7 @@ public final class Spectrum extends Runner {
    * </p>
    *
    * @param block {@link com.greghaskins.spectrum.Block} to run once before each spec
+   * @see Specification#beforeEach
    */
   public static void beforeEach(final com.greghaskins.spectrum.Block block) {
     Specification.beforeEach(block);
@@ -185,6 +188,7 @@ public final class Spectrum extends Runner {
    * </p>
    *
    * @param block {@link com.greghaskins.spectrum.Block Block} to run once after each spec
+   * @see Specification#afterEach
    */
   public static void afterEach(final com.greghaskins.spectrum.Block block) {
     Specification.afterEach(block);
@@ -200,6 +204,7 @@ public final class Spectrum extends Runner {
    * </p>
    *
    * @param block {@link com.greghaskins.spectrum.Block} to run once before all specs in this suite
+   * @see Specification#beforeAll
    */
   public static void beforeAll(final com.greghaskins.spectrum.Block block) {
     Specification.beforeAll(block);
@@ -215,6 +220,7 @@ public final class Spectrum extends Runner {
    * </p>
    *
    * @param block {@link com.greghaskins.spectrum.Block} to run once after all specs in this suite
+   * @see Specification#afterAll
    */
   public static void afterAll(final com.greghaskins.spectrum.Block block) {
     Specification.afterAll(block);
@@ -229,11 +235,11 @@ public final class Spectrum extends Runner {
    * time it is used.
    * </p>
    *
-   * @param <T> The type of value
-   *
+   * @param <T>      The type of value
    * @param supplier {@link com.greghaskins.spectrum.ThrowingSupplier} function that either
-   *        generates the value, or throws a {@link Throwable}
+   *                 generates the value, or throws a {@link Throwable}
    * @return supplier which is refreshed for each spec's context
+   * @see Specification#let
    */
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
     return Specification.let(supplier);
@@ -245,7 +251,6 @@ public final class Spectrum extends Runner {
    * Main constructor called via reflection by the JUnit runtime.
    *
    * @param testClass The class file that defines the current suite
-   *
    * @see org.junit.runner.Runner
    */
   public Spectrum(final Class<?> testClass) {
@@ -268,12 +273,13 @@ public final class Spectrum extends Runner {
   }
 
   /**
-   * Links the test class construction to JUnit rules implementation.
+   * Links the test class construction to JUnit rules implementation. This creates a block which
+   * when executed will perform test definition against Spectrum and also hooks JUnit rule
+   * implementation to the definition based on any "@Rule" annotations on the members - see {@link
+   * Rules}
    *
    * @param testClass type of the test object
-   * @return a block which when executed will perform test definition against Spectrum and also
-   *         hooks JUnit rule implementation to the definition based on any "@Rule" annotations on
-   *         the members - see {@link Rules}
+   * @return a block with JUnit rules activated
    */
   private static <T> com.greghaskins.spectrum.Block createTestClassDefinitionBlock(
       final Class<T> testClass) {

@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 public interface Rules {
 
   @FunctionalInterface
-  static interface Target {
+  interface Target {
     void addHook(Hook hook, HookContext.AppliesTo appliesTo, HookContext.Precedence precedence);
   }
 
