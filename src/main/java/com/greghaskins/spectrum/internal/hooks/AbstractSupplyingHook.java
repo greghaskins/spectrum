@@ -15,12 +15,24 @@ import org.junit.runner.notification.RunNotifier;
  * This is not the only way to achieve that - you can also build from {@link SupplyingHook}
  * but this captures the template for a complex hook.
  */
-abstract class AbstractSupplyingHook<T> extends Variable<T> implements SupplyingHook<T> {
+abstract class AbstractSupplyingHook<T> implements SupplyingHook<T> {
+
+  private final Variable<T> value = new Variable<>();
+
   /**
    * Override this to supply behaviour for before the block is run.
+   *
    * @return the value that the singleton will store to supply
    */
   protected abstract T before();
+
+  /**
+   * Override this to give a message for when the value from this hook gets used any time other than
+   * while running a test.
+   *
+   * @return the IllegalStateException message to use
+   */
+  protected abstract String getExceptionMessageIfUsedAtDeclarationTime();
 
   /**
    * Override this to supply behaviour for after the block is run.
@@ -29,16 +41,17 @@ abstract class AbstractSupplyingHook<T> extends Variable<T> implements Supplying
 
   /**
    * Template method for a hook which supplies.
+   *
    * @param description description - unused here
    * @param runNotifier runNotifier - unused here
-   * @param block the inner block that will be run
+   * @param block       the inner block that will be run
    * @throws Throwable on error
    */
   @Override
   public void accept(final Description description, final RunNotifier runNotifier,
       final Block block) throws Throwable {
     try {
-      set(before());
+      this.value.set(before());
       block.run();
     } finally {
       try {
@@ -53,11 +66,11 @@ abstract class AbstractSupplyingHook<T> extends Variable<T> implements Supplying
   public T get() {
     assertSpectrumIsRunningTestsNotDeclaringThem();
 
-    return super.get();
+    return this.value.get();
   }
 
   private void clear() {
-    set(null);
+    this.value.set(null);
   }
 
   /**
@@ -65,10 +78,10 @@ abstract class AbstractSupplyingHook<T> extends Variable<T> implements Supplying
    * tests, rather than executing them. Useful to see if a hook is being accidentally used during
    * definition.
    */
-  private static void assertSpectrumIsRunningTestsNotDeclaringThem() {
+  private void assertSpectrumIsRunningTestsNotDeclaringThem() {
     if (DeclarationState.instance().getCurrentSuiteBeingDeclared() != null) {
-      throw new IllegalStateException("Cannot use the value from let() in a suite declaration. "
-          + "It may only be used in the context of a running spec.");
+      throw new IllegalStateException(getExceptionMessageIfUsedAtDeclarationTime());
     }
   }
+
 }

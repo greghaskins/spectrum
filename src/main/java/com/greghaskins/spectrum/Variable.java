@@ -8,7 +8,7 @@ import java.util.function.Supplier;
  * {@link #Variable} instance allows you to get/set values from anywhere as long as the Variable
  * itself is {@code final}.
  */
-public class Variable<T> implements Supplier<T> {
+public final class Variable<T> implements Supplier<T> {
 
   private ThreadLocal<T> value = new ThreadLocal<>();
 
