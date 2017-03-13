@@ -11,6 +11,18 @@ Spectrum
 
 The latest released version is [1.0.2](https://github.com/greghaskins/spectrum/releases/tag/1.0.2). Please see the [README for 1.0.2](https://github.com/greghaskins/spectrum/tree/1.0.2) for details about the stable version. The content below applies to the latest development version on the `master` branch. If you'd like to help, we're glad to have it; please see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
+## Overview
+
+Spectrum is a polyglot BDD test framework which converts specs in native Java 8 
+to a fully hierarchical test execution report in your IDE.
+
+![Spectrum with Eclipse via JUnit](junit-screenshot.png)
+
+## Getting Started
+
+- Read the feature overview below
+- Try our [quickstart walkthrough](docs/QuickstartWalkthrough.md)
+- Jump into the JavaDoc in [Spectrum.java](src/main/java/com/greghaskins/spectrum/Spectrum.java)
 
 ## Example
 
@@ -133,461 +145,39 @@ public class ExampleSpecs {
 }
 ```
 
-### Screenshot
-
-![Spectrum with Eclipse via JUnit](junit-screenshot.png)
-
-### Focused Specs
-
-You can focus the runner on particular spec with `fit` or a suite with `fdescribe` so that only those specs get executed.
-
-> from [FocusedSpecs.java](src/test/java/specs/FocusedSpecs.java)
-
-```java
-describe("Focused specs", () -> {
-
-  fit("is focused and will run", () -> {
-    assertThat(true, is(true));
-  });
-
-  it("is not focused and will not run", () -> {
-    throw new Exception();
-  });
-
-  fdescribe("a focused suite", () -> {
-
-    it("will run", () -> {
-      assertThat(true, is(true));
-    });
-
-    it("all its specs", () -> {
-      assertThat(true, is(true));
-    });
-  });
-
-  fdescribe("another focused suite, with focused and unfocused specs", () -> {
-
-    fit("will run focused specs", () -> {
-      assertThat(true, is(true));
-    });
-
-    it("ignores unfocused specs", () -> {
-      throw new Exception();
-    });
-  });
-});
-```
-
-### Ignored Specs
-
-Spectrum supports RSpec style ignoring and focusing of specs and suites. It also has a Spectrum native style which overlaps with its tagging and selecive running capability.
-
-#### Ignored Specs RSpec style
-
-You can ignore a spec with `xit` or ignore all the specs in a suite with `xdescribe`. Prefixing with `f` will focus execution.
-The `pending` function is also available. Unlike declaring a spec as ignored as part of its set up, `pending` will
-abort the execution of a spec as a JUnit assumption failure.
-
-> from [IgnoredSpecs.java](src/test/java/specs/IgnoredSpecs.java)
-
-```java
-describe("Ignored specs", () -> {
-
-    xit("is ignored and will not run", () -> {
-        throw new Exception();
-    });
-
-    it("is not ignored and will run", () -> {
-        assertThat(true, is(true));
-    });
-
-    it("is marked as pending and will abort but will run a bit", () -> {
-      pending();
-      assertThat(true, is(true));
-    });
-
-    xdescribe("an ignored suite", () -> {
-
-        it("will not run", () -> {
-            throw new Exception();
-        });
-
-        describe("with nesting", () -> {
-            it("all its specs", () -> {
-                throw new Exception();
-            });
-
-            fit("including focused specs", () -> {
-                throw new Exception();
-            });
-        });
-    });
-});
-```
-#### Ignoring Specs Spectrum style
-
-Spectrum allows you to specify preconditions on a block. These preconditions can include tagging.
-The `with(Preconditions,Block)` function is used to annotate a block with the preconditions. As ignoring is a common case, there is also an `ignore` function you can
-wrap around a block which has the same effect as using `with(ignore(), ...)`.
-For ignoring or focusing specs, the syntax is:
-
-```java
-      describe("Has suite with ignored specs", () -> {
-        it("is not ignored", () -> {
-        });
-
-        it("is ignored", with(ignore(), () -> {
-        }));
-
-        it("is ignored for a reason", with(ignore("not important for this release"), () -> {
-        }));
-
-        it("is a block ignored as a block", ignore(() -> {
-        }));
-
-        it("is a block ignored as a block for a reason", ignore("Not ready yet", () -> {
-        }));
-      });
-
-      // and for focus
-      describe("Has suite with focused spec", () -> {
-              it("is focused", with(focus(), () -> {
-              }));
-      });
-```
-### Tagging and Selective Running
-
-Tagging is another precondition that can be added to the block of a `describe`, `it`, `scenario`, call. The vanilla example of tagging syntax would be:
-
-```java
-it("is tagged", with(tags("tag1"), () -> {
-    // some test
-})));
-```
-
-The tagging metadata is presently used to control which parts of the spec are run. There are two controls over what is run,
-complementary to any focus or ignore that's hard-coded into the spec.
-
-* Include tags - when set, only suites that have at least one tag in this list can be run
-* Exclude tags - when set, any suite or spec that has an excluded tag will be ignored
-
-The rules for selective running can be set by:
-
-* System property (See [Configure.java](src/main/java/com/greghaskins/spectrum/Configure.java))
-  * This will be the common use case for CI Builds
-  * Set `spectrum.tags.include` and `spectrum.tags.exclude` to be a comma separated list of tags
-  * This is likely done using a `-D` option on the java invocation
-* Function call (See [Configuration.java](src/main/java/com/greghaskins/spectrum/Configure.java))
-  * `filterRun(includeTags("foo"))` and `filterRun(excludeTags("bar"))` allow the rules to vary based on where they are called in the declaration block.
-
-Tags allow you run different categories of specs in different test runs, either through the
-configuration of your build - usually with system property - or with hard coding in the test class or specs themselves.
-
-Example: temporarily making only WIP tests run in a test class
-
-```java
-  @RunWith(Spectrum.class)
-  public TestClass {
-     {
-        filterRun(includeTags("wip"));
-
-        describe("wip suite", with(tags("wip"), () -> {
-           // tests here are run
-           it("is a spec with no tags", () -> {
-               // this is still run because its parent has the tags
-           });
-           if("is a spec with a tag", with(tags("slow", () -> {
-                // in this case, this is run, but if
-                // excludeTags was set to have "slow"
-                // then it would not be allowed to run
-           })));
-        }));
-
-        describe("some other suite", with(tags("wrongTags", () -> {
-           // these are not run
-        }));
-
-        describe("untagged suite", () -> {
-           // this suite is untagged so does not meet the requirement
-        });
-     }
-  }
-```
-### Paramaterized Specs
-
-Paramaterization involves supplying some examples via the `withExamples` function. These examples are objects with between 1 and 8 values. This allows you to:
-
-- Provide a list of objects that parameterize your specs
-- Provide a table of values which are turned into ad-hoc tuples with test data in
-
-Thanks to Java 8's generic type system, you can use the examples to drive the type of paramaterized block you need to provide.
-
-E.g.
-
-```java
-// provides examples of two ints and a String
-withExamples(
-  example(1,2,"12"),
-  example(2,3,"23")
-)
-```
-
-The above expects you to provide a parameterized block to use the parameters which has three parameters, two of which are integer and the other is String. This might formally be declared as:
-
-```java
-(int i1, int i3, String s) -> { ... }
-```
-
-But you don't need to provide the types, so it's more tersely written as:
-
-```java
-(i1, it2, s) -> { ... }
-```
-
-Think of the `withExamples` and `example` syntax as being a table structure with coherent types within each column. Think of the lambda you write to receive those parameters as the table's header. Intuitively you'd expect something like:
-
-```java
-         (num1, num2, num3) -> { ... },
-withExamples(
-  example(1,    2,    3),
-  example(2,    3,    4)
-)
-```
-
-This is how `scenarioOutline` works. You provide a consuming block to take the values for each example and define specs with those values, then you provide the values as examples.
-
-For examples of this in action, see [ParameterizedSpecs.java](src/test/java/specs/ParameterizedSpecs.java).
-
-### Common Variable Initialization
-
-The `let` helper function makes it easy to initialize common variables that are used in multiple specs. This also helps work around Java's restriction that closures can only reference `final` variables in the containing scope. Values are cached within a spec, and lazily re-initialized between specs as in [RSpec #let](http://rspec.info/documentation/3.5/rspec-core/RSpec/Core/MemoizedHelpers/ClassMethods.html#let-instance_method).
-
-> from [LetSpecs.java](src/test/java/specs/LetSpecs.java)
-
-```java
-describe("The `let` helper function", () -> {
-
-  final Supplier<List<String>> items = let(() -> new ArrayList<>(asList("foo", "bar")));
-
-  it("is a way to supply a value for specs", () -> {
-    assertThat(items.get(), contains("foo", "bar"));
-  });
-
-  it("caches the value so it doesn't get created multiple times for the same spec", () -> {
-    assertThat(items.get(), is(sameInstance(items.get())));
-
-    items.get().add("baz");
-    items.get().add("blah");
-    assertThat(items.get(), contains("foo", "bar", "baz", "blah"));
-  });
-
-  it("creates a fresh value for every spec", () -> {
-    assertThat(items.get(), contains("foo", "bar"));
-  });
-});
-```
-
-For cases where you need to access a shared variable across specs or steps, the `Variable` helper class provides a simple `get`/`set` interface. This may be required, for example, to initialize shared state in a `beforeAll` that is used across multiple specs in that suite. Of course, you should exercise caution when sharing state across tests
-
-> from [VariableSpecs.java](src/test/java/specs/VariableSpecs.java)
-
-```java
-describe("The Variable convenience wrapper", () -> {
-
-  final Variable<Integer> counter = new Variable<>();
-
-  beforeAll(() -> {
-    counter.set(0);
-  });
-
-  beforeEach(() -> {
-    final int previousValue = counter.get();
-    counter.set(previousValue + 1);
-  });
-
-  it("lets you work around Java's requirement that closures only use `final` variables", () -> {
-    assertThat(counter.get(), is(1));
-  });
-
-  it("can share values across scopes, so use it carefully", () -> {
-    assertThat(counter.get(), is(2));
-  });
-
-  it("can optionally have an initial value set", () -> {
-    final Variable<String> name = new Variable<>("Alice");
-    assertThat(name.get(), is("Alice"));
-  });
-
-  it("has a null value if not specified", () -> {
-    final Variable<String> name = new Variable<>();
-    assertNull(name.get());
-  });
-
-});
-```
-
-### Gherkin Syntax
-
-Spectrum also provides a Gherkin-style test DSL, accessible from the `GherkinSyntax` interface. In this syntax, tests are declared with `feature`, `scenario`, `given`, `when`, `then`, and ... `and`.
-
-> from [GherkinExampleSpecs.java](src/test/java/specs/GherkinExampleSpecs.java)
-
-```java
-feature("Gherkin-like test DSL", () -> {
-
-  scenario("using given-when-then steps", () -> {
-    final AtomicInteger integer = new AtomicInteger();
-    given("we start with a given", () -> {
-      integer.set(12);
-    });
-    when("we have a when to execute the system", () -> {
-      integer.incrementAndGet();
-    });
-    then("we can assert the outcome", () -> {
-      assertThat(integer.get(), is(13));
-    });
-  });
-
-  scenario("using variables within the scenario to pass data between steps", () -> {
-    final Variable<String> theData = new Variable<>();
-
-    given("the data is set", () -> {
-      theData.set("Hello");
-    });
-
-    when("the data is modified", () -> {
-      theData.set(theData.get() + " world!");
-    });
-
-    then("the data can be seen with the new value", () -> {
-      assertThat(theData.get(), is("Hello world!"));
-    });
-
-    and("the data is still available in subsequent steps", () -> {
-      assertThat(theData.get(), is("Hello world!"));
-    });
-  });
-
-});
-```
-
-When using the Gherkin syntax, each `given`/`when`/`then` step must pass before the next is run. Note that they must be declared inside a `scenario` block to work correctly. Multiple `scenario` blocks can be defined as part of a `feature`.
-
-Parameterized Gherkin scenarios are achieved with `scenarioOutline` see [ParameterizedSpecs.java](src/test/java/specs/ParameterizedSpecs.java).
-
-### JUnit Rules
-
-For more information on compatibility between Spectrum and Junit [see here](doc/JunitRules.md).
-
-To enable users to mix in features from across the JUnit ecosystem, there are two ways you can add JUnit behaviour to Spectrum tests.
-
-* You _can_ use the Java class within which you have declared the Spectrum tests. This can contain local variables and `@Rule` annotated objects. They will be reused over the course of the test.
-* You can wire in Rules classes using `junitMixin` - these provide multiple instances of the test object of that rules class and execute JUnit `@Rule` directives within it along the way.
-
-The Spectrum native approach is the safest and cleanest. Not all JUnit rules are compatible with this approach, so use it with care.
-
-#### JUnit style
-
-With many of the JUnit rules, you can pretend that Spectrum works like JUnit and put `@Rule` and `@ClassRule` members in the test class.
-When things stop working, move to Spectrum style.
-
-```java
-@RunWith(Spectrum.class)
-public class SpectrumSpec {
-  @Rule
-  public TemporaryFolder tempFolderRule = new TemporaryFolder();
-
-{
-  describe("a set of test specs", () -> {
-    it("has a freshly prepared tempFolderRule", () -> {
-      // tempFolderRule gives us one folder here having been set up by the junit.rule
-    });
-    it("has a different fresh copy of the test object here", () -> {
-      // tempFolderRule gives us another folder here too
-    });
-  });
-}}
-```
-
-#### Spectrum style
-
-##### Step 1 - create a class with your JUnit rules in it.
-
-> In Spectrum's own test cases, the mix-in class is a `public static class` inside the test class. This is one option. It does not matter whether the rules class is an inner class, or whether it's external, so long as it is public and has a default constructor. Making these mix-in classes as external reusable objects may be a useful way to modularise testing.
-
-It is up to you whether you make the fields accessible, or put getters on them. For simplicity here is an example with accessible fields:
-
-```java
-public class TestRuleMixin {
-  @Rule
-  public TemporaryFolder tempFolderRule = new TemporaryFolder();
-}
-```
-
-##### Step 2 - use that junit.rule within your tests with `junitMixin`
-
-The `junitMixin` function returns a `Supplier`. That supplier's `get` function will allow you to access the current instance of the mix-in object during your tests/specs. The rules mentioned will have been executed already.
-
-```java
-@RunWith(Spectrum.class)
-public class SpectrumSpec {{
-  Supplier<TestRuleMixin> testObject = junitMixin(TestRuleMixin.class);
-  describe("a set of test specs", () -> {
-    it("has a fresh copy of the test object here", () -> {
-      // testObject.get() gives us one instance here having run
-    });
-    it("has a different fresh copy of the test object here", () -> {
-      // testObject.get() gives us another instance here too
-    });
-  });
-}}
-```
-The rules are applied and the test object created just in time for each atomic test within the describe blocks etc. An atomic test is either an `it` level test or a `compositeTest` for example a `GherkinSyntax` `scenario`.
-
-#### Examples
-
-> See: [JUnitRulesExample](src/test/java/specs/JUnitRulesExample.java),
-[MockitoSpecJUnitStyle](src/test/java/specs/MockitoSpecJUnitStyle.java),
-[MockitoSpecWithRuleClasses](src/test/java/specs/MockitoSpecWithRuleClasses.java),
-[SpringSpecJUnitStyle](src/test/java/specs/SpringSpecJUnitStyle.java) and
-[SpringSpecWithRuleClasses](src/test/java/specs/SpringSpecWithRuleClasses.java)
-
-#### Setting expectations
-
-Regular JUnit runners work quite differently to Spectrum. While it is possible to reuse `@Rule` plugins to JUnit from within Spectrum, the authors of those classes were not expecting their code to be used quite this way. Please [see here](doc/JunitRules.md) for ideas on possible side-effects and problem resolution.
-
-
 ## Supported Features
 
 The Spectrum API is designed to be familiar to Jasmine and RSpec users, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Spectrum should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)
 
 The main functions for defining a test are:
 
-- `describe`
-- `it`
-- `beforeEach` / `afterEach`
-- `beforeAll` / `afterAll`
-- `fit` / `fdescribe`
-- `xit` / `xdescribe`
-- `let`
-- `feature` / `scenario` / `scenarioOutline`
-- `given` / `when` / `then`
-- `context` / `fcontext` / `xcontext`
+- `describe` - a high level suite
+- `it` - an individual spec
+- `beforeEach` / `afterEach` - per spec set up/tear down
+- `beforeAll` / `afterAll` - per suite set up/tear down
+- `fit` / `fdescribe` - [for focusing](doc/FocusingAndIgnoring.md)
+- `xit` / `xdescribe` - [for ignoring](doc/FocusingAndIgnoring.md)
+- `let` / `Variable` - [for providing values](doc/VariablesAndValues.md)
+- `with` / `ignore` / `focus` / `tags` - [for tagging blocks with metadata](doc/FocusingAndIgnoring.md)
+- `feature` / `scenario` / `scenarioOutline` - [Gherkin Syntax](doc/Gherkin.md)
+- `given` / `when` / `then` / `and` - [Gherkin Syntax](doc/Gherkin.md)
+- `context` / `fcontext` / `xcontext` - grouping tests or suites
 
 Spectrum also supports:
 
 - Unlimited nesting of suites within suites
 - Rigorous error handling and reporting when something unexpected goes wrong
 - Compatibility with existing JUnit tools; no configuration required
+- Plugging in familiar JUnit-friendly libraries like `Mockito` or `SpringJUnit` [via JUnit `@Rule`s handling](doc/JunitRules.md).
+- Tagging specs for [selective running](doc/FocusingAndIgnoring.md)
 - Mixing Spectrum tests and normal JUnit tests in the same project suite
 - RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
-- Plugging in familiar JUnit-friendly libraries like Mockito or SpringJUnit via JUnit `@Rules` handling.
 
 ### Non-Features
 
 Unlike some BDD-style frameworks, Spectrum is _only_ a test runner. Assertions, expectations, mocks, and matchers are the purview of other libraries such as [Hamcrest](http://hamcrest.org/JavaHamcrest/), [AssertJ](http://joel-costigliola.github.io/assertj/), [Mockito](http://mockito.org/), or [plain JUnit](https://github.com/junit-team/junit4/wiki/Assertions).
 
-## Getting Started
+## Installation
 
 Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/maven/Spectrum/view), so make sure you have jCenter declared as a repository in your build config. Future inclusion in Maven Central (see [#12](https://github.com/greghaskins/spectrum/issues/12)) will make this even easier.
 
