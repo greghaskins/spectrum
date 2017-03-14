@@ -21,7 +21,7 @@ to a fully hierarchical test execution report in your IDE.
 ## Getting Started
 
 - Read the feature overview below
-- Try our [quickstart walkthrough](docs/QuickstartWalkthrough.md)
+- Try our [quickstart walkthrough](doc/QuickstartWalkthrough.md)
 - Jump into the JavaDoc in [Spectrum.java](src/main/java/com/greghaskins/spectrum/Spectrum.java)
 
 ## Example
