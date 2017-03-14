@@ -55,7 +55,7 @@ Spectrum supports RSpec style ignoring and focusing of specs and suites. It also
 
 #### Ignored Specs RSpec style
 
-You can ignore a spec with `xit` or ignore all the specs in a suite with `xdescribe`. 
+You can ignore a spec with `xit` or ignore all the specs in a suite with `xdescribe`.
 
 The `pending` function is another option. Unlike declaring a spec as ignored as part of its set up, `pending` will
 abort the execution of a spec as a JUnit assumption failure.
@@ -75,7 +75,7 @@ describe("Ignored specs", () -> {
 
     it("is marked as pending and will abort but will run a bit", () -> {
       pending();
-      
+
       // never executed
       assertThat(true, is(true));
     });

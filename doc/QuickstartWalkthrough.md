@@ -13,7 +13,7 @@ A Spectrum test class uses the Spectrum test runner and has an anonymous constru
 ```java
 @RunWith(Spectrum.class)
 public class MySpecs {{
-    // note the extra braces - the Java anonymous constructor			
+    // note the extra braces - the Java anonymous constructor
 }}
 ```
 
@@ -30,7 +30,7 @@ To add a suite, we use the `describe` function which takes a `Block` which is a 
 public class MySpecs {{
     describe("The quick start", () -> {
        // inside this block we can put other suites, or individual specs
-    });			
+    });
 }}
 ```
 
@@ -48,9 +48,9 @@ public class MySpecs {{
     describe("The quick start", () -> {
        it("can make assertions", () -> {
            // here is where you exercise your system-under-test
-       	   assertTrue(true);
+            assertTrue(true);
        });
-    });			
+    });
 }}
 ```
 
@@ -62,15 +62,15 @@ If you want to start with a fresh object for every run of your test, then the ea
 @RunWith(Spectrum.class)
 public class MySpecs {{
     describe("The quick start", () -> {
-    	 // have a fresh foo for each run
-    	 Supplier<Foo> foo = let(() -> FooFactory.makeNewFoo());
-    	 
+       // have a fresh foo for each run
+       Supplier<Foo> foo = let(() -> FooFactory.makeNewFoo());
+
        it("can make assertions", () -> {
-       	   // using get on the supplier, will give you
-       	   // this spec's copy of the object
-       	   assertTrue(foo.get().isFighter());
+            // using get on the supplier, will give you
+            // this spec's copy of the object
+            assertTrue(foo.get().isFighter());
        });
-    });			
+    });
 }}
 ```
 

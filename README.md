@@ -13,7 +13,7 @@ The latest released version is [1.0.2](https://github.com/greghaskins/spectrum/r
 
 ## Overview
 
-Spectrum is a polyglot BDD test framework which converts specs in native Java 8 
+Spectrum is a polyglot BDD test framework which converts specs in native Java 8
 to a fully hierarchical test execution report in your IDE.
 
 ![Spectrum with Eclipse via JUnit](junit-screenshot.png)

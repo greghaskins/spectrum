@@ -9,7 +9,7 @@ There are two drivers for using Spectrum's JUnit rule support:
 
 In the trivial case, you will probably aim to add standard `JUnit` `@Rule` annotations to your test class, and everything should work great. In the second case, you should expect to create a separate class to represent the rules/configuration you want to attach to your Spectrum tests, and then use Spectrum's `junitMixin` function to attach those rules to an object, which Spectrum initialises for you before each spec that can use it.
 
-If in doubt, use the `junitMixin` as, like JUnit itself, it creates a fresh object for each test. 
+If in doubt, use the `junitMixin` as, like JUnit itself, it creates a fresh object for each test.
 
 > There are still limitations of this implementation, so please raise issues if you encounter any problems. Please ensure that any `JUnit` rule related issues come with easy to replicate code examples.
 
@@ -108,7 +108,7 @@ public void willDoSomethingDestructiveToSpring() throws Exception {
 }
 ```
 
-This is not yet supported in Spectrum. You can work around it by using different mix-in classes with different class-level annotations to control this sort of behaviour, and segmenting your test suite so that specs that need certain behaviour are within one `describe` block etc. 
+This is not yet supported in Spectrum. You can work around it by using different mix-in classes with different class-level annotations to control this sort of behaviour, and segmenting your test suite so that specs that need certain behaviour are within one `describe` block etc.
 
 > Please raise feature requests if something you're trying to do is not yet supported.
 
