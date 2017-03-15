@@ -74,7 +74,7 @@ The rules are applied and the test object created just in time for each atomic t
 
 ### Examples
 
-> See: [JUnitRulesExample](../src/test/java/specs/JUnitRulesExample.java),
+> See: [JUnitRuleExample](../src/test/java/specs/JUnitRuleExample.java),
 [MockitoSpecJUnitStyle](../src/test/java/specs/MockitoSpecJUnitStyle.java),
 [MockitoSpecWithRuleClasses](../src/test/java/specs/MockitoSpecWithRuleClasses.java),
 [SpringSpecJUnitStyle](../src/test/java/specs/SpringSpecJUnitStyle.java) and
