@@ -1,8 +1,8 @@
 ## Gherkin
 
-Spectrum provides a Gherkin-style test DSL, accessible from the `GherkinSyntax` interface. In this syntax, tests are declared with `feature`, `scenario`, `given`, `when`, `then`, and ... `and`.
+Spectrum provides a Gherkin-style test DSL, accessible from the `Gherkin` interface. In this syntax, tests are declared with `feature`, `scenario`, `given`, `when`, `then`, and ... `and`.
 
-When using the Gherkin syntax, each `given`/`when`/`then` step must pass before the next is run. Note that they must be declared inside a `scenario` block to work correctly. Multiple `scenario` blocks can be defined as part of a `feature`.
+When using the Gherkin DSL, each `given`/`when`/`then` step must pass before the next is run. Note that they must be declared inside a `scenario` block to work correctly. Multiple `scenario` blocks can be defined as part of a `feature`.
 
 ### Gherkin Examples
 
@@ -47,14 +47,65 @@ feature("Gherkin-like test DSL", () -> {
 });
 ```
 
-### Paramaterized
+### Scenario Outline - Parameterized
 
-Parameterized Gherkin scenarios are achieved with `scenarioOutline` see [ParameterizedSpecs.java](src/test/java/specs/ParameterizedSpecs.java).
+> from [ParameterizedExampleSpecs.java](src/test/java/specs/ParameterizedExampleSpecs.java)
 
-Paramaterization involves supplying some examples via the `withExamples` function. These examples are objects with between 1 and 8 values. This allows you to:
+```java
+scenarioOutline("Cucumber eating",
+    (start, eat, remaining) -> {
+
+      Variable<CukeEater> me = new Variable<>();
+
+      given("there are " + start + " cucumbers", () -> {
+        me.set(new CukeEater(start));
+      });
+
+      when("I eat " + eat + " cucumbers", () -> {
+        me.get().eatCucumbers(eat);
+      });
+
+      then("I should have " + remaining + " cucumbers", () -> {
+        assertThat(me.get().remainingCucumbers(), is(remaining));
+      });
+    },
+
+    withExamples(
+        example(12, 5, 7),
+        example(20, 5, 15))
+
+);
+
+scenarioOutline("Simple calculations",
+    (expression, expectedResult) -> {
+
+      Variable<Calculator> calculator = new Variable<>();
+      Variable<Number> result = new Variable<>();
+
+      given("a calculator", () -> {
+        calculator.set(new Calculator());
+      });
+      when("it computes the expression " + expression, () -> {
+        result.set(calculator.get().compute(expression));
+      });
+      then("the result is " + expectedResult, () -> {
+        assertThat(result.get(), is(expectedResult));
+      });
+
+    },
+
+    withExamples(
+        example("1 + 1", 2),
+        example("5 * 9", 45),
+        example("7 / 2", 3.5)
+    )
+);
+```
+
+Parameterization involves supplying some examples via the `withExamples` function. These examples are objects with between 1 and 8 values. This allows you to:
 
 - Provide a list of objects that parameterize your specs
-- Provide a table of values which are turned into ad-hoc tuples with test data in
+- Provide a table of values which are used as test inputs
 
 Thanks to Java 8's generic type system, you can use the examples to drive the type of paramaterized block you need to provide.
 
@@ -91,5 +142,3 @@ withExamples(
 ```
 
 This is how `scenarioOutline` works. You provide a consuming block to take the values for each example and define specs with those values, then you provide the values as examples.
-
-For examples of this in action, see [ParameterizedSpecs.java](../src/test/java/specs/ParameterizedSpecs.java).
