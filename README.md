@@ -21,7 +21,7 @@ to a fully hierarchical test execution report in your IDE.
 ## Getting Started
 
 - Read the feature overview below
-- Try our [quickstart walkthrough](doc/QuickstartWalkthrough.md)
+- Try our [quickstart walkthrough](docs/QuickstartWalkthrough.md)
 - Jump into the JavaDoc in [Spectrum.java](src/main/java/com/greghaskins/spectrum/Spectrum.java)
 
 ## Example
@@ -155,12 +155,12 @@ The main functions for defining a test are:
 - `it` - an individual spec
 - `beforeEach` / `afterEach` - per spec set up/tear down
 - `beforeAll` / `afterAll` - per suite set up/tear down
-- `fit` / `fdescribe` - [for focusing](doc/FocusingAndIgnoring.md)
-- `xit` / `xdescribe` - [for ignoring](doc/FocusingAndIgnoring.md)
-- `let` / `Variable` - [for providing values](doc/VariablesAndValues.md)
-- `with` / `ignore` / `focus` / `tags` - [for tagging blocks with metadata](doc/FocusingAndIgnoring.md)
-- `feature` / `scenario` / `scenarioOutline` - [Gherkin Syntax](doc/Gherkin.md)
-- `given` / `when` / `then` / `and` - [Gherkin Syntax](doc/Gherkin.md)
+- `fit` / `fdescribe` - [for focusing](docs/FocusingAndIgnoring.md)
+- `xit` / `xdescribe` - [for ignoring](docs/FocusingAndIgnoring.md)
+- `let` / `Variable` - [for providing values](docs/VariablesAndValues.md)
+- `with` / `ignore` / `focus` / `tags` - [for tagging blocks with metadata](docs/FocusingAndIgnoring.md)
+- `feature` / `scenario` / `scenarioOutline` - [Gherkin Syntax](docs/Gherkin.md)
+- `given` / `when` / `then` / `and` - [Gherkin Syntax](docs/Gherkin.md)
 - `context` / `fcontext` / `xcontext` - grouping tests or suites
 
 Spectrum also supports:
@@ -168,8 +168,8 @@ Spectrum also supports:
 - Unlimited nesting of suites within suites
 - Rigorous error handling and reporting when something unexpected goes wrong
 - Compatibility with existing JUnit tools; no configuration required
-- Plugging in familiar JUnit-friendly libraries like `Mockito` or `SpringJUnit` [via JUnit `@Rule`s handling](doc/JunitRules.md).
-- Tagging specs for [selective running](doc/FocusingAndIgnoring.md)
+- Plugging in familiar JUnit-friendly libraries like `Mockito` or `SpringJUnit` [via JUnit `@Rule`s handling](docs/JunitRules.md).
+- Tagging specs for [selective running](docs/FocusingAndIgnoring.md)
 - Mixing Spectrum tests and normal JUnit tests in the same project suite
 - RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
 
