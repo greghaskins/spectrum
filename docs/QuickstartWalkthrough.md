@@ -1,6 +1,6 @@
 # Quickstart Walkthrough
 <!---freshmark main
-output = input.replace(/\d+\.\d+\.\d+/g, '{{stableVersion}}');
+output = input.replace(/\b\d+\.\d+\.\d+\b/g, '{{stableVersion}}');
 -->
 To write your first Spectrum test, you will need:
 
