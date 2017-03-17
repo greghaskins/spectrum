@@ -177,41 +177,9 @@ Spectrum also supports:
 
 Unlike some BDD-style frameworks, Spectrum is _only_ a test runner. Assertions, expectations, mocks, and matchers are the purview of other libraries such as [Hamcrest](http://hamcrest.org/JavaHamcrest/), [AssertJ](http://joel-costigliola.github.io/assertj/), [Mockito](http://mockito.org/), or [plain JUnit](https://github.com/junit-team/junit4/wiki/Assertions).
 
-## Installation
+## Releases
 
-Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/maven/Spectrum/view), so make sure you have jCenter declared as a repository in your build config. Future inclusion in Maven Central (see [#12](https://github.com/greghaskins/spectrum/issues/12)) will make this even easier.
-
-### Dependencies
-
- - JUnit 4
- - Java 8 (for your tests; systems under test can use older versions)
-
-### Gradle
-
-Add the Spectrum dependency to your `testCompile` configuration in `build.gradle`:
-
-```groovy
-dependencies {
-  testCompile 'com.greghaskins:spectrum:1.0.2'
-}
-```
-
-### Maven
-
-Add Spectrum as a dependency with `test` scope in your `pom.xml`:
-
-```xml
-<project>
-  <dependencies>
-    <dependency>
-      <groupId>com.greghaskins</groupId>
-      <artifactId>spectrum</artifactId>
-      <version>1.0.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-</project>
-```
+Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/maven/Spectrum/view) and [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.greghaskins%22%20AND%20a%3A%22spectrum%22). Release notes can be found on the GitHub [Releases Page](https://github.com/greghaskins/spectrum/releases).
 
 ## Can I Contribute?
 
