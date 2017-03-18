@@ -129,12 +129,12 @@ The main functions for defining a test are:
 - `it` - an individual spec
 - `beforeEach` / `afterEach` - per spec set up/tear down
 - `beforeAll` / `afterAll` - per suite set up/tear down
-- `fit` / `fdescribe` - [for focusing](docs/FocusingAndIgnoring.md)
-- `xit` / `xdescribe` - [for ignoring](docs/FocusingAndIgnoring.md)
-- `let` / `Variable` - [for providing values](docs/VariablesAndValues.md)
-- `with` / `ignore` / `focus` / `tags` - [for tagging blocks with metadata](docs/FocusingAndIgnoring.md)
-- `feature` / `scenario` / `scenarioOutline` - [Gherkin Syntax](docs/Gherkin.md)
-- `given` / `when` / `then` / `and` - [Gherkin Syntax](docs/Gherkin.md)
+- `fit` / `fdescribe` - [for focusing](FocusingAndIgnoring.md)
+- `xit` / `xdescribe` - [for ignoring](FocusingAndIgnoring.md)
+- `let` / `Variable` - [for providing values](VariablesAndValues.md)
+- `with` / `ignore` / `focus` / `tags` - [for tagging blocks with metadata](FocusingAndIgnoring.md)
+- `feature` / `scenario` / `scenarioOutline` - [Gherkin Syntax](Gherkin.md)
+- `given` / `when` / `then` / `and` - [Gherkin Syntax](Gherkin.md)
 - `context` / `fcontext` / `xcontext` - grouping tests or suites
 
 Spectrum also supports:
@@ -142,8 +142,8 @@ Spectrum also supports:
 - Unlimited nesting of suites within suites
 - Rigorous error handling and reporting when something unexpected goes wrong
 - Compatibility with existing JUnit tools; no configuration required
-- Plugging in familiar JUnit-friendly libraries like `Mockito` or `SpringJUnit` [via JUnit `@Rule`s handling](docs/JunitRules.md).
-- Tagging specs for [selective running](docs/FocusingAndIgnoring.md)
+- Plugging in familiar JUnit-friendly libraries like `Mockito` or `SpringJUnit` [via JUnit `@Rule`s handling](JunitRules.md).
+- Tagging specs for [selective running](FocusingAndIgnoring.md)
 - Mixing Spectrum tests and normal JUnit tests in the same project suite
 - RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
 

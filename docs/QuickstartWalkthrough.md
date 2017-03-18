@@ -100,6 +100,6 @@ public class MySpecs {{
 
 ## Where next?
 
-For more information see the examples and feature list in [README.md](../README.md).
+For more information see the examples and features described the [full documentation](README.md).
 
 <!---freshmark /main -->
