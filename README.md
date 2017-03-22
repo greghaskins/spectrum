@@ -13,9 +13,13 @@ Spectrum
 output = input.replace(/\b\d+\.\d+\.\d+\b/g, '{{stableVersion}}');
 -->
 
+## Getting Started
+
+Spectrum 1.0.2 is available as a package on [JCenter](https://bintray.com/greghaskins/maven/Spectrum/view) and [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.greghaskins%22%20AND%20a%3A%22spectrum%22).
+
 - [Quickstart Guide](https://github.com/greghaskins/spectrum/tree/1.0.2/docs/QuickstartWalkthrough.md)
 - [Documentation](https://github.com/greghaskins/spectrum/tree/1.0.2/docs)
-- [Release Notes](https://github.com/greghaskins/spectrum/releases/tag/1.0.2)
+- [Release Notes](https://github.com/greghaskins/spectrum/releases)
 - [Source Code](https://github.com/greghaskins/spectrum/tree/1.0.2)
 
 ## Examples
@@ -82,10 +86,6 @@ public class Features {{
 ```
 
 For more details and examples, see the [documentation](https://github.com/greghaskins/spectrum/tree/1.0.2/docs).
-
-## Releases
-
-Spectrum is available as a [package on jCenter](https://bintray.com/greghaskins/maven/Spectrum/view) and [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.greghaskins%22%20AND%20a%3A%22spectrum%22). Release notes can be found on the GitHub [Releases Page](https://github.com/greghaskins/spectrum/releases).
 
 ## Can I Contribute?
 
