@@ -41,9 +41,9 @@ public class MySpecs {{
 }}
 ```
 
-The above class is tagged with the `Spectrum` class, so is executed by JUnit using Spectrum to find and execute all tests.
+The above class is marked to run with the `Spectrum` class, so is executed by JUnit using Spectrum to find and execute all tests.
 
-When Spectrum is asked to find the tests (specs in this case), it makes an instance of the class, and the body of the anonymous constructor will contain calls to `Spectrum` methods that describe the suites and specs.
+When Spectrum is asked to find the tests (specs in this case), it makes an instance of the class, and the body of the anonymous constructor will contain calls to Spectrum methods that describe the suites and specs.
 
 ## Adding a suite
 
