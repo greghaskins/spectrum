@@ -1,1 +1,3 @@
 include 'regression'
+
+rootProject.name = 'spectrum'
