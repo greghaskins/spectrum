@@ -1,10 +1,17 @@
-## Gherkin
+# Spectrum Gherkin DSL
 
-Spectrum provides a Gherkin-style test DSL, accessible from the `Gherkin` interface. In this syntax, tests are declared with `feature`, `scenario`, `given`, `when`, `then`, and ... `and`.
+Spectrum provides a Gherkin-style test DSL, accessible from the [`Gherkin`](../src/main/java/com/greghaskins/spectrum/dsl/gherkin/Gherkin.java) interface. In this syntax, tests are declared with `feature`, `scenario`, `given`, `when`, `then`, and ... `and`. It is inspired by the [Cucumber family of test runners](https://cucumber.io/docs/reference), however, instead of using step definitions, steps are defined inline in Java code.
 
 When using the Gherkin DSL, each `given`/`when`/`then` step must pass before the next is run. Note that they must be declared inside a `scenario` block to work correctly. Multiple `scenario` blocks can be defined as part of a `feature`.
 
-### Gherkin Examples
+## API
+
+- `feature` - declare a feature with the given description
+- `scenario` - describe scenario related to that feature
+- `given` / `when` / `then` / `and` - define test steps, which are to be executed in the given order
+- `scenarioOutline` - parameterized `scenario` declaration with given examples
+
+## Simple Examples
 
 > from [GherkinExampleSpecs.java](../src/test/java/specs/GherkinExampleSpecs.java)
 
@@ -47,7 +54,9 @@ feature("Gherkin-like test DSL", () -> {
 });
 ```
 
-### Scenario Outline - Parameterized
+## Scenario Outline - Parameterized Tests
+
+If you have several similar scenarios with just different input/output data, then the `scenarioOutline` feature is available to parameterize those tests. This feature is inspired by the [Scenario Outline](https://github.com/cucumber/cucumber/wiki/Scenario-Outlines) functionality in Cucumber.
 
 > from [ParameterizedExampleSpecs.java](src/test/java/specs/ParameterizedExampleSpecs.java)
 
