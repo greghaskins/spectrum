@@ -82,6 +82,7 @@ spotless {
     indentWithSpaces(2)
     endWithNewline()
   }
+  freshmark {}
 }
 
 classes { dependsOn 'spotlessApply' }

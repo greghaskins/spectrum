@@ -1,5 +1,11 @@
 package specs;
 
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.and;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.feature;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.given;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.scenario;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.then;
+import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.when;
 import static com.greghaskins.spectrum.dsl.specification.Specification.afterAll;
 import static com.greghaskins.spectrum.dsl.specification.Specification.afterEach;
 import static com.greghaskins.spectrum.dsl.specification.Specification.beforeAll;
@@ -8,6 +14,7 @@ import static com.greghaskins.spectrum.dsl.specification.Specification.context;
 import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
 import static com.greghaskins.spectrum.dsl.specification.Specification.fcontext;
 import static com.greghaskins.spectrum.dsl.specification.Specification.it;
+import static com.greghaskins.spectrum.dsl.specification.Specification.let;
 import static com.greghaskins.spectrum.dsl.specification.Specification.xcontext;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -19,6 +26,8 @@ import static org.junit.Assert.assertEquals;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.SpectrumHelper;
+import com.greghaskins.spectrum.Variable;
+import com.greghaskins.spectrum.dsl.gherkin.Gherkin;
 
 import org.hamcrest.core.Is;
 import org.junit.Assert;
@@ -27,6 +36,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class ExampleSpecs {

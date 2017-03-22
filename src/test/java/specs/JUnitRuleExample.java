@@ -1,8 +1,8 @@
 package specs;
 
+import static com.greghaskins.spectrum.Configure.junitMixin;
 import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
 import static com.greghaskins.spectrum.dsl.specification.Specification.it;
-import static com.greghaskins.spectrum.dsl.specification.Specification.junitMixin;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;

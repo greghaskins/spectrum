@@ -8,21 +8,28 @@ import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.then;
 import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.when;
 import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.withExamples;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Variable;
+import com.greghaskins.spectrum.dsl.gherkin.Gherkin;
 
+import jdk.nashorn.api.scripting.NashornScriptEngine;
 import org.junit.runner.RunWith;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 /**
  * Trying out Scenario outline.
  */
 @RunWith(Spectrum.class)
-public class ParameterizedSpecs {
+public class ParameterizedExampleSpecs {
   {
-    scenarioOutline("Cuke eating - Gherkin style",
-        (start, eat, left) -> {
+    scenarioOutline("Cucumber eating",
+        (start, eat, remaining) -> {
 
           Variable<CukeEater> me = new Variable<>();
 
@@ -34,8 +41,8 @@ public class ParameterizedSpecs {
             me.get().eatCucumbers(eat);
           });
 
-          then("I should have " + left + " cucumbers", () -> {
-            assertThat(me.get().remainingCucumbers(), is(left));
+          then("I should have " + remaining + " cucumbers", () -> {
+            assertThat(me.get().remainingCucumbers(), is(remaining));
           });
         },
 
@@ -44,6 +51,29 @@ public class ParameterizedSpecs {
             example(20, 5, 15))
 
     );
+
+    scenarioOutline("Simple calculations",
+        (expression, expectedResult) -> {
+
+          Variable<Calculator> calculator = new Variable<>();
+          Variable<Number> result = new Variable<>();
+
+          given("a calculator", () -> {
+            calculator.set(new Calculator());
+          });
+          when("it computes the expression " + expression, () -> {
+            result.set(calculator.get().compute(expression));
+          });
+          then("the result is " + expectedResult, () -> {
+            assertThat(result.get(), is(expectedResult));
+          });
+
+        },
+
+        withExamples(
+            example("1 + 1", 2),
+            example("5 * 9", 45),
+            example("7 / 2", 3.5)));
 
     scenarioOutline("different types of parameters",
         (foo, bar, baz) -> {
@@ -67,6 +97,8 @@ public class ParameterizedSpecs {
 
 
     );
+
+
 
     scenarioOutline("with two parameters, just to see",
         (foo, bar) -> {
@@ -103,6 +135,21 @@ public class ParameterizedSpecs {
 
     public void eatCucumbers(int number) {
       this.amount -= number;
+    }
+
+  }
+
+  // another dummy class under test
+  static class Calculator {
+
+    private final ScriptEngine engine;
+
+    public Calculator() {
+      this.engine = new ScriptEngineManager().getEngineByName("nashorn");
+    }
+
+    public Number compute(String expression) throws Exception {
+      return (Number) this.engine.eval(expression);
     }
 
   }

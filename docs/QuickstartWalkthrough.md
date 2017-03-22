@@ -1,10 +1,34 @@
 # Quickstart Walkthrough
-
+<!---freshmark main
+output = input.replace(/\b\d+\.\d+\.\d+\b/g, '{{stableVersion}}');
+-->
 To write your first Spectrum test, you will need:
 
-- Java 8
-- JUnit 4
-- The Spectrum maven or Gradle dependency (see the bottom of [README.md](../README.md))
+- Java 8 (for your tests; systems under test can use older versions)
+- The Gradle/Maven dependency for Spectrum (see below)
+
+### Gradle
+
+Add the Spectrum dependency to your `testCompile` configuration in `build.gradle`:
+
+```groovy
+dependencies {
+  testCompile 'com.greghaskins:spectrum:1.0.2'
+}
+```
+
+### Maven
+
+Add Spectrum as a dependency with `test` scope in your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.greghaskins</groupId>
+    <artifactId>spectrum</artifactId>
+    <version>1.0.2</version>
+    <scope>test</scope>
+</dependency>
+```
 
 ## The Basics
 
@@ -17,9 +41,9 @@ public class MySpecs {{
 }}
 ```
 
-The above class is tagged with the `Spectrum` class, so is executed by JUnit using Spectrum to find and execute all tests.
+The above class is marked to run with the `Spectrum` class, so is executed by JUnit using Spectrum to find and execute all tests.
 
-When Spectrum is asked to find the tests (specs in this case), it makes an instance of the class, and the body of the anonymous constructor will contain calls to `Spectrum` methods that describe the suites and specs.
+When Spectrum is asked to find the tests (specs in this case), it makes an instance of the class, and the body of the anonymous constructor will contain calls to Spectrum methods that describe the suites and specs.
 
 ## Adding a suite
 
@@ -76,4 +100,6 @@ public class MySpecs {{
 
 ## Where next?
 
-For more information see the examples and feature list in [README.md](../README.md).
+For more information see the examples and features described the [full documentation](README.md).
+
+<!---freshmark /main -->
