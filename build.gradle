@@ -197,7 +197,7 @@ bintray {
       name = project.version
       released = new Date()
       mavenCentralSync {
-        sync = false
+        sync = true
         user = System.getenv('SONATYPE_USER')
         password = System.getenv('SONATYPE_PASSWORD')
         close = '1'
