@@ -7,7 +7,7 @@ Spectrum
 
 [Spectrum](https://github.com/greghaskins/spectrum) is inspired by the behavior-driven testing frameworks [Jasmine](https://jasmine.github.io/) and [RSpec](http://rspec.info/), bringing their expressive syntax and functional style to Java tests. It is a custom runner for [JUnit](http://junit.org/), so it works with many development and reporting tools out of the box.
 
-![Spectrum with Eclipse via JUnit](junit-screenshot.png)
+![Spectrum with Eclipse via JUnit](docs/junit-screenshot.png)
 
 <!---freshmark main
 output = input.replace(/\b\d+\.\d+\.\d+\b/g, '{{stableVersion}}');
