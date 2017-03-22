@@ -7,7 +7,7 @@ Specrtrum is a BDD-style test runner for Java 8. It leverages lambda functions t
 Spectrum provides two ways of writing tests:
 
 - [Specification-style test DSL](SpecificationDSL.md) with `describe` / `it` / `beforeEach` / etc.
-- [Gherkin-style test DSL](Gherkin.md) with `feature` / `scenario` / `given` / `when` / `then` / etc.
+- [Gherkin-style test DSL](GherkinDSL.md) with `feature` / `scenario` / `given` / `when` / `then` / etc.
 
 Spectrum also supports:
 
@@ -25,4 +25,4 @@ Unlike some BDD-style frameworks, Spectrum is _only_ a test runner. Assertions, 
 
 ## Getting Started
 
-See the [quickstart waklthrough](QuickstartWalkthrough.md) and the docs for writing [Specification-style](SpecificationDSL.md) or [Gherkin-style](Gherkin.md) tests.
+See the [quickstart waklthrough](QuickstartWalkthrough.md) and the docs for writing [Specification-style](SpecificationDSL.md) or [Gherkin-style](GherkinDSL.md) tests.
