@@ -163,51 +163,6 @@ public class ExampleSpecs {
         it("ignoring is possible", ExampleSpecs::ignoringContextExample);
       });
     });
-
-    describe("A list", () -> {
-
-      List<String> list = new ArrayList<>();
-
-      afterEach(list::clear);
-
-      it("should be empty by default", () -> {
-        assertThat(list.size(), is(0));
-      });
-
-      it("should be able to add items", () -> {
-        list.add("foo");
-        list.add("bar");
-
-        assertThat(list, contains("foo", "bar"));
-      });
-
-    });
-
-    feature("Lists", () -> {
-
-      scenario("adding items", () -> {
-
-        Variable<List<String>> list = new Variable<>();
-
-        given("an empty list", () -> {
-          list.set(new ArrayList<>());
-        });
-
-        when("you add the item 'foo'", () -> {
-          list.get().add("foo");
-        });
-
-        and("you add the item 'bar'", () -> {
-          list.get().add("bar");
-        });
-
-        then("it contains both foo and bar", () -> {
-          assertThat(list.get(), contains("foo", "bar"));
-        });
-
-      });
-
-    });
   }
 
   private static void focusingContextExample() throws Exception {
