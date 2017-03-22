@@ -1,4 +1,20 @@
-# Spectrum Features
+# Spectrum Specification DSL
+
+Spectrum provides a Specification-style test DSL similar to [RSpec](http://rspec.info/) and [Jasmine](https://jasmine.github.io/), accessible from the [`Specification`](../src/main/java/com/greghaskins/spectrum/dsl/specification/Specification.java) interface. The API is designed to be familiar to users of those tools, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Spectrum should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)
+
+## API
+
+- `describe` - a high level suite
+- `context` - alias of `describe` for nesting and grouping
+- `it` - an individual spec
+- `beforeEach` / `afterEach` - per-spec setup/teardown
+- `beforeAll` / `afterAll` - per-suite setup/teardown
+- `let` / `Variable` - [for providing values to tests](VariablesAndValues.md)
+- `fit` / `fdescribe` / `fcontext` - [for focusing](FocusingAndIgnoring.md)
+- `xit` / `xdescribe` / `xcontext` - [for ignoring](FocusingAndIgnoring.md)
+- `with` / `ignore` / `focus` / `tags` - [for tagging blocks with metadata](FocusingAndIgnoring.md)
+
+## Examples
 
 > from [ExampleSpecs.java](../src/test/java/specs/ExampleSpecs.java)
 
@@ -118,35 +134,3 @@ public class ExampleSpecs {
   }
 }
 ```
-
-## Supported Features
-
-The Spectrum API is designed to be familiar to Jasmine and RSpec users, while remaining compatible with JUnit. The features and behavior of those libraries help guide decisions on how Spectrum should work, both for common scenarios and edge cases. (See [the discussion on #41](https://github.com/greghaskins/spectrum/pull/41#issuecomment-238729178) for an example of how this factors into design decisions.)
-
-The main functions for defining a test are:
-
-- `describe` - a high level suite
-- `it` - an individual spec
-- `beforeEach` / `afterEach` - per spec set up/tear down
-- `beforeAll` / `afterAll` - per suite set up/tear down
-- `fit` / `fdescribe` - [for focusing](FocusingAndIgnoring.md)
-- `xit` / `xdescribe` - [for ignoring](FocusingAndIgnoring.md)
-- `let` / `Variable` - [for providing values](VariablesAndValues.md)
-- `with` / `ignore` / `focus` / `tags` - [for tagging blocks with metadata](FocusingAndIgnoring.md)
-- `feature` / `scenario` / `scenarioOutline` - [Gherkin Syntax](Gherkin.md)
-- `given` / `when` / `then` / `and` - [Gherkin Syntax](Gherkin.md)
-- `context` / `fcontext` / `xcontext` - grouping tests or suites
-
-Spectrum also supports:
-
-- Unlimited nesting of suites within suites
-- Rigorous error handling and reporting when something unexpected goes wrong
-- Compatibility with existing JUnit tools; no configuration required
-- Plugging in familiar JUnit-friendly libraries like `Mockito` or `SpringJUnit` [via JUnit `@Rule`s handling](JunitRules.md).
-- Tagging specs for [selective running](FocusingAndIgnoring.md)
-- Mixing Spectrum tests and normal JUnit tests in the same project suite
-- RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
-
-### Non-Features
-
-Unlike some BDD-style frameworks, Spectrum is _only_ a test runner. Assertions, expectations, mocks, and matchers are the purview of other libraries such as [Hamcrest](http://hamcrest.org/JavaHamcrest/), [AssertJ](http://joel-costigliola.github.io/assertj/), [Mockito](http://mockito.org/), or [plain JUnit](https://github.com/junit-team/junit4/wiki/Assertions).
