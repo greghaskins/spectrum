@@ -5,13 +5,13 @@ import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.configuration.TaggingFilterCriteria;
 
 import org.junit.runner.Description;
-import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.Failure;
 
 public interface Child {
 
   Description getDescription();
 
-  void run(RunNotifier notifier);
+  void run(RunReporting<Description, Failure> reporting);
 
   int testCount();
 
@@ -30,6 +30,14 @@ public interface Child {
    * @return if the child is atomic
    */
   default boolean isAtomic() {
+    return false;
+  }
+
+  /**
+   * Does this child appear as an individual test within the test runner.
+   * @return true if it's an individual test item in the runner
+   */
+  default boolean isLeaf() {
     return false;
   }
 

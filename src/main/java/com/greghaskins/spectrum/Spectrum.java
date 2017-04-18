@@ -5,6 +5,7 @@ import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.ConstructorBlock;
 import com.greghaskins.spectrum.internal.junit.Rules;
+import com.greghaskins.spectrum.internal.junit.RunNotifierReporting;
 
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
@@ -257,7 +258,7 @@ public final class Spectrum extends Runner {
 
   @Override
   public void run(final RunNotifier notifier) {
-    this.rootSuite.run(notifier);
+    this.rootSuite.run(new RunNotifierReporting(notifier));
   }
 
   /**
