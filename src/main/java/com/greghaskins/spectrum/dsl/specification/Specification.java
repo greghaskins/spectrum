@@ -16,7 +16,6 @@ import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo;
 import com.greghaskins.spectrum.internal.hooks.HookContext.Precedence;
 import com.greghaskins.spectrum.internal.hooks.LetHook;
-import com.greghaskins.spectrum.internal.junit.Rules;
 
 import org.junit.AssumptionViolatedException;
 

@@ -4,10 +4,11 @@ import static com.greghaskins.spectrum.internal.blocks.NotifyingBlock.wrapWithRe
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.Variable;
+import com.greghaskins.spectrum.internal.RunReporting;
 import com.greghaskins.spectrum.internal.blocks.NotifyingBlock;
 
 import org.junit.runner.Description;
-import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.Failure;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
@@ -62,29 +63,42 @@ public class Hooks extends ArrayList<HookContext> {
    * Convert the hooks into a chain of responsibility and execute as
    * a consumer of the given block.
    * @param description test node being run
-   * @param notifier test result notifier
+   * @param reporting test result notifier
    * @param block to execute
    */
-  public void runAround(final Description description, final RunNotifier notifier,
+  public void runAround(final Description description, final RunReporting<Description, Failure> reporting,
       final Block block) {
-    NotifyingBlock.run(description, notifier,
-        () -> runAroundInternal(description, notifier, block));
+    NotifyingBlock.run(description, reporting,
+        () -> runAroundInternal(description, reporting, block));
   }
 
-  private void runAroundInternal(final Description description, final RunNotifier notifier,
+  private void runAroundInternal(final Description description,
+      final RunReporting<Description, Failure> reporting,
       final Block block) throws Throwable {
     Variable<Boolean> hooksRememberedToRunTheInner = new Variable<>(false);
 
+    Hook chainOfResponsibility = createChainOfResponsibility(hooksRememberedToRunTheInner);
+    executeChain(description, reporting, block, chainOfResponsibility);
+
+    if (!hooksRememberedToRunTheInner.get()) {
+      throw new RuntimeException("At least one of the test hooks did not run the test block.");
+    }
+  }
+
+  private Hook createChainOfResponsibility(Variable<Boolean> hooksRememberedToRunTheInner) {
     Hook chainOfResponsibility = innerHook(hooksRememberedToRunTheInner);
 
     for (HookContext context : this) {
       chainOfResponsibility = wrap(chainOfResponsibility, context);
     }
-    chainOfResponsibility.accept(description, notifier, block);
 
-    if (!hooksRememberedToRunTheInner.get()) {
-      throw new RuntimeException("At least one of the test hooks did not run the test block.");
-    }
+    return chainOfResponsibility;
+  }
+
+  private void executeChain(Description description, RunReporting<Description, Failure> reporting,
+      Block block, Hook chainOfResponsibility)
+      throws Throwable {
+    chainOfResponsibility.accept(description, reporting, block);
   }
 
   private Hook innerHook(Variable<Boolean> hooksRememberedToRunTheInner) {
@@ -95,9 +109,9 @@ public class Hooks extends ArrayList<HookContext> {
   }
 
   private Hook wrap(final Hook inner, final HookContext outer) {
-    return (description, notifier, block) -> outer.getHook().accept(description, notifier,
-        wrapWithReporting(description, notifier,
-            () -> inner.accept(description, notifier, block)));
+    return (description, reporting, block) -> outer.getHook().accept(description, reporting,
+        wrapWithReporting(description, reporting,
+            () -> inner.accept(description, reporting, block)));
   }
 
   private Hooks filtered(Predicate<HookContext> predicate) {

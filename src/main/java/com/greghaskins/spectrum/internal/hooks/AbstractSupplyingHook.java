@@ -3,9 +3,10 @@ package com.greghaskins.spectrum.internal.hooks;
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.Variable;
 import com.greghaskins.spectrum.internal.DeclarationState;
+import com.greghaskins.spectrum.internal.RunReporting;
 
 import org.junit.runner.Description;
-import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.Failure;
 
 /**
  * A base class for {@link SupplyingHook hooks that supply a value}.
@@ -43,12 +44,12 @@ abstract class AbstractSupplyingHook<T> implements SupplyingHook<T> {
    * Template method for a hook which supplies.
    *
    * @param description description - unused here
-   * @param runNotifier runNotifier - unused here
+   * @param reporting reporting - unused here
    * @param block       the inner block that will be run
    * @throws Throwable on error
    */
   @Override
-  public void accept(final Description description, final RunNotifier runNotifier,
+  public void accept(final Description description, final RunReporting<Description, Failure> reporting,
       final Block block) throws Throwable {
     try {
       this.value.set(before());

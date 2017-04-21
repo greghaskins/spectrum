@@ -3,7 +3,7 @@ package com.greghaskins.spectrum.internal;
 import com.greghaskins.spectrum.internal.configuration.TaggingFilterCriteria;
 
 import org.junit.runner.Description;
-import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.Failure;
 
 /**
  * Subclass of {@link Suite} that represent the fact that some tests are composed
@@ -26,18 +26,15 @@ final class CompositeTest extends Suite {
     return true;
   }
 
-  private static void abortOnFailureChildRunner(final Suite suite, final RunNotifier runNotifier) {
-    FailureDetectingRunListener listener = new FailureDetectingRunListener();
-    runNotifier.addListener(listener);
-    try {
-      for (Child child : suite.children) {
-        if (listener.hasFailedYet()) {
-          child.ignore();
-        }
-        suite.runChild(child, runNotifier);
+  private static void abortOnFailureChildRunner(final Suite suite,
+      final RunReporting<Description, Failure> reporting) {
+    FailureDetectingRunDecorator<Description, Failure> decoratedReporting =
+        new FailureDetectingRunDecorator<>(reporting);
+    for (Child child : suite.children) {
+      if (decoratedReporting.hasFailedYet()) {
+        child.ignore();
       }
-    } finally {
-      runNotifier.removeListener(listener);
+      suite.runChild(child, decoratedReporting);
     }
   }
 }

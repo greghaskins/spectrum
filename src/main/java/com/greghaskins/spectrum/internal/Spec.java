@@ -3,7 +3,7 @@ package com.greghaskins.spectrum.internal;
 import com.greghaskins.spectrum.internal.blocks.NotifyingBlock;
 
 import org.junit.runner.Description;
-import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.Failure;
 
 final class Spec implements Child {
 
@@ -25,15 +25,14 @@ final class Spec implements Child {
   }
 
   @Override
-  public void run(final RunNotifier notifier) {
+  public void run(final RunReporting<Description, Failure> notifier) {
     if (this.ignored) {
       notifier.fireTestIgnored(this.description);
       return;
     }
 
-    notifier.fireTestStarted(this.description);
     this.block.run(this.description, notifier);
-    notifier.fireTestFinished(this.description);
+
   }
 
   @Override
@@ -57,6 +56,11 @@ final class Spec implements Child {
 
   @Override
   public boolean isAtomic() {
+    return true;
+  }
+
+  @Override
+  public boolean isLeaf() {
     return true;
   }
 

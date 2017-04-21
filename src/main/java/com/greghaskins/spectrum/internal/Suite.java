@@ -5,11 +5,12 @@ import com.greghaskins.spectrum.internal.blocks.NotifyingBlock;
 import com.greghaskins.spectrum.internal.configuration.BlockConfiguration;
 import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.configuration.TaggingFilterCriteria;
+import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext;
 import com.greghaskins.spectrum.internal.hooks.Hooks;
 
 import org.junit.runner.Description;
-import org.junit.runner.notification.RunNotifier;
+import org.junit.runner.notification.Failure;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +38,7 @@ public class Suite implements Parent, Child {
    */
   @FunctionalInterface
   interface ChildRunner {
-    void runChildren(final Suite suite, final RunNotifier notifier);
+    void runChildren(final Suite suite, final RunReporting<Description, Failure> reporting);
   }
 
   public static Suite rootSuite(final Description description) {
@@ -51,7 +52,7 @@ public class Suite implements Parent, Child {
    * @param description the JUnit description
    * @param parent parent item
    * @param childRunner which child running strategy to use - this will normally be
-   *        {@link #defaultChildRunner(Suite, RunNotifier)} which runs them all but can be
+   *        {@link #defaultChildRunner(Suite, RunReporting)} which runs them all but can be
    *        substituted.
    * @param taggingFilterCriteria the state of tagging inherited from the parent
    */
@@ -188,37 +189,37 @@ public class Suite implements Parent, Child {
   }
 
   @Override
-  public void run(final RunNotifier notifier) {
+  public void run(final RunReporting<Description, Failure> reporting) {
     if (testCount() == 0) {
-      notifier.fireTestIgnored(this.description);
-      runChildren(notifier);
+      reporting.fireTestIgnored(this.description);
+      runChildren(reporting);
     } else {
-      runSuite(notifier);
+      runSuite(reporting);
     }
   }
 
-  private void runSuite(final RunNotifier notifier) {
+  private void runSuite(final RunReporting<Description, Failure> reporting) {
     if (isEffectivelyIgnored()) {
-      runChildren(notifier);
+      runChildren(reporting);
     } else {
       this.hooks.once().sorted()
-          .runAround(this.description, notifier, () -> runChildren(notifier));
+          .runAround(this.description, reporting, () -> runChildren(reporting));
     }
   }
 
-  private void runChildren(final RunNotifier notifier) {
-    this.childRunner.runChildren(this, notifier);
+  private void runChildren(final RunReporting<Description, Failure> reporting) {
+    this.childRunner.runChildren(this, reporting);
   }
 
-  protected void runChild(final Child child, final RunNotifier notifier) {
+  protected void runChild(final Child child, final RunReporting<Description, Failure> reporting) {
     if (child.isEffectivelyIgnored()) {
       // running the child will make it act ignored
-      child.run(notifier);
+      child.run(reporting);
     } else if (childIsNotInFocus(child)) {
-      notifier.fireTestIgnored(child.getDescription());
+      reporting.fireTestIgnored(child.getDescription());
     } else {
-      this.hooks.forThisLevel().sorted().runAround(child.getDescription(), notifier,
-          () -> runChildWithHooks(child, notifier));
+      this.hooks.forThisLevel().sorted().runAround(child.getDescription(), reporting,
+          () -> runChildWithHooks(child, reporting));
     }
   }
 
@@ -226,9 +227,34 @@ public class Suite implements Parent, Child {
     return !this.focusedChildren.isEmpty() && !this.focusedChildren.contains(child);
   }
 
-  private void runChildWithHooks(final Child child, final RunNotifier notifier) {
-    getHooksFor(child).sorted().runAround(child.getDescription(), notifier,
-        () -> child.run(notifier));
+  private void runChildWithHooks(final Child child, final RunReporting<Description, Failure> reporting) {
+    addLeafHook(getHooksFor(child).sorted(), child).runAround(child.getDescription(), reporting,
+        () -> child.run(reporting));
+
+  }
+
+  private Hooks addLeafHook(final Hooks hooks, final Child child) {
+    if (child.isLeaf()) {
+      hooks.add(testNotifier());
+    }
+
+    return hooks;
+  }
+
+  private HookContext testNotifier() {
+    return new HookContext(testNotificationHook(), 0, HookContext.AppliesTo.ONCE,
+        HookContext.Precedence.ROOT);
+  }
+
+  private Hook testNotificationHook() {
+    return (description, notifier, block) -> {
+      notifier.fireTestStarted(description);
+      try {
+        block.run();
+      } finally {
+        notifier.fireTestFinished(description);
+      }
+    };
   }
 
   @Override
@@ -248,8 +274,9 @@ public class Suite implements Parent, Child {
     this.children.clear();
   }
 
-  private static void defaultChildRunner(final Suite suite, final RunNotifier runNotifier) {
-    suite.children.forEach((child) -> suite.runChild(child, runNotifier));
+  private static void defaultChildRunner(final Suite suite,
+      final RunReporting<Description, Failure> reporting) {
+    suite.children.forEach((child) -> suite.runChild(child, reporting));
   }
 
   private String sanitise(final String name) {
@@ -263,8 +290,6 @@ public class Suite implements Parent, Child {
 
   private boolean hasANonIgnoredChild() {
     return this.children.stream()
-        .filter(child -> !child.isEffectivelyIgnored())
-        .findFirst()
-        .isPresent();
+        .anyMatch(child -> !child.isEffectivelyIgnored());
   }
 }
