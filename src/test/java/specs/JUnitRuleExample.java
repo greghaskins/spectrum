@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 
 import com.greghaskins.spectrum.Spectrum;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -20,9 +21,27 @@ import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class JUnitRuleExample {
+  // mixins for the Spectrum native style of mixin
   public static class TempFolderRuleMixin {
     @Rule
     public TemporaryFolder tempFolderRule = new TemporaryFolder();
+  }
+
+  public static class JUnitBeforeClassExample {
+    public static String value;
+
+    @BeforeClass
+    public static void beforeClass() {
+      value = "Hello world";
+    }
+  }
+
+  // can also use native junit annotations
+  private static String classValue;
+
+  @BeforeClass
+  public static void beforeClass() {
+    classValue = "initialised";
   }
 
   {
@@ -45,6 +64,17 @@ public class JUnitRuleExample {
 
       it("has received a different instance of the rule-provided object each time", () -> {
         assertThat(ruleProvidedFoldersSeen.size(), is(3));
+      });
+
+      describe("with just a beforeClass mixin", () -> {
+        Supplier<JUnitBeforeClassExample> mixin = junitMixin(JUnitBeforeClassExample.class);
+        it("the mixin's before class has been called", () -> {
+          assertThat(JUnitBeforeClassExample.value, is("Hello world"));
+        });
+      });
+
+      it("has also initialised a class member owing to a local JUnit annotation", () -> {
+        assertThat(classValue, is("initialised"));
       });
     });
   }

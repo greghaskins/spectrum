@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -104,8 +104,30 @@ public class RunNotifierTest {
         // note: this is a deviation from the way BlockJUnitRunner specifically runs
         RunNotifier notifier = runWithSpectrumNotifier(failingBeforeAllTest());
         InOrder inOrder = Mockito.inOrder(notifier);
-        inOrder.verify(notifier, times(2)).fireTestFailure(any());
+        inOrder.verify(notifier).fireTestStarted(forMethod("failsTransitively1"));
+        inOrder.verify(notifier).fireTestFailure(any());
+        inOrder.verify(notifier).fireTestFinished(forMethod("failsTransitively1"));
+        inOrder.verify(notifier).fireTestStarted(forMethod("failsTransitively2"));
+        inOrder.verify(notifier).fireTestFailure(any());
+        inOrder.verify(notifier).fireTestFinished(forMethod("failsTransitively2"));
+      });
+
+      it("Reports single failure when it's the JUnit @BeforeClass that's failing", () -> {
+        RunNotifier notifier = runWithSpectrumNotifier(BeforeClassFailsInJunitStyle.class);
+        InOrder inOrder = Mockito.inOrder(notifier);
+        inOrder.verify(notifier).fireTestFailure(any());
         inOrder.verifyNoMoreInteractions();
+      });
+
+      it("Reports errors correctly in nested tests", () -> {
+        RunNotifier notifier = runWithSpectrumNotifier(failingNestedBeforeAllTest());
+        InOrder inOrder = Mockito.inOrder(notifier);
+        inOrder.verify(notifier).fireTestStarted(forMethod("failsTransitively1"));
+        inOrder.verify(notifier).fireTestFailure(any());
+        inOrder.verify(notifier).fireTestFinished(forMethod("failsTransitively1"));
+        inOrder.verify(notifier).fireTestStarted(forMethod("failsTransitively2"));
+        inOrder.verify(notifier).fireTestFailure(any());
+        inOrder.verify(notifier).fireTestFinished(forMethod("failsTransitively2"));
       });
     });
   }
@@ -134,9 +156,9 @@ public class RunNotifierTest {
   }
 
   // these classes will ACTUALLY be run with BlockJUnitRunner above, but we mark them
-  // as run with Spectrum so that they are passed over if an IDE's test runner decides
+  // as run with null so that they are passed over if an IDE's test runner decides
   // to try to execute them
-  @RunWith(Spectrum.class)
+  @RunWith(SpectrumHelper.NullRunner.class)
   public static class OnePassing {
     @Test
     public void passes() {
@@ -144,7 +166,8 @@ public class RunNotifierTest {
     }
   }
 
-  @RunWith(Spectrum.class)
+
+  @RunWith(SpectrumHelper.NullRunner.class)
   public static class OneFailing {
     @Test
     public void fails() {
@@ -152,8 +175,9 @@ public class RunNotifierTest {
     }
   }
 
+
   // method order is fixed to enable order-based verification
-  @RunWith(Spectrum.class)
+  @RunWith(SpectrumHelper.NullRunner.class)
   @FixMethodOrder(MethodSorters.NAME_ASCENDING)
   public static class BeforeMethodFails {
     @Before
@@ -172,8 +196,9 @@ public class RunNotifierTest {
     }
   }
 
+
   // method order is fixed to enable order-based verification
-  @RunWith(Spectrum.class)
+  @RunWith(SpectrumHelper.NullRunner.class)
   @FixMethodOrder(MethodSorters.NAME_ASCENDING)
   public static class BeforeClassMethodFails {
     @BeforeClass
@@ -257,6 +282,45 @@ public class RunNotifierTest {
     }
 
     return FailingBeforeAll.class;
+  }
+
+  private static Class<?> failingNestedBeforeAllTest() {
+    class FailingNestedBeforeAll {
+      {
+        describe("suite", () -> {
+          beforeAll(() -> {
+            throw new IllegalArgumentException("aaagh");
+          });
+
+          describe("with sub suite", () -> {
+            it("failsTransitively1", () -> {
+            });
+
+            it("failsTransitively2", () -> {
+            });
+          });
+        });
+      }
+    }
+
+    return FailingNestedBeforeAll.class;
+  }
+
+  @RunWith(SpectrumHelper.NullRunner.class)
+  public static class BeforeClassFailsInJunitStyle {
+    @BeforeClass
+    public static void beforeClass() {
+      failAnAssertion();
+    }
+
+    {
+      describe("A suite", () -> {
+        it("fails because of the Junit before class", () -> {
+        });
+        it("fails again because of the Junit before class", () -> {
+        });
+      });
+    }
   }
 
   private static void successfulAssertion() {

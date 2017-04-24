@@ -146,7 +146,7 @@ public interface Specification {
    * @param block {@link Block} to run once before all specs in this suite
    */
   static void beforeAll(final Block block) {
-    DeclarationState.instance().addHook(before(new IdempotentBlock(block)), AppliesTo.EACH_CHILD,
+    DeclarationState.instance().addHook(before(new IdempotentBlock(block)), AppliesTo.ATOMIC_ONLY,
         Precedence.SET_UP);
   }
 

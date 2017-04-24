@@ -12,6 +12,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpectrumHelper {
+  // Allows us to hide a test class from IDE/test discovery
+  public static class NullRunner extends Runner {
+    private Class<?> clazz;
+
+    public NullRunner(Class<?> clazz) {
+      this.clazz = clazz;
+    }
+
+    @Override
+    public Description getDescription() {
+      // empty suite
+
+      return Description.createSuiteDescription(clazz);
+    }
+
+    @Override
+    public void run(RunNotifier notifier) {
+      // do nothing
+    }
+  }
 
   public static class RecordingListener extends RunListener {
     private List<Description> testsStarted = new ArrayList<>();
@@ -56,5 +76,4 @@ public class SpectrumHelper {
   private static Result runWithJUnit(final Runner runner) {
     return new JUnitCore().run(Request.runner(runner));
   }
-
 }

@@ -62,17 +62,16 @@ public class HookContext implements Comparable<HookContext> {
      */
     GUARANTEED_CLEAN_UP_GLOBAL(2),
 
+    /**
+     * Set up code should run before the local context.
+     */
+    SET_UP(3),
 
     /**
      * Guaranteed tidy up code should be allowed to run no matter
      * what, once the test has started.
      */
-    GUARANTEED_CLEAN_UP_LOCAL(3),
-
-    /**
-     * Set up code should run before the local context.
-     */
-    SET_UP(4),
+    GUARANTEED_CLEAN_UP_LOCAL(4),
 
     /**
      * Local context - the order depends on declaration.

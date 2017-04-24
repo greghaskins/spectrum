@@ -87,8 +87,8 @@ The rules are applied and the test object created just in time for each atomic t
 ### What is Supported
 
 * `@ClassRule` is applied
-* `@BeforeAll` is applied
-* `@AfterAll` is applied
+* `@BeforeClass` is applied
+* `@AfterClass` is applied
 * `@Rule` objects:
   * `TestRule`s are applied at the level of each atomic test
   * `MethodRule`s are applied at the level of each atomic test
