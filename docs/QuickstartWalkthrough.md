@@ -13,7 +13,7 @@ Add the Spectrum dependency to your `testCompile` configuration in `build.gradle
 
 ```groovy
 dependencies {
-  testCompile 'com.greghaskins:spectrum:1.1.0'
+  testCompile 'com.greghaskins:spectrum:1.1.1'
 }
 ```
 
@@ -25,7 +25,7 @@ Add Spectrum as a dependency with `test` scope in your `pom.xml`:
 <dependency>
     <groupId>com.greghaskins</groupId>
     <artifactId>spectrum</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <scope>test</scope>
 </dependency>
 ```
