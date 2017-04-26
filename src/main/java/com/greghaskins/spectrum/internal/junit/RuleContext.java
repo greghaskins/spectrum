@@ -161,15 +161,23 @@ public class RuleContext<T> implements Supplier<T> {
   }
 
   private Statement withAfterClasses(final Statement base) {
-    List<FrameworkMethod> afters = testClass.getAnnotatedMethods(AfterClass.class);
+    List<FrameworkMethod> afters = getAfterClassMethods();
 
     return afters.isEmpty() ? base : new RunAfters(base, afters, null);
   }
 
+  private List<FrameworkMethod> getAfterClassMethods() {
+    return testClass.getAnnotatedMethods(AfterClass.class);
+  }
+
   private Statement withBeforeClasses(final Statement base) {
-    List<FrameworkMethod> befores = testClass.getAnnotatedMethods(BeforeClass.class);
+    List<FrameworkMethod> befores = getBeforeClassMethods();
 
     return befores.isEmpty() ? base : new RunBefores(base, befores, null);
+  }
+
+  private List<FrameworkMethod> getBeforeClassMethods() {
+    return testClass.getAnnotatedMethods(BeforeClass.class);
   }
 
   private List<TestRule> getClassRules() {
@@ -198,7 +206,8 @@ public class RuleContext<T> implements Supplier<T> {
    * @return true if there are rules
    */
   boolean hasAnyJUnitAnnotations() {
-    return getClassRules().size() > 0 || hasAnyTestOrMethodRules();
+    return hasAnyTestOrMethodRules()
+        || getClassRules().size() + getAfterClassMethods().size() + getBeforeClassMethods().size() > 0;
   }
 
   /**

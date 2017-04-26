@@ -218,7 +218,7 @@ public class Suite implements Parent, Child {
     } else if (childIsNotInFocus(child)) {
       reporting.fireTestIgnored(child.getDescription());
     } else {
-      this.hooks.forThisLevel().sorted().runAround(child.getDescription(), reporting,
+      addLeafHook(this.hooks.forThisLevel().sorted(), child).runAround(child.getDescription(), reporting,
           () -> runChildWithHooks(child, reporting));
     }
   }
@@ -228,7 +228,7 @@ public class Suite implements Parent, Child {
   }
 
   private void runChildWithHooks(final Child child, final RunReporting<Description, Failure> reporting) {
-    addLeafHook(getHooksFor(child).sorted(), child).runAround(child.getDescription(), reporting,
+    getHooksFor(child).sorted().runAround(child.getDescription(), reporting,
         () -> child.run(reporting));
 
   }
