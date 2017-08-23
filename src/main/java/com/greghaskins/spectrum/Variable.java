@@ -20,6 +20,8 @@ public final class Variable<T> implements Supplier<T> {
   /**
    * Create a Variable with the given initial value.
    *
+   * NOTE! State is thread local.
+   *
    * @param value starting value
    */
   public Variable(final T value) {
@@ -38,6 +40,8 @@ public final class Variable<T> implements Supplier<T> {
 
   /**
    * Change the value of this Variable.
+   *
+   * NOTE! State is thread local.
    *
    * @param value new value
    */
