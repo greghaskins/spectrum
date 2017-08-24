@@ -182,8 +182,26 @@ public class LetSpecs {
             assertThat(result.getFailures().get(1).getMessage(), is("Bong!"));
           });
         });
+      });
 
+      describe("let across multiple threads", () -> {
+        final Supplier<List<String>> listSupplier = let(ArrayList::new);
+        it("can share the object with worker thread", () -> {
+          // when the supplier's object has something added to it
+          listSupplier.get().add("Hello world");
 
+          // used as a box for the integer
+          AtomicInteger atomicInteger = new AtomicInteger();
+
+          // when we access the object within a worker thread
+          Thread thread = new Thread(() -> atomicInteger.set(listSupplier.get().size()));
+          thread.start();
+          thread.join();
+
+          // then the worker thread saw the same object as the outer thread
+          // then the worker thread saw the same object as the outer thread
+          assertThat(atomicInteger.get(), is(1));
+        });
       });
     });
   }

@@ -48,6 +48,17 @@ public class VariableSpecs {
         assertNull(name.get());
       });
 
+      it("has the same value across threads", () -> {
+        final Variable<String> outerVariable = new Variable<>("outer");
+        final Variable<String> whatWorkerThreadSees = new Variable<>();
+
+        Thread worker = new Thread(() -> whatWorkerThreadSees.set(outerVariable.get()));
+        worker.start();
+        worker.join();
+
+        assertThat(whatWorkerThreadSees.get(), is(outerVariable.get()));
+      });
+
     });
 
   }
