@@ -94,8 +94,8 @@ E.g.
 Supplier<List<String>> list = let(ArrayList::new);
 
 it("can use the object", () -> {
-	list.get().add("Hello");
-	assertThat(list.get().get(0), is("Hello"));
+  list.get().add("Hello");
+  assertThat(list.get().get(0), is("Hello"));
 });
 ```
 
@@ -105,7 +105,7 @@ can be replaced by
 List<String> list = unbox(let(ArrayList::new), List.class);
 
 it("can use the object as though it was not in a supplier", () -> {
-	list.add("Hello");
-	assertThat(list.get(0), is("Hello"));
+  list.add("Hello");
+  assertThat(list.get(0), is("Hello"));
 });
 ```
