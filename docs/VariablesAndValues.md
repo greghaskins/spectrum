@@ -80,3 +80,32 @@ describe("The Variable convenience wrapper", () -> {
 
 });
 ```
+
+### When `get` is getting you down
+
+`Variable` objects and the `Supplier` returned by `let` require use of the `get` function to read their contents. This requires you to write 	`get()` throughout
+your code, which can lead to a little bloat.
+
+If the object in question can be used via an interface, then you can use the `unbox` function inside `Unboxer` to wrap the supplier with a proxy. This will reduce your boilerplate code.
+
+E.g.
+
+```java
+Supplier<List<String>> list = let(ArrayList::new);
+
+it("can use the object", () -> {
+	list.get().add("Hello");
+	assertThat(list.get().get(0), is("Hello"));
+});
+```
+
+can be replaced by
+
+```java
+List<String> list = unbox(let(ArrayList::new), List.class);
+
+it("can use the object as though it was not in a supplier", () -> {
+	list.add("Hello");
+	assertThat(list.get(0), is("Hello"));
+});
+```
