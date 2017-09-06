@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 @RunWith(Spectrum.class)
 public class BlockConfigurationSpecs {
   {
-    describe("The ignore() precondition", () -> {
+    describe("The ignore() configuration", () -> {
 
       describe("at the suite level", () -> {
         Supplier<Result> result = let(() -> SpectrumHelper.run(() -> {

@@ -63,15 +63,10 @@ public class TaggingFilterCriteria {
         || tags.stream().anyMatch(this.included::contains);
   }
 
-  private String[] fromSystemProperty(final String property) {
+  private Stream<String> fromSystemProperty(final String property) {
     return Optional.ofNullable(System.getProperty(property))
-        .map(string -> string.split(TaggingFilterCriteria.TAGS_SEPARATOR))
-        .filter(TaggingFilterCriteria::notArrayWithEmptyValue)
-        .orElse(new String[0]);
+        .map(string -> Arrays.stream(string.split(TaggingFilterCriteria.TAGS_SEPARATOR))
+            .filter(tag -> !tag.isEmpty()))
+        .orElse(Stream.empty());
   }
-
-  private static boolean notArrayWithEmptyValue(final String[] array) {
-    return !(array.length == 1 && array[0].isEmpty());
-  }
-
 }

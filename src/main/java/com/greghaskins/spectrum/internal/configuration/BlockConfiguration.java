@@ -12,12 +12,12 @@ import java.util.stream.Stream;
  */
 public class BlockConfiguration {
   /**
-   * Combine provided precondition objects together.
+   * Combine provided configuration objects together.
    *
    * @param conditions to combine
-   * @return a combination of all preconditions as a new object
+   * @return a combination of all configurations as a new object
    */
-  static BlockConfiguration merge(BlockConfiguration... conditions) {
+  public static BlockConfiguration merge(BlockConfiguration... conditions) {
     BlockConfiguration merged = new BlockConfiguration();
     Arrays.stream(conditions).forEach(merged::mergeWith);
 
@@ -70,9 +70,9 @@ public class BlockConfiguration {
   }
 
   /**
-   * Visitor pattern - when necessary, the child gets the preconditions to apply to it.
+   * Visitor pattern - when necessary, the child gets the configurations to apply to it.
    *
-   * @param child to be pre-processed according to the preconditions.
+   * @param child to be pre-processed according to the configurations.
    * @param state the tagging state within which the child is operating
    */
   public void applyTo(final Child child, final TaggingFilterCriteria state) {

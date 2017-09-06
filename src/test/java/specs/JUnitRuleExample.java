@@ -27,6 +27,16 @@ public class JUnitRuleExample {
     public TemporaryFolder tempFolderRule = new TemporaryFolder();
   }
 
+  // alternative morphology of providing a rule - see http://junit.org/junit4/javadoc/4.12/org/junit/Rule.html
+  public static class TempFolderRuleProvidedViaMethodMixin {
+    private TemporaryFolder tempFolderRule = new TemporaryFolder();
+
+    @Rule
+    public TemporaryFolder getFolder() {
+      return tempFolderRule;
+    }
+  }
+
   public static class JUnitBeforeClassExample {
     public static String value;
 
@@ -75,6 +85,15 @@ public class JUnitRuleExample {
 
       it("has also initialised a class member owing to a local JUnit annotation", () -> {
         assertThat(classValue, is("initialised"));
+      });
+    });
+
+    describe("A spec with a rule mix-in where the rule is provided by method", () -> {
+      Supplier<TempFolderRuleProvidedViaMethodMixin> tempFolderRuleMixin =
+          junitMixin(TempFolderRuleProvidedViaMethodMixin.class);
+
+      it("has access to an initialised object", () -> {
+        assertNotNull(tempFolderRuleMixin.get().getFolder().getRoot());
       });
     });
   }

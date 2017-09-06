@@ -100,8 +100,18 @@ describe("Ignored specs", () -> {
 ```
 #### Ignoring Specs Spectrum style
 
-Spectrum allows you to specify preconditions on a block. These preconditions can include tagging.
-The `with(BlockConfigurationChain,Block)` function is used to annotate a block with preconditions. Preconditions include:
+Spectrum allows you to specify preconditions for execution as part of the configuration of a block. These can include tagging.
+The `with(BlockConfigurationChain,Block)` function is used to annotate a block, for example:
+
+```java
+describe("an ignored suite", with(ignore(), () -> {
+  ...
+}));
+```
+
+For the full capabilities of adding configuration to blocks see [Configuration](Configuration.md).
+
+Available tagging for ignoring:
 
 - `ignore()` - ignore this test
 - `ignore(String reason)` - ignore this test and provide a reason to the reader

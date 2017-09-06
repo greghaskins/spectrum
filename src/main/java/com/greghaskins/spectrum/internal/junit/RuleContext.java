@@ -192,7 +192,7 @@ public class RuleContext<T> implements Supplier<T> {
    * @param toExecute block that will be running inside the statement
    * @return statement encapsulating the work
    */
-  private Statement statementOf(final Block toExecute) {
+  public static Statement statementOf(final Block toExecute) {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
