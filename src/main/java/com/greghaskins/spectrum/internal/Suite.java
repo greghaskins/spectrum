@@ -1,6 +1,7 @@
 package com.greghaskins.spectrum.internal;
 
 import static com.greghaskins.spectrum.internal.configuration.BlockConfiguration.merge;
+import static com.greghaskins.spectrum.internal.configuration.ConfiguredBlock.configurationFromBlock;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.internal.configuration.BlockConfiguration;
@@ -112,14 +113,29 @@ public class Suite implements Parent, Child {
   }
 
   private Child configuredChild(final Child child, final Block block) {
-    merge(this.configuration.forChild(), ConfiguredBlock.configurationFromBlock(block))
+    merge(this.configuration.forChild(), configurationFromBlock(block))
         .applyTo(child, this.tagging);
 
     return child;
   }
 
+  /**
+   * Attach any configuration attached to the given block to the configuration of my suite.
+   * Block configuration is provided when a {@link ConfiguredBlock} is created using the
+   * {@link ConfiguredBlock#with(BlockConfiguration, Block)} function to wrap a normal
+   * {@link Block}
+   * @param block the block with a configuration
+   */
   public void applyConfigurationFromBlock(Block block) {
-    this.configuration = merge(this.configuration, ConfiguredBlock.configurationFromBlock(block));
+    applyConfiguration(configurationFromBlock(block));
+  }
+
+  /**
+   * Attach an explicitly created configuration to the current suite.
+   * @param configuration to attach to this suite and its descendents
+   */
+  public void applyConfiguration(BlockConfiguration configuration) {
+    this.configuration = merge(this.configuration, configuration);
     this.configuration.applyTo(this, this.tagging);
   }
 

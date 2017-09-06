@@ -7,11 +7,14 @@ import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 
 import com.greghaskins.spectrum.Block;
+import com.greghaskins.spectrum.ExceptionExpectation;
 import com.greghaskins.spectrum.ThrowingConsumer;
 import com.greghaskins.spectrum.ThrowingSupplier;
 import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.IdempotentBlock;
+import com.greghaskins.spectrum.internal.exception.ExceptionExpectationProxy;
+import com.greghaskins.spectrum.internal.exception.ExceptionExpecter;
 import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo;
 import com.greghaskins.spectrum.internal.hooks.HookContext.Precedence;
@@ -252,6 +255,27 @@ public interface Specification {
    */
   static void aroundAll(ThrowingConsumer<Block> consumer) {
     DeclarationState.instance().addHook(Hook.from(consumer), AppliesTo.ONCE, Precedence.OUTER);
+  }
+
+  /**
+   * Create an object which individual specs can use to define their expectations on exceptions.
+   * By default a spec requires that there is no exception for it to pass. If that's all a spec
+   * requires, then this is not needed. However, if a spec wishes to define a particular exception
+   * as its outcome, then the object returned by this function, which must be created in the
+   * surrounding <code>describe</code> or <code>context</code> block, can be used to build the
+   * exception expectations. Internally, the object uses the {@link #let} mechanism, so is
+   * fresh for each spec.
+   * @return interface to an object you can use to set exception expectations for the spec
+   */
+  static ExceptionExpectation expectExceptions() {
+    Supplier<ExceptionExpectation> expecter = let(ExceptionExpecter::new);
+    ExceptionExpectationProxy exceptionExpectation = new ExceptionExpectationProxy(expecter);
+
+    DeclarationState.instance()
+        .getCurrentSuiteBeingDeclared()
+        .applyConfiguration(exceptionExpectation.asConfiguration());
+
+    return exceptionExpectation;
   }
 
 }

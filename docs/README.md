@@ -16,6 +16,7 @@ Spectrum also supports:
 - Compatibility with most existing JUnit tools; no configuration required
 - Plugging in familiar JUnit-friendly libraries like `MockitoJUnit` or `SpringJUnit` [via JUnit `@Rule`s handling](JunitRules.md).
 - Tagging specs for [selective running](FocusingAndIgnoring.md) or adding [configuration](Configuration.md) including [timeouts](Timeout.md)
+- [Expecting exceptions](ExceptionHandling.md) within specs
 - Mixing Spectrum tests and normal JUnit tests in the same project suite
 - RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
 
