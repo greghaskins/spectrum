@@ -1,6 +1,7 @@
 package com.greghaskins.spectrum.internal.hooks;
 
 import static com.greghaskins.spectrum.internal.blocks.NotifyingBlock.wrapWithReporting;
+import static com.greghaskins.spectrum.internal.hooks.NonReportingHook.nonReportingHookFrom;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.Variable;
@@ -95,23 +96,32 @@ public class Hooks extends ArrayList<HookContext> {
     return chainOfResponsibility;
   }
 
-  private void executeChain(Description description, RunReporting<Description, Failure> reporting,
-      Block block, Hook chainOfResponsibility)
-      throws Throwable {
+  private void executeChain(final Description description,
+      final RunReporting<Description, Failure> reporting,
+      final Block block, final Hook chainOfResponsibility) throws Throwable {
     chainOfResponsibility.accept(description, reporting, block);
   }
 
-  private Hook innerHook(Variable<Boolean> hooksRememberedToRunTheInner) {
-    return (description, notifier, innerBlock) -> {
+  private Hook innerHook(final Variable<Boolean> hooksRememberedToRunTheInner) {
+    return nonReportingHookFrom((description, reporting, block) -> {
       hooksRememberedToRunTheInner.set(true);
-      innerBlock.run();
-    };
+      block.run();
+    });
   }
 
   private Hook wrap(final Hook inner, final HookContext outer) {
     return (description, reporting, block) -> outer.getHook().accept(description, reporting,
-        wrapWithReporting(description, reporting,
+        conditionallyWrapWithReporting(inner, description, reporting,
             () -> inner.accept(description, reporting, block)));
+  }
+
+  private static Block conditionallyWrapWithReporting(final Hook forHook, final Description description,
+      final RunReporting<Description, Failure> reporting, final Block innerBlock) {
+    if (forHook.requiresUnreportedInnerBlock()) {
+      return innerBlock;
+    }
+
+    return wrapWithReporting(description, reporting, innerBlock);
   }
 
   private Hooks filtered(Predicate<HookContext> predicate) {

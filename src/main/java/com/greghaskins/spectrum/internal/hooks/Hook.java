@@ -27,6 +27,14 @@ public interface Hook {
       final Block block) throws Throwable;
 
   /**
+   * Override to return true if the inner block cannot report its own errors for some reason.
+   * @return true to suppress wrapping inner block in self-reporting
+   */
+  default boolean requiresUnreportedInnerBlock() {
+    return false;
+  }
+
+  /**
    * Create a hook from a {@link ThrowingConsumer}.
    * @param consumer to turn into a hook
    * @return the hook

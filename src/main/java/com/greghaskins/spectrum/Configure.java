@@ -4,11 +4,14 @@ import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.configuration.BlockFocused;
 import com.greghaskins.spectrum.internal.configuration.BlockIgnore;
 import com.greghaskins.spectrum.internal.configuration.BlockTagging;
+import com.greghaskins.spectrum.internal.configuration.BlockTimeout;
 import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.configuration.ExcludeTags;
 import com.greghaskins.spectrum.internal.configuration.IncludeTags;
 import com.greghaskins.spectrum.internal.junit.Rules;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public interface Configure {
@@ -18,8 +21,8 @@ public interface Configure {
 
   /**
    * Surround a {@link Block} with the {@code with} statement to add
-   * preconditions and metadata to it. E.g. <code>with(tags("foo"), () -&gt; {})</code>.<br>
-   * Note: preconditions and metadata can be chained using the
+   * configuration and metadata to it. E.g. <code>with(tags("foo"), () -&gt; {})</code>.<br>
+   * Note: configuration metadata can be chained using the
    * {@link BlockConfigurationChain#and(BlockConfigurationChain)} method. E.g.
    * <code>with(tags("foo").and(ignore()), () -&gt; {})</code>
    *
@@ -30,6 +33,7 @@ public interface Configure {
    * @see #ignore()
    * @see #focus()
    * @see #tags(String...)
+   * @see #timeout(Duration)
    */
   static Block with(final BlockConfigurationChain configuration, final Block block) {
     return ConfiguredBlock.with(configuration.getBlockConfiguration(), block);
@@ -93,6 +97,16 @@ public interface Configure {
    */
   static BlockConfigurationChain focus() {
     return new BlockConfigurationChain().with(new BlockFocused());
+  }
+
+  /**
+   * Apply timeout to all leaf nodes from this level down. Can be superseded by a lower level having its
+   * own timeout.
+   * @param timeout the amount of the timeout
+   * @return a chainable configuration that will apply a timeout to all leaf nodes below
+   */
+  static BlockConfigurationChain timeout(Duration timeout) {
+    return new BlockConfigurationChain().with(new BlockTimeout(timeout));
   }
 
   /**

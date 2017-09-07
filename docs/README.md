@@ -15,7 +15,7 @@ Spectrum also supports:
 - Rigorous error handling and reporting when something unexpected goes wrong
 - Compatibility with most existing JUnit tools; no configuration required
 - Plugging in familiar JUnit-friendly libraries like `MockitoJUnit` or `SpringJUnit` [via JUnit `@Rule`s handling](JunitRules.md).
-- Tagging specs for [selective running](FocusingAndIgnoring.md)
+- Tagging specs for [selective running](FocusingAndIgnoring.md) or adding [configuration](Configuration.md) including [timeouts](Timeout.md)
 - Mixing Spectrum tests and normal JUnit tests in the same project suite
 - RSpec-style `aroundEach` and `aroundAll` hooks for advanced users and plugin authors
 
@@ -25,4 +25,4 @@ Unlike some BDD-style frameworks, Spectrum is _only_ a test runner. Assertions, 
 
 ## Getting Started
 
-See the [quickstart waklthrough](QuickstartWalkthrough.md) and the docs for writing [Specification-style](SpecificationDSL.md) or [Gherkin-style](GherkinDSL.md) tests.
+See the [quickstart walkthrough](QuickstartWalkthrough.md) and the docs for writing [Specification-style](SpecificationDSL.md) or [Gherkin-style](GherkinDSL.md) tests.

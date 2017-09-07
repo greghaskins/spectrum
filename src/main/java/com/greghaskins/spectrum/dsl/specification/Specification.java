@@ -34,7 +34,7 @@ public interface Specification {
     final Suite suite = DeclarationState.instance()
         .getCurrentSuiteBeingDeclared()
         .addSuite(context);
-    suite.applyPreconditions(block);
+    suite.applyConfigurationFromBlock(block);
     DeclarationState.instance().beginDeclaration(suite, block);
   }
 

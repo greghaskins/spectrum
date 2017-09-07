@@ -1,7 +1,8 @@
 package com.greghaskins.spectrum.internal;
 
+import static com.greghaskins.spectrum.internal.configuration.BlockConfiguration.merge;
+
 import com.greghaskins.spectrum.Block;
-import com.greghaskins.spectrum.internal.blocks.NotifyingBlock;
 import com.greghaskins.spectrum.internal.configuration.BlockConfiguration;
 import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
 import com.greghaskins.spectrum.internal.configuration.TaggingFilterCriteria;
@@ -30,7 +31,7 @@ public class Suite implements Parent, Child {
   private boolean ignored;
 
   private final TaggingFilterCriteria tagging;
-  private BlockConfiguration preconditions = BlockConfiguration.defaultConfiguration();
+  private BlockConfiguration configuration = BlockConfiguration.defaultConfiguration();
   private NameSanitiser nameSanitiser = new NameSanitiser();
 
   /**
@@ -70,9 +71,10 @@ public class Suite implements Parent, Child {
   }
 
   private Suite addSuite(final String name, final ChildRunner childRunner) {
-    final Suite suite =
-        new Suite(Description.createSuiteDescription(sanitise(name)), this, childRunner,
-            this.tagging.clone());
+    final Suite suite = new Suite(Description.createSuiteDescription(sanitise(name)), this, childRunner,
+        this.tagging.clone());
+
+    suite.inheritConfigurationFromParent(configuration.forChild());
 
     return addedToThis(suite);
   }
@@ -102,13 +104,23 @@ public class Suite implements Parent, Child {
     final Description specDescription =
         Description.createTestDescription(this.description.getClassName(), sanitise(name));
 
-    final NotifyingBlock specBlockInContext = NotifyingBlock.wrap(block);
+    return configuredChild(new Spec(specDescription, block, this), block);
+  }
 
-    ConfiguredBlock configuredBlock =
-        ConfiguredBlock.with(this.preconditions.forChild(), block);
+  private void inheritConfigurationFromParent(final BlockConfiguration fromParent) {
+    configuration = merge(fromParent, configuration);
+  }
 
-    return new Spec(specDescription, specBlockInContext, this).applyPreconditions(configuredBlock,
-        this.tagging);
+  private Child configuredChild(final Child child, final Block block) {
+    merge(this.configuration.forChild(), ConfiguredBlock.configurationFromBlock(block))
+        .applyTo(child, this.tagging);
+
+    return child;
+  }
+
+  public void applyConfigurationFromBlock(Block block) {
+    this.configuration = merge(this.configuration, ConfiguredBlock.configurationFromBlock(block));
+    this.configuration.applyTo(this, this.tagging);
   }
 
   private void addChild(final Child child) {
@@ -156,11 +168,6 @@ public class Suite implements Parent, Child {
    */
   public void excludeTags(final String... tags) {
     this.tagging.exclude(tags);
-  }
-
-  public void applyPreconditions(Block block) {
-    this.preconditions = ConfiguredBlock.findApplicablePreconditions(block);
-    applyPreconditions(block, this.tagging);
   }
 
   @Override

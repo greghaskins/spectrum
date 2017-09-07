@@ -3,7 +3,7 @@ package com.greghaskins.spectrum.internal.configuration;
 import com.greghaskins.spectrum.Block;
 
 /**
- * A block with preconditions set on it.
+ * A block with configuration data applied to it.
  */
 public class ConfiguredBlock implements Block {
   private final BlockConfiguration blockConfiguration;
@@ -20,7 +20,7 @@ public class ConfiguredBlock implements Block {
   public static ConfiguredBlock with(final BlockConfiguration blockConfiguration,
       final Block block) {
 
-    BlockConfiguration existingBlockConfiguration = findApplicablePreconditions(block);
+    BlockConfiguration existingBlockConfiguration = configurationFromBlock(block);
     BlockConfiguration mergedBlockConfiguration =
         BlockConfiguration.merge(existingBlockConfiguration, blockConfiguration);
 
@@ -28,7 +28,7 @@ public class ConfiguredBlock implements Block {
   }
 
   /**
-   * Construct a new precondition block to wrap a block.
+   * Construct a ConfiguredBlock to wrap block execution with configuration data.
    * @param innerBlock the block to wrap
    */
   private ConfiguredBlock(final BlockConfiguration blockConfiguration, final Block innerBlock) {
@@ -37,10 +37,10 @@ public class ConfiguredBlock implements Block {
   }
 
   /**
-   * Get the preconditions that apply to the block.
-   * @return the preconditions on the block
+   * Get the configuration that applies to the block.
+   * @return the configuration on the block
    */
-  BlockConfiguration getPreconditions() {
+  BlockConfiguration getConfiguration() {
     return this.blockConfiguration;
   }
 
@@ -50,14 +50,13 @@ public class ConfiguredBlock implements Block {
   }
 
   /**
-   * Provide the precondition object for this child's block, which are
-   * either in the block itself, or provided as a default.
-   * @param block the block which may have preconditions
-   * @return a non null preconditions object to use
+   * Provide any configuration data for this child's block or the default.
+   * @param block the block which may have configuration data
+   * @return a non null {@link BlockConfiguration} object to use
    */
-  public static BlockConfiguration findApplicablePreconditions(final Block block) {
+  public static BlockConfiguration configurationFromBlock(final Block block) {
     if (block instanceof ConfiguredBlock) {
-      return ((ConfiguredBlock) block).getPreconditions();
+      return ((ConfiguredBlock) block).getConfiguration();
     } else {
       return BlockConfiguration.defaultConfiguration();
     }
