@@ -65,8 +65,24 @@ public class BlockConfiguration {
     add(new BlockTagging());
   }
 
+  /**
+   * Construct an empty block configuration.
+   * @return a block configuration with no special configuration in it
+   */
   public static BlockConfiguration defaultConfiguration() {
     return new BlockConfiguration();
+  }
+
+  /**
+   * Construct BlockConfiguration from a single configurable.
+   * @param configurable to start with
+   * @return a block configuration with the configurable in it
+   */
+  public static BlockConfiguration of(BlockConfigurable<?> configurable) {
+    BlockConfiguration configuration = new BlockConfiguration();
+    configuration.add(configurable);
+
+    return configuration;
   }
 
   /**
