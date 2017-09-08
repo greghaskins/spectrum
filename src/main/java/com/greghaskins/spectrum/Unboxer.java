@@ -24,7 +24,7 @@ public interface Unboxer {
    */
   @SuppressWarnings("unchecked")
   static <T extends S, R extends S, S> R unbox(Supplier<T> supplier, Class<S> asClass) {
-    return (R) Proxy.newProxyInstance(asClass.getClassLoader(), new Class[] {asClass},
+    return (R) Proxy.newProxyInstance(asClass.getClassLoader(), new Class<?>[] {asClass},
         (Object proxy, Method method, Object[] args) -> method.invoke(supplier.get(), args));
   }
 }

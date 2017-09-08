@@ -109,3 +109,14 @@ it("can use the object as though it was not in a supplier", () -> {
   assertThat(list.get(0), is("Hello"));
 });
 ```
+
+The `unbox` method can be used with any `Supplier<>`. There is also an overload of `let` as a short form for this:
+
+```java
+List<String> list = let(ArrayList::new, List.class);
+
+it("can use the object as though it was not in a supplier", () -> {
+  list.add("Hello");
+  assertThat(list.get(0), is("Hello"));
+});
+```

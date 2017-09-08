@@ -80,10 +80,6 @@ The rules are applied and the test object created just in time for each atomic t
 [SpringSpecJUnitStyle](../src/test/java/specs/SpringSpecJUnitStyle.java) and
 [SpringSpecWithRuleClasses](../src/test/java/specs/SpringSpecWithRuleClasses.java)
 
-
-
-
-
 ### What is Supported
 
 * `@ClassRule` is applied
@@ -93,6 +89,7 @@ The rules are applied and the test object created just in time for each atomic t
   * `TestRule`s are applied at the level of each atomic test
   * `MethodRule`s are applied at the level of each atomic test
 * `junitMixin` is implemented to be thread-safe
+* `junitMixin` provides an overload for unboxing the supplier - `junitMixin(SomeClass.class, SomeInterface.class)` - if your mixin has an interface to it. See also [`let` - when get is getting you down.](VariablesAndValues.md)
 
 ### What is not supported
 

@@ -1,5 +1,7 @@
 package com.greghaskins.spectrum;
 
+import static com.greghaskins.spectrum.Unboxer.unbox;
+
 import com.greghaskins.spectrum.dsl.specification.Specification;
 import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.Suite;
@@ -232,6 +234,33 @@ public final class Spectrum extends Runner {
    */
   public static <T> Supplier<T> let(final com.greghaskins.spectrum.ThrowingSupplier<T> supplier) {
     return Specification.let(supplier);
+  }
+
+  /**
+   * A value that will be fresh within each spec and cannot bleed across specs. This is provided
+   * as a proxy to a lazy loading object, with the interface given.
+   *
+   * <p>
+   * Note that {@code let} is lazy-evaluated: the internal {@code supplier} is not called until the first
+   * time it is used.
+   * </p>
+   *
+   * @param <T>      The type of value
+   * @param <R>      the required type at the consumer - allowing for generic interfaces
+   *                 (e.g. <code>List&lt;String&gt;</code>)
+   * @param <S>      the type of the value's interface.
+   * @param supplier {@link com.greghaskins.spectrum.ThrowingSupplier} function that either
+   *                 generates the value, or throws a {@link Throwable}
+   * @param interfaceToUse an interface type, that is supported by the supplied object and can be used
+   *                       to access it through the supplier without having to call {@link Supplier#get()}
+   * @return proxy to the object supplied, using the interface given
+   * @see Specification#let
+   * @see Unboxer#unbox(Supplier, Class)
+   */
+  public static <T extends S, R extends S, S> R let(
+      final com.greghaskins.spectrum.ThrowingSupplier<T> supplier,
+      Class<S> interfaceToUse) {
+    return unbox(let(supplier), interfaceToUse);
   }
 
   private final Suite rootSuite;

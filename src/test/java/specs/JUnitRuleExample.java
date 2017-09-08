@@ -21,10 +21,19 @@ import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class JUnitRuleExample {
+  public interface JUnitTempFolderInterface {
+    TemporaryFolder getTempFolder();
+  }
+
   // mixins for the Spectrum native style of mixin
-  public static class TempFolderRuleMixin {
+  public static class TempFolderRuleMixin implements JUnitTempFolderInterface {
     @Rule
     public TemporaryFolder tempFolderRule = new TemporaryFolder();
+
+    @Override
+    public TemporaryFolder getTempFolder() {
+      return tempFolderRule;
+    }
   }
 
   // alternative morphology of providing a rule - see http://junit.org/junit4/javadoc/4.12/org/junit/Rule.html
@@ -95,12 +104,28 @@ public class JUnitRuleExample {
       it("has access to an initialised object", () -> {
         assertNotNull(tempFolderRuleMixin.get().getFolder().getRoot());
       });
+
+      describe("A spec with a rule mix-in via interface", () -> {
+        JUnitTempFolderInterface tempFolderGetter =
+            junitMixin(TempFolderRuleMixin.class, JUnitTempFolderInterface.class);
+
+        it("has access to the rule-provided object at the top level", () -> {
+          checkCanUseTempFolderAndRecordWhatItWas(ruleProvidedFoldersSeen,
+              tempFolderGetter.getTempFolder());
+        });
+
+      });
     });
   }
 
   private void checkCanUseTempFolderAndRecordWhatItWas(Set<File> filesSeen,
       Supplier<TempFolderRuleMixin> tempFolderRuleMixin) {
-    assertNotNull(tempFolderRuleMixin.get().tempFolderRule.getRoot());
-    filesSeen.add(tempFolderRuleMixin.get().tempFolderRule.getRoot());
+    checkCanUseTempFolderAndRecordWhatItWas(filesSeen, tempFolderRuleMixin.get().tempFolderRule);
+  }
+
+  private void checkCanUseTempFolderAndRecordWhatItWas(Set<File> filesSeen,
+      TemporaryFolder folder) {
+    assertNotNull(folder.getRoot());
+    filesSeen.add(folder.getRoot());
   }
 }

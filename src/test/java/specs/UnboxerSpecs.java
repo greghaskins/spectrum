@@ -36,6 +36,15 @@ public class UnboxerSpecs {
       });
     });
 
+    describe("Using let overload", () -> {
+      List<String> list = let(ArrayList::new, List.class);
+
+      it("can use the object as though it was not in a supplier", () -> {
+        list.add("Hello");
+        assertThat(list.get(0), is("Hello"));
+      });
+    });
+
     describe("Using unboxer with variable", () -> {
       Variable<ArrayList<String>> listVariable = new Variable<>(new ArrayList<>());
       List<String> list = unbox(listVariable, List.class);

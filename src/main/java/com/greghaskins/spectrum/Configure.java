@@ -1,5 +1,7 @@
 package com.greghaskins.spectrum;
 
+import static com.greghaskins.spectrum.Unboxer.unbox;
+
 import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.configuration.BlockFocused;
 import com.greghaskins.spectrum.internal.configuration.BlockIgnore;
@@ -11,7 +13,6 @@ import com.greghaskins.spectrum.internal.configuration.IncludeTags;
 import com.greghaskins.spectrum.internal.junit.Rules;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public interface Configure {
@@ -153,5 +154,23 @@ public interface Configure {
    */
   static <T> Supplier<T> junitMixin(final Class<T> classWithRules) {
     return Rules.applyRules(classWithRules, DeclarationState.instance()::addHook);
+  }
+
+  /**
+   * Uses the given class as a mix-in for JUnit rules to be applied. These rules will cascade down
+   * and be applied at the level of specs or atomic specs. Provide a proxy to the eventual mix-in
+   * via the interface given.
+   *
+   * @param classWithRules Class to create and apply rules to for each spec.
+   * @param interfaceToReturn the type of interface the caller requires the proxy object to be
+   * @param <T>            type of the mixin object
+   * @param <R>            the required type at the consumer - allowing for generic interfaces
+   *                       (e.g. <code>List&lt;String&gt;</code>)
+   * @param <S>            type of the interface common to the rules object and the proxy
+   * @return a proxy to the rules object
+   */
+  static <T extends S, R extends S, S> R junitMixin(final Class<T> classWithRules,
+      final Class<S> interfaceToReturn) {
+    return unbox(junitMixin(classWithRules), interfaceToReturn);
   }
 }
