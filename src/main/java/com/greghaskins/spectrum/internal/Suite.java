@@ -126,7 +126,8 @@ public class Suite implements Parent, Child {
   }
 
   private Hooks getHooksFor(final Child child) {
-    Hooks allHooks = this.parent.getInheritableHooks().plus(this.hooks);
+    Hooks allHooks = isAtomic() ? new Hooks() : this.parent.getInheritableHooks();
+    allHooks = allHooks.plus(this.hooks);
 
     return child.isAtomic() ? allHooks.forAtomic() : allHooks.forNonAtomic();
   }

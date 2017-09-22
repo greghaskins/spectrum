@@ -3,6 +3,7 @@ package com.greghaskins.spectrum.dsl.specification;
 import static com.greghaskins.spectrum.Configure.focus;
 import static com.greghaskins.spectrum.Configure.ignore;
 import static com.greghaskins.spectrum.Configure.with;
+import static com.greghaskins.spectrum.internal.Declaration.addSuiteInternal;
 import static com.greghaskins.spectrum.internal.hooks.AfterHook.after;
 import static com.greghaskins.spectrum.internal.hooks.BeforeHook.before;
 
@@ -19,6 +20,8 @@ import com.greghaskins.spectrum.internal.hooks.LetHook;
 
 import org.junit.AssumptionViolatedException;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface Specification {
@@ -31,11 +34,7 @@ public interface Specification {
    *                define each expected behavior
    */
   static void describe(final String context, final Block block) {
-    final Suite suite = DeclarationState.instance()
-        .getCurrentSuiteBeingDeclared()
-        .addSuite(context);
-    suite.applyPreconditions(block);
-    DeclarationState.instance().beginDeclaration(suite, block);
+    addSuiteInternal(parent -> parent.addSuite(context), block);
   }
 
   /**

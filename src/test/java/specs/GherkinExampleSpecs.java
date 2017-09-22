@@ -1,5 +1,8 @@
 package specs;
 
+import static com.greghaskins.spectrum.Configure.focus;
+import static com.greghaskins.spectrum.Configure.with;
+import static com.greghaskins.spectrum.Spectrum.let;
 import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.and;
 import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.feature;
 import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.given;
@@ -10,11 +13,16 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import com.greghaskins.spectrum.Spectrum;
+import com.greghaskins.spectrum.SpectrumHelper;
 import com.greghaskins.spectrum.Variable;
 
+import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 @RunWith(Spectrum.class)
 public class GherkinExampleSpecs {
@@ -51,6 +59,38 @@ public class GherkinExampleSpecs {
 
         and("the data is still available in subsequent steps", () -> {
           assertThat(theData.get(), is("Hello world!"));
+        });
+      });
+
+      Supplier<List<String>> list = let(ArrayList::new);
+      scenario("behaviour of let in gherkin", () -> {
+        given("the data is set", () -> {
+          list.get().add("hello");
+        });
+
+        then("the data is still there", () -> {
+          assertThat(list.get().get(0), is("hello"));
+        });
+      });
+
+      scenario("application of block configuration", () -> {
+        Variable<Result> result = new Variable<>();
+        when("executing a gherkin test suite with a configured block", () -> {
+          result.set(SpectrumHelper.run(
+              () -> {
+                scenario("some scenario", () -> {
+                  then("should have been ignored", () -> {
+                  });
+                });
+                scenario("some focused scenario", with(focus(), () -> {
+                  then("should not have been ignored", () -> {
+                  });
+                }));
+              }));
+        });
+        then("the block configuration will have applied", () -> {
+          assertThat(result.get().getRunCount(), is(1));
+          assertThat(result.get().getIgnoreCount(), is(1));
         });
       });
 

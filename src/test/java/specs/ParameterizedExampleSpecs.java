@@ -1,5 +1,6 @@
 package specs;
 
+import static com.greghaskins.spectrum.Spectrum.let;
 import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.and;
 import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.example;
 import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.given;
@@ -10,6 +11,7 @@ import static com.greghaskins.spectrum.dsl.gherkin.Gherkin.withExamples;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.Variable;
@@ -17,6 +19,10 @@ import com.greghaskins.spectrum.dsl.gherkin.Gherkin;
 
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import org.junit.runner.RunWith;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -118,6 +124,24 @@ public class ParameterizedExampleSpecs {
             example("bye", -1.5))
 
     );
+
+    Supplier<Set<String>> set = let(HashSet::new);
+    scenarioOutline("behaviour of let inside scenario outline",
+        (first, second) -> {
+          given("set contains first", () -> {
+            set.get().add(first);
+          });
+          when("set has second added", () -> {
+            set.get().add(second);
+          });
+          then("both are found in the set", () -> {
+            assertTrue(set.get().contains(first));
+            assertTrue(set.get().contains(second));
+          });
+        },
+        withExamples(
+            example("a", "b"),
+            example("b", "c")));
   }
 
   // dummy class under test

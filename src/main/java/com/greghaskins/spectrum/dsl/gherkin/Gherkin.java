@@ -2,6 +2,7 @@ package com.greghaskins.spectrum.dsl.gherkin;
 
 import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
 import static com.greghaskins.spectrum.dsl.specification.Specification.it;
+import static com.greghaskins.spectrum.internal.Declaration.addComposite;
 
 import com.greghaskins.spectrum.Block;
 import com.greghaskins.spectrum.ParameterizedBlock;
@@ -13,8 +14,6 @@ import com.greghaskins.spectrum.ParameterizedBlock.SevenArgBlock;
 import com.greghaskins.spectrum.ParameterizedBlock.SixArgBlock;
 import com.greghaskins.spectrum.ParameterizedBlock.ThreeArgBlock;
 import com.greghaskins.spectrum.ParameterizedBlock.TwoArgBlock;
-import com.greghaskins.spectrum.internal.DeclarationState;
-import com.greghaskins.spectrum.internal.Suite;
 
 import java.util.Arrays;
 
@@ -50,9 +49,7 @@ public interface Gherkin {
    * @see #then
    */
   static void scenario(final String scenarioName, final Block block) {
-    final Suite suite = DeclarationState.instance().getCurrentSuiteBeingDeclared()
-        .addCompositeSuite("Scenario: " + scenarioName);
-    DeclarationState.instance().beginDeclaration(suite, block);
+    addComposite("Scenario: " + scenarioName, block);
   }
 
   /**
@@ -155,14 +152,14 @@ public interface Gherkin {
     describe("Scenario outline: " + name, () -> {
       describe("Examples:", () -> {
         examples.rows().forEach(example -> {
-          describe(example.toString(), () -> example.runDeclaration(block));
+          addComposite(example.toString(), () -> example.runDeclaration(block));
         });
       });
     });
   }
 
   /**
-   * Construct an Examples table for {@link scenarioOutline}. Used this method to compose individual
+   * Construct an Examples table for {@link #scenarioOutline}. Used this method to compose individual
    * rows created with {@link #example} type methods into a type-implicit container. You should try
    * to lay out your examples like a data table as that's what they essentially are. Better than
    * just providing some primitives in an example block would be to provide some objects with fields
