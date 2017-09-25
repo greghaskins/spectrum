@@ -3,6 +3,7 @@ package com.greghaskins.spectrum;
 import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.configuration.BlockFocused;
 import com.greghaskins.spectrum.internal.configuration.BlockIgnore;
+import com.greghaskins.spectrum.internal.configuration.BlockRandomOrder;
 import com.greghaskins.spectrum.internal.configuration.BlockTagging;
 import com.greghaskins.spectrum.internal.configuration.BlockTimeout;
 import com.greghaskins.spectrum.internal.configuration.ConfiguredBlock;
@@ -107,6 +108,24 @@ public interface Configure {
    */
   static BlockConfigurationChain timeout(Duration timeout) {
     return new BlockConfigurationChain().with(new BlockTimeout(timeout));
+  }
+
+  /**
+   * Apply random order to all parents from this point in the hierarchy down.
+   * @return a chainable configuration that will apply random test order to all parent nodes below
+   */
+  static BlockConfigurationChain randomOrder() {
+    return new BlockConfigurationChain().with(new BlockRandomOrder());
+  }
+
+  /**
+   * Apply random order to all parents from this point in the hierarchy down.
+   * Using the given seed to make that random order the same every time.
+   * @param seed a fixed random seed to (temporarily) fix the order for diagnostics.
+   * @return a chainable configuration that will apply random test order to all parent nodes below
+   */
+  static BlockConfigurationChain randomOrder(long seed) {
+    return new BlockConfigurationChain().with(new BlockRandomOrder(seed));
   }
 
   /**

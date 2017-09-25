@@ -1,5 +1,6 @@
 package com.greghaskins.spectrum.internal;
 
+import static com.greghaskins.spectrum.internal.ExecutionSequencer.DEFAULT;
 import static com.greghaskins.spectrum.internal.configuration.BlockConfiguration.merge;
 
 import com.greghaskins.spectrum.Block;
@@ -18,7 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Suite implements Parent, Child {
+public class Suite implements Parent, Child, ExecutionSequenceApplier {
   private Hooks hooks = new Hooks();
 
   protected final List<Child> children = new ArrayList<>();
@@ -33,6 +34,8 @@ public class Suite implements Parent, Child {
   private final TaggingFilterCriteria tagging;
   private BlockConfiguration configuration = BlockConfiguration.defaultConfiguration();
   private NameSanitiser nameSanitiser = new NameSanitiser();
+
+  private ExecutionSequencer sequencer = DEFAULT;
 
   /**
    * The strategy for running the children within the suite.
@@ -150,6 +153,11 @@ public class Suite implements Parent, Child {
     // each child of the suite, or once
 
     return this.parent.getInheritableHooks().plus(this.hooks.forAtomic());
+  }
+
+  @Override
+  public void setSequencer(ExecutionSequencer sequencer) {
+    this.sequencer = sequencer;
   }
 
   /**
@@ -283,7 +291,8 @@ public class Suite implements Parent, Child {
 
   private static void defaultChildRunner(final Suite suite,
       final RunReporting<Description, Failure> reporting) {
-    suite.children.forEach((child) -> suite.runChild(child, reporting));
+    suite.sequencer.sequence(suite.children)
+        .forEach((child) -> suite.runChild(child, reporting));
   }
 
   private String sanitise(final String name) {
