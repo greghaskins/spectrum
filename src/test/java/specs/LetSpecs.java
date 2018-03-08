@@ -1,6 +1,8 @@
 package specs;
 
 import static com.greghaskins.spectrum.dsl.specification.Specification.afterEach;
+import static com.greghaskins.spectrum.dsl.specification.Specification.beforeEach;
+import static com.greghaskins.spectrum.dsl.specification.Specification.context;
 import static com.greghaskins.spectrum.dsl.specification.Specification.describe;
 import static com.greghaskins.spectrum.dsl.specification.Specification.it;
 import static com.greghaskins.spectrum.dsl.specification.Specification.let;
@@ -15,6 +17,7 @@ import static org.hamcrest.Matchers.sameInstance;
 
 import com.greghaskins.spectrum.Spectrum;
 import com.greghaskins.spectrum.SpectrumHelper;
+import com.greghaskins.spectrum.Variable;
 
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
@@ -29,7 +32,6 @@ import java.util.function.Supplier;
 public class LetSpecs {
   {
     describe("The `let` helper function", () -> {
-
       final Supplier<List<String>> items = let(() -> new ArrayList<>(asList("foo", "bar")));
 
       it("is a way to supply a value for specs", () -> {
@@ -41,6 +43,7 @@ public class LetSpecs {
 
         items.get().add("baz");
         items.get().add("blah");
+
         assertThat(items.get(), contains("foo", "bar", "baz", "blah"));
       });
 
@@ -48,11 +51,28 @@ public class LetSpecs {
         assertThat(items.get(), contains("foo", "bar"));
       });
 
+      context("when the value returned by the supplier is `null`", () -> {
+        final AtomicInteger callCounter = new AtomicInteger();
+
+        final Supplier<String> stringLet = let(() -> {
+          if (callCounter.getAndIncrement() == 0) {
+            return null;
+          } else {
+            return "fail";
+          }
+        });
+
+        it("does not call the supplier multiple times", () -> {
+          assertThat(stringLet.get(), is(nullValue()));
+          assertThat(stringLet.get(), is(nullValue()));
+        });
+      });
+
       describe("in complex test hierarchies", () -> {
         describe("a new let object is created for each spec", () -> {
           AtomicInteger integer = new AtomicInteger();
-          describe("a thing", () -> {
 
+          describe("a thing", () -> {
             final Supplier<Integer> intLet = let(integer::getAndIncrement);
 
             it("starts with one value", () -> {
@@ -85,14 +105,26 @@ public class LetSpecs {
                 });
               });
             });
+          });
+        });
+      });
 
+      describe("lazy initialization", () -> {
+        context("when setup has to be done before a let is evaluated", () -> {
+          final Variable<Integer> theVariable = new Variable<>();
+          final Supplier<Integer> result = let(() -> theVariable.get());
+
+          beforeEach(() -> {
+            theVariable.set(123);
           });
 
+          it("does not cache a value until the let is referenced", () -> {
+            assertThat(result.get(), is(123));
+          });
         });
       });
 
       describe("when trying to use a value outside a spec", () -> {
-
         final Supplier<Result> result =
             let(() -> SpectrumHelper.run(getSuiteThatUsesLetValueOutsideSpec()));
 
