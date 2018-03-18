@@ -12,6 +12,7 @@ import com.greghaskins.spectrum.ThrowingSupplier;
 import com.greghaskins.spectrum.internal.DeclarationState;
 import com.greghaskins.spectrum.internal.Suite;
 import com.greghaskins.spectrum.internal.blocks.IdempotentBlock;
+import com.greghaskins.spectrum.internal.hooks.EagerLetHook;
 import com.greghaskins.spectrum.internal.hooks.Hook;
 import com.greghaskins.spectrum.internal.hooks.HookContext.AppliesTo;
 import com.greghaskins.spectrum.internal.hooks.HookContext.Precedence;
@@ -183,6 +184,26 @@ public interface Specification {
     DeclarationState.instance().addHook(letHook, AppliesTo.ATOMIC_ONLY, Precedence.LOCAL);
 
     return letHook;
+  }
+
+  /**
+   * A value that will be calculated fresh at the start of each spec and cannot bleed across specs.
+   *
+   * <p>
+   * Note that {@code eagerLet} is eagerly evaluated: the {@code supplier} is called at the start
+   * of the spec, before {@code beforeEach} blocks.
+   * </p>
+   *
+   * @param <T>      The type of value
+   * @param supplier {@link ThrowingSupplier} function that either generates the value, or throws a
+   *                 {@link Throwable}
+   * @return supplier which is refreshed for each spec's context
+   */
+  static <T> Supplier<T> eagerLet(final ThrowingSupplier<T> supplier) {
+    EagerLetHook<T> eagerLetHook = new EagerLetHook<>(supplier);
+    DeclarationState.instance().addHook(eagerLetHook, AppliesTo.ATOMIC_ONLY, Precedence.LOCAL);
+
+    return eagerLetHook;
   }
 
   /**
