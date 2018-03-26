@@ -9,7 +9,7 @@ Spectrum provides a Specification-style test DSL similar to [RSpec](http://rspec
 - `it` - an individual spec
 - `beforeEach` / `afterEach` - per-spec setup/teardown
 - `beforeAll` / `afterAll` - per-suite setup/teardown
-- `let` / `Variable` - [for providing values to tests](VariablesAndValues.md)
+- `let` / `eagerLet` / `Variable` - [for providing values to tests](VariablesAndValues.md)
 - `fit` / `fdescribe` / `fcontext` - [for focusing](FocusingAndIgnoring.md)
 - `xit` / `xdescribe` / `xcontext` - [for ignoring](FocusingAndIgnoring.md)
 - `with` / `ignore` / `focus` / `tags` - [for tagging blocks with metadata](FocusingAndIgnoring.md)
