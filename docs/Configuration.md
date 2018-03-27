@@ -60,3 +60,5 @@ In addition to:
 there is also:
 
 - `timeout(Duration timeout)` - make the test fail if it takes too long - see [Timeout](Timeout.md)
+- `randomOrder()` - put the tests into a different order each run - this outputs the seed used, allowing you to repeat a particular run
+- `randomOrder(long seed)` - put the tests into a pseudo-random order, using the given seed to fix that order - most commonly used to diagnose a particular order having an effect on the result
